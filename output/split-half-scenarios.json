@@ -1,0 +1,308 @@
+{
+  "scenarios": [
+    {
+      "id": "SH-01",
+      "tag": "FT-101",
+      "service": "Boiler Feedwater Flow",
+      "tagDerived": true,
+      "range": "0-500 GPM",
+      "lrv": 0,
+      "urv": 500,
+      "units": "GPM",
+      "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Flow 0 GPM 500 GPM)",
+      "faultLink": 3,
+      "faultLinkName": "Wiring",
+      "faultCategory": "Reading pegged low (at or below 4 mA)",
+      "faultDescription": "Confirm polarity and that no wire is lifted or backed out.",
+      "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading pegged low (at or below 4 mA)\", step 3",
+      "readings": {
+        "proc": {
+          "good": "300 GPM",
+          "bad": null,
+          "statusGood": true
+        },
+        "sens": {
+          "good": "300 GPM",
+          "bad": null,
+          "statusGood": true
+        },
+        "xmtr": {
+          "good": "13.6 mA",
+          "bad": null,
+          "statusGood": true
+        },
+        "jb": {
+          "good": "13.6 mA",
+          "bad": "0.0 mA",
+          "statusGood": false
+        },
+        "card": {
+          "good": "13.6 mA",
+          "bad": "0.0 mA",
+          "statusGood": false
+        },
+        "ctrl": {
+          "good": "300 GPM",
+          "bad": "-125 GPM",
+          "statusGood": false
+        },
+        "hmi": {
+          "good": "300 GPM",
+          "bad": "-125 GPM",
+          "statusGood": false
+        }
+      },
+      "isProcessFault": false,
+      "numbers": "Healthy signal 60% = 13.6 mA (p.4 table). Past the fault: 0.0 mA (p.4: open circuit, lifted wire). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
+      "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
+    },
+    {
+      "id": "SH-02",
+      "tag": "TT-205",
+      "service": "Reactor Outlet Temperature",
+      "tagDerived": true,
+      "range": "0-200 °C",
+      "lrv": 0,
+      "urv": 200,
+      "units": "°C",
+      "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Temperature 0 °C 200 °C)",
+      "faultLink": 1,
+      "faultLinkName": "Sensor",
+      "faultCategory": "Reading pegged high (at or above 20 mA)",
+      "faultDescription": "For temperature, check for an open thermocouple or RTD lead.",
+      "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading pegged high (at or above 20 mA)\", step 6",
+      "readings": {
+        "proc": {
+          "good": "100 °C",
+          "bad": null,
+          "statusGood": true
+        },
+        "sens": {
+          "good": "100 °C",
+          "bad": "Open circuit",
+          "statusGood": false
+        },
+        "xmtr": {
+          "good": "12.0 mA",
+          "bad": "21.0 mA",
+          "statusGood": false
+        },
+        "jb": {
+          "good": "12.0 mA",
+          "bad": "21.0 mA",
+          "statusGood": false
+        },
+        "card": {
+          "good": "12.0 mA",
+          "bad": "21.0 mA",
+          "statusGood": false
+        },
+        "ctrl": {
+          "good": "100 °C",
+          "bad": "212.5 °C",
+          "statusGood": false
+        },
+        "hmi": {
+          "good": "100 °C",
+          "bad": "212.5 °C",
+          "statusGood": false
+        }
+      },
+      "isProcessFault": false,
+      "numbers": "Healthy signal 50% = 12.0 mA (p.4 table). Past the fault: 21.0 mA (p.4: device failure alarm, NAMUR NE43 high; Form 7: upscale burnout). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
+      "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
+    },
+    {
+      "id": "SH-03",
+      "tag": "PDT-401",
+      "service": "Filter Differential Pressure",
+      "tagDerived": true,
+      "range": "0-100 inH2O",
+      "lrv": 0,
+      "urv": 100,
+      "units": "inH2O",
+      "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Differential pressure 0 inH₂O 100 inH₂O)",
+      "faultLink": 2,
+      "faultLinkName": "Transmitter",
+      "faultCategory": "Reading is wrong but stable",
+      "faultDescription": "Check for zero shift: has the device been overpressured, or the mounting changed?",
+      "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading is wrong but stable\", step 3",
+      "readings": {
+        "proc": {
+          "good": "50 inH2O",
+          "bad": null,
+          "statusGood": true
+        },
+        "sens": {
+          "good": "50 inH2O",
+          "bad": null,
+          "statusGood": true
+        },
+        "xmtr": {
+          "good": "12.0 mA",
+          "bad": "13.6 mA",
+          "statusGood": false
+        },
+        "jb": {
+          "good": "12.0 mA",
+          "bad": "13.6 mA",
+          "statusGood": false
+        },
+        "card": {
+          "good": "12.0 mA",
+          "bad": "13.6 mA",
+          "statusGood": false
+        },
+        "ctrl": {
+          "good": "50 inH2O",
+          "bad": "60 inH2O",
+          "statusGood": false
+        },
+        "hmi": {
+          "good": "50 inH2O",
+          "bad": "60 inH2O",
+          "statusGood": false
+        }
+      },
+      "isProcessFault": false,
+      "numbers": "Healthy signal 50% = 12.0 mA (p.4 table). Past the fault: zero-shifted to 60% = 13.6 mA (p.4 table). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
+      "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
+    },
+    {
+      "id": "SH-04",
+      "tag": "LT-310",
+      "service": "Surge Drum Level",
+      "tagDerived": true,
+      "range": "2-18 ft",
+      "lrv": 2,
+      "urv": 18,
+      "units": "ft",
+      "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Level 2 ft 18 ft)",
+      "faultLink": 4,
+      "faultLinkName": "Card",
+      "faultCategory": "Reading is wrong but stable",
+      "faultDescription": "Check controller scaling and raw counts before touching the field device.",
+      "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading is wrong but stable\", step 2",
+      "readings": {
+        "proc": {
+          "good": "14 ft",
+          "bad": null,
+          "statusGood": true
+        },
+        "sens": {
+          "good": "14 ft",
+          "bad": null,
+          "statusGood": true
+        },
+        "xmtr": {
+          "good": "16.0 mA",
+          "bad": null,
+          "statusGood": true
+        },
+        "jb": {
+          "good": "16.0 mA",
+          "bad": null,
+          "statusGood": true
+        },
+        "card": {
+          "good": "16.0 mA",
+          "bad": "12.0 mA",
+          "statusGood": false
+        },
+        "ctrl": {
+          "good": "14 ft",
+          "bad": "10 ft",
+          "statusGood": false
+        },
+        "hmi": {
+          "good": "14 ft",
+          "bad": "10 ft",
+          "statusGood": false
+        }
+      },
+      "isProcessFault": false,
+      "numbers": "Healthy signal 75% = 16.0 mA (p.4 table). Past the fault: the card reads 12.0 mA (50%, p.4 table). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
+      "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
+    },
+    {
+      "id": "SH-05",
+      "tag": "FT-712",
+      "service": "Cooling Water Supply Flow",
+      "tagDerived": true,
+      "range": "0-1,200 GPM",
+      "lrv": 0,
+      "urv": 1200,
+      "units": "GPM",
+      "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Flow 0 GPM 1,200 GPM)",
+      "faultLink": 0,
+      "faultLinkName": "Process",
+      "faultCategory": "Reading pegged low (at or below 4 mA)",
+      "faultDescription": "Compare to the actual process with an independent indication.",
+      "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading pegged low (at or below 4 mA)\", step 5",
+      "readings": {
+        "proc": {
+          "good": "600 GPM",
+          "bad": "0 GPM",
+          "statusGood": false
+        },
+        "sens": {
+          "good": "600 GPM",
+          "bad": "0 GPM",
+          "statusGood": false
+        },
+        "xmtr": {
+          "good": "12.0 mA",
+          "bad": "4.0 mA",
+          "statusGood": false
+        },
+        "jb": {
+          "good": "12.0 mA",
+          "bad": "4.0 mA",
+          "statusGood": false
+        },
+        "card": {
+          "good": "12.0 mA",
+          "bad": "4.0 mA",
+          "statusGood": false
+        },
+        "ctrl": {
+          "good": "600 GPM",
+          "bad": "0 GPM",
+          "statusGood": false
+        },
+        "hmi": {
+          "good": "600 GPM",
+          "bad": "0 GPM",
+          "statusGood": false
+        }
+      },
+      "isProcessFault": true,
+      "numbers": "Normal (what operations expect) 50% = 12.0 mA (p.4 table). Actual: the process really is at LRV, 4.0 mA (p.4: process truly at LRV). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
+      "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
+    }
+  ],
+  "chain": [
+    "Process",
+    "Sensor",
+    "Transmitter",
+    "Wiring",
+    "Card",
+    "Controller",
+    "Display"
+  ],
+  "testPoints": [
+    "proc",
+    "sens",
+    "xmtr",
+    "jb",
+    "card",
+    "ctrl",
+    "hmi"
+  ],
+  "generatedAt": "2026-09-24",
+  "sources": [
+    "IC_Fundamentals_Drill_Input_Library.pdf p.16",
+    "Field Troubleshooting Template Pack.pdf p.4",
+    "Field Troubleshooting Template Pack.pdf p.9-10"
+  ]
+}
