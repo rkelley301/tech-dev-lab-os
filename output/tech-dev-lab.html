@@ -16,14 +16,18 @@
 @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
 @keyframes flow { to { stroke-dashoffset: -32; } }
 @keyframes shieldPop { 0% { opacity: 0; transform: scale(0.85); } 60% { opacity: 1; transform: scale(1.04); } 100% { opacity: 1; transform: scale(1); } }
-/* Diagnostic ribbon: spacing tightens below 1500px so it fits at 1400px; the scrollbar shows on hover only. */
+/* Diagnostic ribbon: spacing tightens below 1500px so it fits at 1400px. */
 .diag-step { letter-spacing: 2px; padding: 0 6px; }
 @media (max-width: 1499px) { .diag-step { letter-spacing: 1px; padding: 0 2px; } }
-.diag-ribbon { scrollbar-width: thin; scrollbar-color: transparent transparent; }
-.diag-ribbon:hover { scrollbar-color: var(--rib-thumb) transparent; }
-.diag-ribbon::-webkit-scrollbar { height: 6px; background: transparent; }
-.diag-ribbon::-webkit-scrollbar-thumb { background: transparent; border-radius: 3px; }
-.diag-ribbon:hover::-webkit-scrollbar-thumb { background: var(--rib-thumb); }
+/* Wide tool content (chain, chassis, rung, tables) scrolls inside its panel on narrow windows.
+   contain: inline-size stops the fixed-width content from widening the tool grid around it. */
+.tool-scroll { overflow-x: auto; min-width: 0; contain: inline-size; }
+/* Ribbon and tool scrollbars: thin, shown on hover only, theme border color (--scroll-thumb, set on the app root). */
+.diag-ribbon, .tool-scroll { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+.diag-ribbon:hover, .tool-scroll:hover { scrollbar-color: var(--scroll-thumb) transparent; }
+.diag-ribbon::-webkit-scrollbar, .tool-scroll::-webkit-scrollbar { height: 6px; background: transparent; }
+.diag-ribbon::-webkit-scrollbar-thumb, .tool-scroll::-webkit-scrollbar-thumb { background: transparent; border-radius: 3px; }
+.diag-ribbon:hover::-webkit-scrollbar-thumb, .tool-scroll:hover::-webkit-scrollbar-thumb { background: var(--scroll-thumb); }
 html.theme-fade, html.theme-fade * { transition: background-color 200ms ease-out, border-color 200ms ease-out, color 200ms ease-out !important; }
 </style>
 </head>
@@ -4424,7 +4428,7 @@ function SphChain({ s, r, onProbe, canProbe }) {
   const reduced = useReducedMotion();
   const revealed = r.outcome && r.outcome.correct;
   return (
-    <div style={{ overflowX: "auto", paddingBottom: 4 }}>
+    <div className="tool-scroll" style={{ paddingBottom: 4 }}>
       <ol aria-label="Diagnostic chain" style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", gap: 6, minWidth: 700 }}>
         {CHAIN.map((link, i) => {
           const probe = r.probes.find(p => p.link === i);
@@ -4714,7 +4718,7 @@ function SplitHalf({ onResult, onStep }) {
         {r.probes.length === 0 ? (
           <p style={{ margin: "8px 0 0", fontSize: 13, color: C.text_mute }}>Each probe is logged here. Solved scenarios go to Field Notes.</p>
         ) : (
-          <div style={{ overflowX: "auto", marginTop: 8 }}>
+          <div className="tool-scroll" style={{ marginTop: 8 }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
                 <tr style={{ color: C.text_dim, textAlign: "left" }}>
@@ -6952,7 +6956,7 @@ function CalRecordBuilder({ onResult, onStep }) {
 
       <div>
         <H as="h3">{CAL_FORM.asFoundHeading}</H>
-        <div style={{ overflowX: "auto", marginTop: 8 }}>
+        <div className="tool-scroll" style={{ marginTop: 8 }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ color: C.text_dim, textAlign: "left" }}>
@@ -7020,7 +7024,7 @@ function CalRecordBuilder({ onResult, onStep }) {
       {solved && (
         <div style={{ display: "grid", gap: 10 }}>
           <H as="h3">As-left</H>
-          <div style={{ overflowX: "auto" }}>
+          <div className="tool-scroll">
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
                 <tr style={{ color: C.text_dim, textAlign: "left" }}>
@@ -7794,7 +7798,7 @@ function IOMapInspector({ onResult, onStep }) {
 
       <div>
         <H as="h3">Chassis</H>
-        <div style={{ overflowX: "auto", marginTop: 8 }}>
+        <div className="tool-scroll" style={{ marginTop: 8 }}>
           <div role="group" aria-label="Chassis slots" style={{ display: "grid", gridTemplateColumns: "repeat(8, minmax(84px, 1fr))", gap: 6, minWidth: 700 }}>
             {IOM.slots.map(s => {
               const empty = s.kind === "EMPTY";
@@ -7840,7 +7844,7 @@ function IOMapInspector({ onResult, onStep }) {
         {slot.points.length === 0 ? (
           <p style={{ margin: "8px 0 0", fontSize: 13, color: C.text_mute }}>{slot.kind === "EMPTY" ? "No module in this slot." : "The controller has no I/O points."}</p>
         ) : (
-          <div style={{ overflowX: "auto", marginTop: 8 }}>
+          <div className="tool-scroll" style={{ marginTop: 8 }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
                 <tr style={{ color: C.text_dim, textAlign: "left" }}>
@@ -7892,7 +7896,7 @@ function IOMapInspector({ onResult, onStep }) {
 
       <div>
         <H as="h3">Ladder cross-reference</H>
-        <div style={{ display: "grid", gap: 6, marginTop: 8, overflowX: "auto" }}>
+        <div className="tool-scroll" style={{ display: "grid", gap: 6, marginTop: 8 }}>
           {IOM.rungs.map(r => {
             const on = outs[r.output];
             return (
@@ -8170,7 +8174,7 @@ function PermissiveDetective({ onResult, onStep }) {
         <ConstructedNote source={PERM.source} />
       </section>
 
-      <div style={{ overflowX: "auto", border: `1px solid ${C.border}`, borderRadius: 4, background: C.bg, padding: "12px 10px" }}>
+      <div className="tool-scroll" style={{ border: `1px solid ${C.border}`, borderRadius: 4, background: C.bg, padding: "12px 10px" }}>
         <div style={{ display: "flex", alignItems: "center", minWidth: 760 }}>
           <div style={rail} aria-hidden="true" />
           {PERM.permissives.map((p, i) => {
@@ -8483,7 +8487,7 @@ function DiagnosticRibbon({ active, visited }) {
       className="diag-ribbon"
       aria-label={`Six-step diagnostic sequence (${DIAG.source})`}
       title={`Six-step diagnostic sequence (${DIAG.source})`}
-      style={{ "--rib-thumb": C.border, height: 32, boxSizing: "border-box", overflowX: "auto", overflowY: "hidden", borderBottom: `1px solid ${C.border}`, marginBottom: 16 }}
+      style={{ height: 32, boxSizing: "border-box", overflowX: "auto", overflowY: "hidden", borderBottom: `1px solid ${C.border}`, marginBottom: 16 }}
     >
       <ol style={{ display: "flex", height: "100%", margin: 0, padding: 0, listStyle: "none", minWidth: "max-content" }}>
         {DIAG.steps.map(st => {
@@ -8903,6 +8907,20 @@ function App() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+  // Browsers leave a partly visible control where it is when it takes focus; inside a
+  // .tool-scroll box, scroll just far enough to show all of it.
+  useEffect(() => {
+    const onFocus = e => {
+      const box = e.target.closest && e.target.closest(".tool-scroll");
+      if (!box) return;
+      const b = box.getBoundingClientRect();
+      const r = e.target.getBoundingClientRect();
+      if (r.left < b.left) box.scrollLeft -= b.left - r.left + 8;
+      else if (r.right > b.right) box.scrollLeft += r.right - b.right + 8;
+    };
+    document.addEventListener("focusin", onFocus);
+    return () => document.removeEventListener("focusin", onFocus);
+  }, []);
   const clearNotes = () => {
     saveTool(FIELD_NOTES_KEY, []);
     setNotes([]);
@@ -8949,7 +8967,7 @@ function App() {
   return (
     <ThemeCtx.Provider value={C}>
     <MotionCtx.Provider value={reduced}>
-      <div style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: UI_FONT }}>
+      <div style={{ "--scroll-thumb": C.border, minHeight: "100vh", background: C.bg, color: C.text, fontFamily: UI_FONT }}>
         <StatusStrip state={state} layer={layer} theme={theme} onToggleTheme={toggleTheme} onToggleMute={toggleMute} onReset={reset} onNotes={() => setNotesOpen(true)} notesCount={notes.length} />
         <FieldNotesDrawer open={notesOpen} onClose={() => setNotesOpen(false)} notes={notes} state={state} mobile={mobile} onClear={clearNotes} />
         {mobile ? (
