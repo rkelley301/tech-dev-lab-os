@@ -3414,8 +3414,14 @@ function DecisionLog({ title, headers, log, cells, empty }) {
   );
 }
 
-function SymptomFirstMove({ onResult }) {
+function SymptomFirstMove({ onResult, onStep }) {
   const [t, setT] = useState(sfmLoad);
+  const [choosing, setChoosing] = useState(false);
+  useEffect(() => setChoosing(false), [t.pos]);
+  const ribbonStep = t.pos >= t.deck.length ? null : t.solved ? 5 : choosing || t.tried.length ? 4 : 1;
+  useEffect(() => {
+    if (onStep) onStep(ribbonStep);
+  }, [ribbonStep]);
   const headRef = useRef(null);
   const moved = useRef(false);
 
@@ -3447,15 +3453,7 @@ function SymptomFirstMove({ onResult }) {
         xp: fresh ? SFM_XP_BY_ATTEMPT[attempts - 1] || 0 : 0,
         firstTry: attempts === 1,
         firstPass: fresh && attempts === 1,
-        note: {
-          tool: "3.4",
-          tag: card.tag,
-          symptom: card.symptom,
-          firstMove: option.text,
-          firstPick: first,
-          attempts,
-          source: card.source,
-        },
+        note: { tool: "3.4", tag: card.tag, text: `Symptom → First Move ${card.tag}: ${capFirst(option.text)} — ${option.reason}` },
       });
     }
     setT({ ...t, deck, tried, solved: option.correct, log, stats, played });
@@ -3548,7 +3546,7 @@ function SymptomFirstMove({ onResult }) {
 
       <SignalChain cut={t.solved ? correct.cut : null} basis={t.solved ? correct.cutBasis : ""} />
 
-      <div role="group" aria-labelledby="sfm-ask">
+      <div role="group" aria-labelledby="sfm-ask" onMouseEnter={() => setChoosing(true)} onFocus={() => setChoosing(true)}>
         <H as="h3" style={{ marginBottom: 10 }}>
           <span id="sfm-ask">Your first move</span>
         </H>
@@ -3748,7 +3746,7 @@ function TrapSpotter({ onResult }) {
         xp: fresh ? TS_XP_BY_ATTEMPT[attempts - 1] || 0 : 0,
         firstTry: attempts === 1,
         firstPass: fresh && attempts === 1,
-        note: { tool: "1.4", trap: trap.trap, firstPick: first, attempts, fix: trap.fix, source: trap.source },
+        note: { tool: "1.4", text: `Trap Spotter: ${trap.trap} — ${trap.fix}` },
       });
     }
     setT({ ...t, deck, tried, solved: ok, log, stats, played });
@@ -4409,7 +4407,7 @@ function SphChain({ s, r, onProbe, canProbe }) {
   );
 }
 
-function SplitHalf({ onResult }) {
+function SplitHalf({ onResult, onStep }) {
   const [t, setT] = useState(sphLoad);
   const headRef = useRef(null);
   const moved = useRef(false);
@@ -4426,6 +4424,10 @@ function SplitHalf({ onResult }) {
   const canProbe = !r.outcome && used < SPH_BUDGET;
   const guessOpen = !r.outcome && used >= SPH_GUESS_AFTER;
   const processBad = r.probes.some(p => p.link === 0 && !p.good);
+  const ribbonStep = r.outcome && r.outcome.correct ? 5 : guessOpen || r.outcome ? 4 : 3;
+  useEffect(() => {
+    if (onStep) onStep(ribbonStep);
+  }, [ribbonStep]);
 
   const probe = link => {
     if (!canProbe || r.probes.some(p => p.link === link)) return;
@@ -4457,12 +4459,10 @@ function SplitHalf({ onResult }) {
         radar: SPH_RADAR,
         note: {
           tool: "2.4",
-          scenario: s.id,
           tag: s.tag,
-          faultAt: CHAIN[s.faultLink],
-          attempt: r.attempt,
-          probes: r.probes.map(p => `${SPH_POINTS[p.link].name}: ${p.reading} (${p.good ? "good" : "bad"}, ${p.flag})`),
-          source: s.faultSource,
+          text: s.isProcessFault
+            ? `Split-Half Isolator ${s.tag}: no instrumentation fault, the process is the problem — ${s.faultDescription}`
+            : `Split-Half Isolator ${s.tag}: fault isolated to ${CHAIN[s.faultLink]} — ${s.faultDescription}`,
         },
       });
     }
@@ -5205,13 +5205,12 @@ function WireItLive({ onResult }) {
         xp: fresh ? WIL_XP_LATCH : 0,
         firstTry: true,
         firstPass: fresh,
-        note: { tool: "1.1", result: "Energized and latched as drawn", wires: t.wires.map(wilWireName), run: summary, source: WIL.sources.join("; ") },
+        note: { tool: "1.1", text: `Wire It Live: latched as drawn — ${WIL.operation[0]}` },
       });
     } else {
       onResult({
         xp: 0,
         firstTry: false,
-        note: { tool: "1.1", result: diag, wires: t.wires.map(wilWireName), run: summary, source: WIL.sources.join("; ") },
       });
     }
     let quiz = null;
@@ -5249,7 +5248,7 @@ function WireItLive({ onResult }) {
     if (id === t.diag) {
       const fresh = !identified.includes(id) && picked.length === 1;
       if (!identified.includes(id)) identified = [...identified, id];
-      onResult({ xp: fresh ? WIL_XP_IDENTIFY : 0, firstTry: picked.length === 1, note: { tool: "1.1", identified: WIL_FAULT[id].name, tries: picked.length } });
+      onResult({ xp: fresh ? WIL_XP_IDENTIFY : 0, firstTry: picked.length === 1 });
     }
     setT({ ...t, identified, quiz: { ...t.quiz, picked } });
   };
@@ -6280,7 +6279,7 @@ function Formula({ text, work }) {
   );
 }
 
-function ScalingBench({ onResult }) {
+function ScalingBench({ onResult, onStep }) {
   const [t, setT] = useState(sbLoad);
   const inputRef = useRef(null);
   useEffect(() => saveTool(SB_KEY, t), [t]);
@@ -6296,6 +6295,10 @@ function ScalingBench({ onResult }) {
 
   const card = t.pos < t.deck.length ? t.deck[t.pos] : null;
   const ch = card ? sbChallenge(card) : null;
+  const ribbonStep = t.solved ? 5 : 1;
+  useEffect(() => {
+    if (onStep) onStep(ribbonStep);
+  }, [ribbonStep]);
 
   const check = e => {
     e.preventDefault();
@@ -6315,11 +6318,7 @@ function ScalingBench({ onResult }) {
         radar: SB_RADAR,
         note: {
           tool: "2.2",
-          question: `${euText(ch.eu)} ${ch.range.units} on ${euText(ch.range.lrv)} to ${euText(ch.range.urv)} ${ch.range.units}`,
-          answer: `${num2(ch.mA)} mA`,
-          given: `${t.answer} mA`,
-          tries,
-          source: LRV_URV.source,
+          text: `Scaling Bench: ${euText(ch.eu)} ${ch.range.units} on a ${euText(ch.range.lrv)} to ${euText(ch.range.urv)} ${ch.range.units} range = ${num2(ch.mA)} mA — ${fI}`,
         },
       });
     }
@@ -6622,7 +6621,7 @@ function crPrint(s, round, a, action, asLeft) {
   return true;
 }
 
-function CalRecordBuilder({ onResult }) {
+function CalRecordBuilder({ onResult, onStep }) {
   const reduced = useReducedMotion();
   const [t, setT] = useState(crLoad);
   const [shown, setShown] = useState(null); // output reading on the bench, mA
@@ -6649,6 +6648,10 @@ function CalRecordBuilder({ onResult }) {
   const a = crAnalyze(r.recorded, tolOk ? tol : CALC.calRecord.toleranceDefaultPct);
   const correct = allRecorded ? (a.pass ? "No adjustment" : s.action) : null;
   const solved = r.picks.includes(correct);
+  const ribbonStep = solved ? 6 : allRecorded && !r.destroyed ? 5 : 3;
+  useEffect(() => {
+    if (onStep) onStep(ribbonStep);
+  }, [ribbonStep]);
   const setRound = patch => setT(x => ({ ...x, round: { ...x.round, ...patch } }));
 
   // Output settles toward the transmitter's as-found reading for the applied point.
@@ -6707,16 +6710,7 @@ function CalRecordBuilder({ onResult }) {
         firstTry: picks.length === 1,
         firstPass: fresh,
         radar: CR_RADAR,
-        note: {
-          tool: "2.3",
-          tag: s.tag,
-          asFound: r.recorded.map(m => m.toFixed(2)),
-          maxErrorPct: a.max.toFixed(3),
-          result: a.pass ? "PASS" : "FAIL",
-          action,
-          tries: picks.length,
-          source: s.source,
-        },
+        note: { tool: "2.3", tag: s.tag, text: `Cal Record Builder ${s.tag}: ${action} — ${patternText}` },
       });
       setT(x => ({ ...x, played, round: { ...x.round, picks } }));
     } else {
@@ -7603,7 +7597,7 @@ function iomLoad() {
   };
 }
 
-function IOMapInspector({ onResult }) {
+function IOMapInspector({ onResult, onStep }) {
   const [t, setT] = useState(iomLoad);
   useEffect(() => saveTool(IOM_KEY, t), [t]);
   const set = patch => setT(s => ({ ...s, ...patch }));
@@ -7612,6 +7606,10 @@ function IOMapInspector({ onResult }) {
   const faultRung = t.fault ? iomUses(t.fault)[0] : null;
   const slot = IOM.slots[t.slot];
   const cardFault = s => s.points.some(p => p.tag === t.fault);
+  const ribbonStep = t.solved ? 5 : t.fault && (t.src || t.out) ? 4 : 3;
+  useEffect(() => {
+    if (onStep) onStep(ribbonStep);
+  }, [ribbonStep]);
 
   const inject = () => {
     const pool = IOM_CANDIDATES.filter(c => c !== t.fault);
@@ -7640,11 +7638,8 @@ function IOMapInspector({ onResult }) {
         radar: IOM_RADAR,
         note: {
           tool: "3.1",
-          faulted: `${t.fault} (${iomAddr(IOM_BY_TAG[t.fault])})`,
-          rung: faultRung.rung,
-          output: `${faultRung.output} (${iomAddr(IOM_BY_TAG[faultRung.output])})`,
-          tries,
-          source: IOM.source,
+          tag: t.fault,
+          text: `I/O Map Inspector ${t.fault}: ${t.fault} (${iomAddr(IOM_BY_TAG[t.fault])}) faulted, ${faultRung.output} dropped — rung ${faultRung.rung} examines ${t.fault} and drives ${faultRung.output}`,
         },
       });
       setT(s => ({
@@ -7967,7 +7962,7 @@ function RungContact({ p, n, phase, marked, closed, bit, onClick }) {
   );
 }
 
-function PermissiveDetective({ onResult }) {
+function PermissiveDetective({ onResult, onStep }) {
   const [t, setT] = useState(pdLoad);
   useEffect(() => saveTool(PD_KEY, t), [t]);
   const s = t.session;
@@ -7977,6 +7972,10 @@ function PermissiveDetective({ onResult }) {
   const allTrue = PERM.permissives.every(closed);
   const openIds = PERM.permissives.filter(p => !closed(p)).map(p => p.id);
   const key = [...s.blocked].sort().join("+");
+  const ribbonStep = s.phase === "diagnose" ? 3 : 5;
+  useEffect(() => {
+    if (onStep) onStep(ribbonStep);
+  }, [ribbonStep]);
 
   // Lube pressure builds for the permissive's delay after the pump starts.
   useEffect(() => {
@@ -8015,10 +8014,8 @@ function PermissiveDetective({ onResult }) {
         radar: PD_RADAR,
         note: {
           tool: "3.2",
-          rung: PERM.motor.rung,
-          open: s.blocked.map(id => `${PD_BY_ID[id].ins} ${PD_BY_ID[id].tag} (${PD_BY_ID[id].label})`),
-          tries,
-          source: PERM.source,
+          tag: PERM.motor.id,
+          text: `Permissive Detective ${PERM.motor.id}: open contacts ${s.blocked.map(id => `${PD_BY_ID[id].ins} ${PD_BY_ID[id].tag}`).join(", ")} — XIC is ${PERM.instructionConvention.XIC}; XIO is ${PERM.instructionConvention.XIO}`,
         },
       });
       setT(x => ({
@@ -8229,26 +8226,32 @@ const TOOLS = {
   },
   "2.2": {
     component: ScalingBench,
+    ribbon: true,
     source: "Formulas and reference table: Field Troubleshooting Calculators.xlsx (Start Here, mA Converter). Check Mode ranges: IC_Fundamentals_Drill_Input_Library.pdf p.16.",
   },
   "2.3": {
     component: CalRecordBuilder,
+    ribbon: true,
     source: "Field Troubleshooting Calculators.xlsx (Cal Record, Loop Check) and Field Troubleshooting Template Pack.pdf p.7 (Form 5). TT-205 and LT-310 error patterns are training scenarios.",
   },
   "2.4": {
     component: SplitHalf,
+    ribbon: true,
     source: "Scenarios: output/split-half-scenarios.json (ranges: Input Library p.16; mA values and EU formula: Template Pack p.4; faults: Template Pack Form 7). Cut quality: Calculators Split-Half Log. Tags, services, and fault placement are constructed.",
   },
   "3.1": {
     component: IOMapInspector,
+    ribbon: true,
     source: "Rack, tags, addresses, and rungs: constructed — training scenario, no source citation. Lessons: Field Learning Plan.pdf p.12 and p.14.",
   },
   "3.2": {
     component: PermissiveDetective,
+    ribbon: true,
     source: "Permissive rung and field devices: constructed — training scenario, no source citation. Lessons: Field Learning Plan.pdf p.10 and p.12; IC_Fundamentals_Drill_Input_Library.pdf p.6 and p.8.",
   },
   "3.4": {
     component: SymptomFirstMove,
+    ribbon: true,
     source: "Symptoms: IC_Fundamentals_Drill_Input_Library.pdf p.13–15. Answers: cited on each option.",
   },
 };
@@ -8258,6 +8261,16 @@ function ToolSlot({ layer, tool, onTestXP, onResult }) {
   const reduced = useReducedMotion();
   const built = TOOLS[tool.id];
   const Tool = built && built.component;
+  const [rib, setRib] = useState({ active: null, visited: [] });
+  // A step lower than one already reached means the tool started a new round.
+  const onStep = n =>
+    setRib(r => {
+      if (n === r.active) return r;
+      if (n === null) return { active: null, visited: [] };
+      const newRound = r.visited.length && n < Math.max(...r.visited);
+      const visited = newRound ? [n] : r.visited.includes(n) ? r.visited : [...r.visited, n];
+      return { active: n, visited };
+    });
   return (
     <Panel
       aria-label={`Tool ${tool.id}: ${tool.name}`}
@@ -8273,7 +8286,8 @@ function ToolSlot({ layer, tool, onTestXP, onResult }) {
       </header>
       {Tool ? (
         <div style={{ marginTop: 24 }}>
-          <Tool layer={layer} onResult={onResult} />
+          {built.ribbon && <DiagnosticRibbon active={rib.active} visited={rib.visited} />}
+          <Tool layer={layer} onResult={onResult} onStep={built.ribbon ? onStep : undefined} />
         </div>
       ) : (
         <>
@@ -8285,6 +8299,304 @@ function ToolSlot({ layer, tool, onTestXP, onResult }) {
         </>
       )}
     </Panel>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Diagnostic ribbon: the six-step sequence from course-design.pdf p.2.
+   Tools that map to a step report it through onStep; the ribbon lights the
+   active step and dims the ones already passed this round.
+   -------------------------------------------------------------------------- */
+
+// Generated from output/content-library.json. Do not edit by hand.
+const DIAG = {
+ "steps": [
+  {
+   "n": 1,
+   "name": "Define symptom",
+   "text": "Identify the specific reading anomaly or process discrepancy."
+  },
+  {
+   "n": 2,
+   "name": "Verify safety",
+   "text": "Confirm safety boundaries, permits, and LOTO requirements before taking measurements."
+  },
+  {
+   "n": 3,
+   "name": "Check signal path",
+   "text": "Trace power, wiring, terminal blocks, and ground path connections."
+  },
+  {
+   "n": 4,
+   "name": "Split the loop",
+   "text": "Perform split-half isolation to determine whether the fault is in the field device, field wiring, power supply, or controller/card."
+  },
+  {
+   "n": 5,
+   "name": "Prove root cause",
+   "text": "Apply physical tests (meter measurements, calibration checks, stroke tests) to confirm the specific failure mode."
+  },
+  {
+   "n": 6,
+   "name": "Document",
+   "text": "Record as-found/as-left values, complete the case log, and verify with a final loop check."
+  }
+ ],
+ "source": "course-design.pdf p.2"
+};
+const TEMPLATE_FORMS = [
+ {
+  "n": 1,
+  "title": "Five-Question Triage Card",
+  "source": "Field Troubleshooting Template Pack.pdf p.2"
+ },
+ {
+  "n": 2,
+  "title": "Split-Half Isolation Worksheet",
+  "source": "Field Troubleshooting Template Pack.pdf p.3"
+ },
+ {
+  "n": 3,
+  "title": "4–20 mA Reference & Conversion Sheet",
+  "source": "Field Troubleshooting Template Pack.pdf p.4"
+ },
+ {
+  "n": 4,
+  "title": "Loop Check Form (Cold and Hot)",
+  "source": "Field Troubleshooting Template Pack.pdf p.5"
+ },
+ {
+  "n": 5,
+  "title": "As-Found / As-Left Calibration Record",
+  "source": "Field Troubleshooting Template Pack.pdf p.7"
+ },
+ {
+  "n": 6,
+  "title": "Case Study Worksheet",
+  "source": "Field Troubleshooting Template Pack.pdf p.8"
+ },
+ {
+  "n": 7,
+  "title": "Master Diagnostic Checklists by Symptom",
+  "source": "Field Troubleshooting Template Pack.pdf p.9"
+ }
+];
+
+function DiagnosticRibbon({ active, visited }) {
+  const reduced = useReducedMotion();
+  return (
+    <nav
+      aria-label={`Six-step diagnostic sequence (${DIAG.source})`}
+      title={`Six-step diagnostic sequence (${DIAG.source})`}
+      style={{ height: 32, boxSizing: "border-box", overflowX: "auto", overflowY: "hidden", borderBottom: `1px solid ${C.border}`, marginBottom: 16 }}
+    >
+      <ol style={{ display: "flex", height: "100%", margin: 0, padding: 0, listStyle: "none", minWidth: 680 }}>
+        {DIAG.steps.map(st => {
+          const on = st.n === active;
+          const done = !on && active !== null && st.n < active && visited.includes(st.n);
+          return (
+            <li
+              key={st.n}
+              aria-current={on ? "step" : undefined}
+              title={`${st.name}: ${st.text}`}
+              style={{
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "0 6px",
+                whiteSpace: "nowrap",
+                fontFamily: MONO_FONT,
+                fontSize: 10,
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                color: on ? C.signal_cyan : done ? C.text_dim : C.text_mute,
+                borderBottom: `2px solid ${on ? C.signal_cyan : "transparent"}`,
+                transition: reduced ? "none" : "color 180ms ease-out, border-color 180ms ease-out",
+              }}
+            >
+              {st.n}. {st.name}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Field Notes: every correct decision in every tool writes one line here.
+   Stored oldest first under techDevLab.v3.fieldNotes; shown newest first.
+   -------------------------------------------------------------------------- */
+
+const FIELD_NOTES_KEY = STORAGE_KEY + ".fieldNotes";
+const NOTES_EVENT = "techdevlab:fieldnotes";
+// Template Pack form that matches each tool's work, for the Markdown export.
+const TOOL_FORM = { "2.2": 3, "2.3": 5, "2.4": 2, "3.4": 7 };
+
+function loadNotes() {
+  const n = loadTool(FIELD_NOTES_KEY);
+  return Array.isArray(n) ? n.filter(x => x && typeof x.text === "string") : [];
+}
+
+function toolNameOf(id) {
+  for (const l of LAYERS) {
+    const t = l.tools.find(x => x.id === id);
+    if (t) return t.name;
+  }
+  return id || "Tool";
+}
+
+function logFieldNote(entry) {
+  if (!entry || !entry.text) return;
+  const note = { at: new Date().toISOString(), tool: entry.tool, toolName: toolNameOf(entry.tool), tag: entry.tag || null, text: entry.text };
+  saveTool(FIELD_NOTES_KEY, [...loadNotes(), note]);
+  try {
+    window.dispatchEvent(new Event(NOTES_EVENT));
+  } catch (e) {
+    // no event support; the drawer reloads when opened
+  }
+}
+
+function noteTime(iso) {
+  const d = new Date(iso);
+  const p = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+function notesMarkdown(notes, state) {
+  const today = noteTime(new Date().toISOString()).slice(0, 10);
+  const lines = ["# Tech Dev Lab — Field Notes", "", `- Date: ${today}`, `- Level: ${state.level} (${titleOf(state.level)})`, `- XP: ${state.xp}`, ""];
+  const ids = [...new Set(notes.map(n => n.tool))].sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true }));
+  ids.forEach(id => {
+    lines.push(`## ${id} ${toolNameOf(id)}`);
+    const form = TEMPLATE_FORMS.find(f => f.n === TOOL_FORM[id]);
+    if (form) lines.push("", `Template Pack form: ${form.n}. ${form.title} (${form.source})`);
+    lines.push("");
+    notes.filter(n => n.tool === id).forEach(n => lines.push(`- ${noteTime(n.at)}${n.tag ? ` · ${n.tag}` : ""} · ${n.text}`));
+    lines.push("");
+  });
+  if (!notes.length) lines.push("Nothing logged yet.", "");
+  return lines.join("\n");
+}
+
+function BookIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style={{ display: "block" }}>
+      <path d="M2 2.5h4.5a1.5 1.5 0 0 1 1.5 1.5v9.5a1.2 1.2 0 0 0-1.2-1.2H2z M14 2.5H9.5A1.5 1.5 0 0 0 8 4v9.5a1.2 1.2 0 0 1 1.2-1.2H14z" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function FieldNotesDrawer({ open, onClose, notes, state, mobile, onClear }) {
+  const headRef = useRef(null);
+  const [armed, setArmed] = useState(false);
+  const [msg, setMsg] = useState("");
+  useEffect(() => {
+    if (open && headRef.current) headRef.current.focus();
+    if (!open) {
+      setArmed(false);
+      setMsg("");
+    }
+  }, [open]);
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = e => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+  if (!open) return null;
+
+  const exportMd = () => {
+    const md = notesMarkdown(notes, state);
+    try {
+      const url = URL.createObjectURL(new Blob([md], { type: "text/markdown" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `tech-dev-lab-field-notes-${noteTime(new Date().toISOString()).slice(0, 10)}.md`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setMsg("Markdown file saved to your downloads.");
+    } catch (e) {
+      setMsg("This browser blocked the download.");
+    }
+  };
+
+  const clear = () => {
+    if (!armed) {
+      setArmed(true);
+      return;
+    }
+    setArmed(false);
+    onClear();
+    setMsg("All notes cleared.");
+  };
+
+  const shown = [...notes].reverse();
+  return (
+    <aside
+      role="dialog"
+      aria-labelledby="fn-title"
+      style={{
+        position: "fixed",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        width: mobile ? "100%" : 380,
+        boxSizing: "border-box",
+        zIndex: 30,
+        display: "flex",
+        flexDirection: "column",
+        background: C.panel,
+        borderLeft: `1px solid ${C.border}`,
+        boxShadow: "0 0 40px rgba(0,0,0,0.5)",
+        paddingTop: "env(safe-area-inset-top, 0px)",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 16px", borderBottom: `1px solid ${C.border}` }}>
+        <span style={{ color: C.signal_cyan }}>
+          <BookIcon />
+        </span>
+        <h2 id="fn-title" ref={headRef} tabIndex={-1} style={{ margin: 0, flex: 1, fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 18, color: C.text, outline: "none" }}>
+          Field Notes
+        </h2>
+        <Chip color={C.text_mute}>{notes.length}</Chip>
+        <Btn variant="ghost" onClick={onClose} ariaLabel="Close Field Notes">Close</Btn>
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, padding: "10px 16px", borderBottom: `1px solid ${C.border}` }}>
+        <Btn variant="ghost" onClick={exportMd} ariaLabel="Export notes as Markdown">Export as Markdown</Btn>
+        <Btn variant="ghost" color={C.rose} pressed={armed} onClick={clear} disabled={!notes.length} ariaLabel={armed ? "Confirm: clear all notes" : "Clear all notes"}>
+          {armed ? "Confirm clear" : "Clear all notes"}
+        </Btn>
+        <div aria-live="polite" style={{ width: "100%", fontSize: 12, color: C.text_mute, minHeight: 16 }}>{msg}</div>
+      </div>
+      <div style={{ flex: 1, overflowY: "auto", padding: "12px 16px" }}>
+        {shown.length === 0 ? (
+          <p style={{ margin: 0, fontSize: 14, color: C.text_mute }}>Nothing logged yet. Every correct decision writes a line here.</p>
+        ) : (
+          <ol style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 10 }}>
+            {shown.map((n, i) => (
+              <li key={n.at + i} style={{ borderLeft: `2px solid ${C.signal_cyan}55`, paddingLeft: 10 }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+                  <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: C.text_dim }}>{noteTime(n.at)}</span>
+                  <Chip color={C.signal_cyan}>{n.tool} {n.toolName}</Chip>
+                  {n.tag && <Chip color={C.amber}>{n.tag}</Chip>}
+                </div>
+                <div style={{ marginTop: 4, fontSize: 13, lineHeight: 1.45, color: C.text }}>{n.text}</div>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
+    </aside>
   );
 }
 
@@ -8359,7 +8671,7 @@ function ResetButton({ onReset }) {
   );
 }
 
-function StatusStrip({ state, layer, onToggleMute, onReset }) {
+function StatusStrip({ state, layer, onToggleMute, onReset, onNotes, notesCount }) {
   return (
     <header
       style={{
@@ -8382,6 +8694,13 @@ function StatusStrip({ state, layer, onToggleMute, onReset }) {
       <div style={{ flex: 1 }} />
       <XPReadout xp={state.xp} level={state.level} />
       <Radar values={state.skillRadar} />
+      <Btn variant="ghost" onClick={onNotes} ariaLabel={`Open Field Notes, ${notesCount} entries (Ctrl or Cmd + B)`}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          <BookIcon />
+          Field Notes
+          <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: C.text_dim }}>{notesCount}</span>
+        </span>
+      </Btn>
       <Btn
         variant="ghost"
         pressed={!state.muted}
@@ -8399,10 +8718,48 @@ function App() {
   const [state, setState] = useState(load);
   const [toolByLayer, setToolByLayer] = useState({});
   const [resetCount, setResetCount] = useState(0);
+  const [notes, setNotes] = useState(loadNotes);
+  const [notesOpen, setNotesOpen] = useState(false);
   const mobile = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
   const reduced = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   useEffect(() => save(state), [state]);
+
+  // Field Notes live under their own key; notes from earlier builds (kept in
+  // the app state) move over once.
+  useEffect(() => {
+    if (state.fieldNotes && state.fieldNotes.length) {
+      const moved = [...state.fieldNotes].reverse().map(n => {
+        const rest = Object.entries(n)
+          .filter(([k]) => !["at", "tool", "source"].includes(k))
+          .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join("; ") : v}`)
+          .join(", ");
+        return { at: n.at || new Date().toISOString(), tool: n.tool, toolName: toolNameOf(n.tool), tag: n.tag || null, text: `${toolNameOf(n.tool)}: ${rest}` };
+      });
+      saveTool(FIELD_NOTES_KEY, [...moved, ...loadNotes()]);
+      setNotes(loadNotes());
+      setState(s => ({ ...s, fieldNotes: [] }));
+    }
+  }, []);
+  useEffect(() => {
+    const refresh = () => setNotes(loadNotes());
+    window.addEventListener(NOTES_EVENT, refresh);
+    return () => window.removeEventListener(NOTES_EVENT, refresh);
+  }, []);
+  useEffect(() => {
+    const onKey = e => {
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === "b" || e.key === "B")) {
+        e.preventDefault();
+        setNotesOpen(o => !o);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+  const clearNotes = () => {
+    saveTool(FIELD_NOTES_KEY, []);
+    setNotes([]);
+  };
 
   const layer = LAYERS.find(l => l.id === state.activeLayer) || LAYERS[0];
   const toolId = toolByLayer[layer.id] || layer.tools[0].id;
@@ -8416,10 +8773,12 @@ function App() {
     setState(DEFAULT_STATE);
     setToolByLayer({});
     setResetCount(n => n + 1);
+    setNotes([]);
   };
   const testXP = () => setState(s => awardXP(s, 25));
   // Tools report each solved item here: XP, streak, skill radar, Field Notes.
-  const recordResult = ({ xp, firstTry, firstPass, note, radar = RADAR_STEP }) =>
+  const recordResult = ({ xp, firstTry, firstPass, note, radar = RADAR_STEP }) => {
+    if (note) logFieldNote(note);
     setState(s => {
       let next = awardXP(s, xp);
       const streak = firstTry === undefined ? s.streak : firstTry ? s.streak + 1 : 0;
@@ -8428,8 +8787,9 @@ function App() {
         const v = Math.min(100, Math.round((next.skillRadar[layer.id] + radar) * 10) / 10);
         next.skillRadar = { ...next.skillRadar, [layer.id]: v };
       }
-      return note ? addFieldNote(next, note) : next;
+      return next;
     });
+  };
 
   const main = (
     <main style={{ padding: mobile ? 16 : 24, display: "grid", gap: 16, alignContent: "start", minWidth: 0 }}>
@@ -8442,7 +8802,8 @@ function App() {
   return (
     <MotionCtx.Provider value={reduced}>
       <div style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: UI_FONT }}>
-        <StatusStrip state={state} layer={layer} onToggleMute={toggleMute} onReset={reset} />
+        <StatusStrip state={state} layer={layer} onToggleMute={toggleMute} onReset={reset} onNotes={() => setNotesOpen(true)} notesCount={notes.length} />
+        <FieldNotesDrawer open={notesOpen} onClose={() => setNotesOpen(false)} notes={notes} state={state} mobile={mobile} onClear={clearNotes} />
         {mobile ? (
           <div style={{ paddingBottom: 72 }}>
             {main}

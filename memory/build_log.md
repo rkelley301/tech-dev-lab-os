@@ -182,3 +182,30 @@
 - Tool 3.2 Permissive Detective: 5 series contacts (XIC/XIO), field panel with physical states; mark open contacts (keys 1-5, Enter), then operate field devices (lube 3 s pressure build) until P401_RUN energizes; forcing one open drops it (block 6). Lessons: XIC/XIO convention (constructed), Input Library concepts, block 6, trap 5. XP 20 / 8 / 0 (played per open-contact combination), radar 0.5 PLC. Key techDevLab.v3.permissiveDetective.
 - Verified headless from disk: badges and constructed source lines, addresses, fault injection + card FLT + rung OFF, wrong trace (feedback) then retry 8 XP, first try 20 XP + radar 0.5, replay 0 XP, reload; 3.2 wrong diagnosis then retry 8 XP, lube pending then running, forced open drops OTE, new session first try 20 XP + radar; phone width; reset clears both keys. Regressions 1.1, 1.4, 2.2, 2.3, 2.4, 3.4 pass. No console errors.
 - File: output/tech-dev-lab.html (8 tools: 1.1, 1.4, 2.2, 2.3, 2.4, 3.1, 3.2, 3.4)
+
+## 2026-09-24 — Cross-cutting: diagnostic ribbon, Field Notes drawer, note backfill
+- content-library.json: "diagnosticSequence" (6 steps, name + description verbatim, course-design.pdf p.2) and "templateForms" (Forms 1-7 titles with pages, Template Pack p.2-9). Verified.
+- Diagnostic ribbon: 32 px, mono uppercase, 2 px letter-spacing; active step cyan with 2 px underline, steps passed this round dim to gray, 180 ms color transition (none with reduced motion). Shown only on tools with a step mapping: 3.4 (1 card / 4 choosing / 5 solved), 2.4 (3 probing / 4 guess / 5 correct), 2.3 (3 recording / 5 action / 6 record generated = solved), 2.2 (1 question / 5 correct), 3.1 (3 inspecting / 4 marking / 5 correct), 3.2 (3 marking / 5 diagnosed). Silent on Layer 1 and unbuilt tools. A lower step than already reached starts a new round.
+- Field Notes: logFieldNote() writes { at, tool, toolName, tag, text } to techDevLab.v3.fieldNotes (oldest first) and signals the drawer. Notes previously kept in the app state migrate once. Drawer: status-strip button (book icon + count) or Ctrl/Cmd+B; Escape closes; 380 px desktop, full width under 900 px; newest first; empty state per spec; two-step "Clear all notes"; "Export as Markdown" (header with date, level, XP; notes grouped by tool, chronological; matching Template Pack form title under 2.2, 2.3, 2.4, 3.4). Reset progress clears notes.
+- Backfill: one-line notes on correct decisions in all 8 tools, "[Tool] [tag]: [decision] — [reason]", reasons taken only from existing sourced or labeled content (spec operation line, trap fix, sheet formula, Loop Check line, Form 7 line, rung cross-reference, XIC/XIO convention, option reason). 1.1 no longer logs failed runs or quiz answers.
+- Verified headless: every ribbon mapping and dimming, ribbon 32 px, drawer 380 px / full width, Ctrl+B, Esc, entries, migration, Markdown export file contents, clear confirm, phone width; regressions 1.1, 1.4, 2.2, 2.3, 2.4, 3.1, 3.2, 3.4 pass; no console errors.
+- File: output/tech-dev-lab.html
+
+## 2026-09-24 — Diagnostic ribbon + Field Notes drawer
+- Diagnostic ribbon: the six-step sequence from content-library.json "diagnosticSequence" (course-design.pdf p.2), cited in the ribbon's label/title. Shown on tools 2.2, 2.3, 2.4, 3.1, 3.2, 3.4 (registry flag ribbon: true); not on Layer 1. Tools report their step through onStep; the active step lights, the steps passed this round dim.
+  - 3.4: card 1, choosing 4, solved 5. 2.4: probing 3, guess 4, correct 5. 2.3: recording 3, action 5, record generated 6. 2.2: question 1, correct 5. 3.1: inspect 3, trace 4, correct 5. 3.2: marking 3, diagnosed 5.
+- Field Notes drawer: one line per correct decision from every tool (time, tool, tag, text), newest first. Stored under techDevLab.v3.fieldNotes; the old app-state fieldNotes are migrated there on load and cleared. Opened by the "Open Field Notes" button; Esc closes; focus goes to the title.
+- Export as Markdown: tech-dev-lab-field-notes-YYYY-MM-DD.md with date, level, and XP. Notes are grouped by tool, and each group names its matching Template Pack form from content-library.json "templateForms" (2.2 Form 3 p.4, 2.3 Form 5 p.7, 2.4 Form 2 p.3, 3.4 Form 7 p.9).
+- Clear all notes needs a second click to confirm; the empty state reads "Nothing logged yet. Every correct decision writes a line here."
+- Verified headless from disk: migration, ribbon states on all six tools, none on Layer 1, 9 notes written, drawer open/focus/entries, export file and content, Esc, two-step clear, phone width (drawer full width, no overflow) with reduced motion. Regressions 1.1, 1.4, 2.2, 2.3, 2.4, 3.1, 3.2, 3.4 pass. No console errors.
+- Known test debt: test24v2 and test34 still count notes in app state (they now read 0); notes live in techDevLab.v3.fieldNotes. The cross test covers them.
+- File: output/tech-dev-lab.html (338,799 bytes)
+
+## 2026-09-24 — Regression re-run after usage-limit interruption
+- The draft (draft-tech-dev-lab.html, 338,799 bytes) was still in the previous session's scratchpad. It is byte-identical to output/tech-dev-lab.html, which commit 6f8b239 already includes, so nothing needed copying.
+- Re-ran the full headless suite (Edge) against output/tech-dev-lab.html: 1.1, 1.4, 2.2/2.3, 2.4 (test24v2), 3.1/3.2, 3.4, and cross-cutting (ribbon on all six tools, none on Layer 1, notes migration, drawer, Markdown export, Esc, two-step clear). All pass. No console errors.
+- Drawer width measured at fixed viewports: 380 px at 1400 and 900; full width at 899 and 390; no horizontal scroll.
+- test24.mjs (v1) fails because it reads the retired key techDevLab.v3.splitHalfIsolator. test24v2 replaced it and confirms the old key is removed. This is obsolete test code, not an app regression.
+- Log housekeeping: the two entries above ("Cross-cutting: diagnostic ribbon..." and "Diagnostic ribbon + Field Notes drawer") describe the same build.
+- Still open: test24v2 and test34 read field notes from app state (report 0). test_cross covers notes.
+- File: output/tech-dev-lab.html (unchanged)
