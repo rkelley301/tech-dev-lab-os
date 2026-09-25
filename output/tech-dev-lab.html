@@ -34,6 +34,2806 @@ html.theme-fade, html.theme-fade * { transition: background-color 200ms ease-out
 <body style="margin:0;background:#0a0e14;">
 <script>try { if (localStorage.getItem("techDevLab.v3.theme") === "light") document.body.style.background = "#f7f8fa"; } catch (e) {}</script>
 <div id="root"></div>
+<script>
+/* The Bench data: plain object literals, loaded before the Babel block so that
+   block stays under Babel Standalone's 500 KB code-generation limit. */
+// Generated from output/content-library.json. Do not edit by hand.
+const DRILLS = [
+ {
+  "id": "drill-001",
+  "name": "Blank-Sheet Fundamentals Dump",
+  "whenToUse": "Test unprompted retrieval for a fundamental you have previously studied.",
+  "steps": [
+   "Dump everything from memory on [fundamental] covering: purpose, problem solved, terms, equations/relationships, operating values, field mistakes, and system recognition.",
+   "Audit the response into three categorized blocks: KNOWN, MISSING, and WRONG.",
+   "Rewrite only the MISSING and WRONG material from memory without looking at the corrections."
+  ],
+  "whyItWorks": "Uses no-lookup blank-page recall and error-based relearning. The second retrieval strengthens the exact material that failed.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.3"
+ },
+ {
+  "id": "drill-002",
+  "name": "Rebuild the Loop From Memory",
+  "whenToUse": "Master signal paths and component interconnections automatically instead of memorizing isolated definitions.",
+  "steps": [
+   "Reconstruct the entire signal path for [loop] from memory in sequence: Power source → Field device → Signal → Terminals/wiring → Input/output module → Controller → Final element.",
+   "Detail power origin, current/voltage path, signal type, component function, open-connection impact, and expected meter readings at two test points.",
+   "Compare your reconstructed path against the correct text diagram and review only the differences."
+  ],
+  "whyItWorks": "Uses chunking and dual coding by turning individual facts into a connected physical and signal-flow model.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.3"
+ },
+ {
+  "id": "drill-003",
+  "name": "Spaced Fundamental Rotation",
+  "whenToUse": "Maintain long-term retention of previously studied fundamentals across days and weeks.",
+  "steps": [
+   "Retrieve recall answers for a rotated set of 5 fundamentals one at a time.",
+   "Classify each response as SOLID (quick/correct), SLOW (hesitant), or MISS (incorrect/forgotten).",
+   "Re-test SLOW items later in the session, and re-test MISS items after two unrelated questions following a brief correction.",
+   "Schedule future reviews (1 day, 3 days, 1 week) focusing exclusively on weak items."
+  ],
+  "whyItWorks": "Uses spaced repetition and expanding retrieval while concentrating practice on weak memories instead of repeatedly reviewing known material.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.4"
+ },
+ {
+  "id": "drill-004",
+  "name": "Build the Mental Model From Zero",
+  "whenToUse": "Convert superficial vocabulary familiarity into deep physical intuition.",
+  "steps": [
+   "State what you believe [concept] means and describe the physical reality occurring in the field.",
+   "Anchor the model using a 1-sentence definition, simple text diagram, physical cause-and-effect relationship, key equation, and real field example.",
+   "Teach back the concept in your own words without referencing the original explanation."
+  ],
+  "whyItWorks": "Uses elaboration and teach-back. Reconstructing the physical mechanism creates a stronger anchor than memorizing definitions.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.4"
+ },
+ {
+  "id": "drill-005",
+  "name": "Contrast Pair Drill",
+  "whenToUse": "Eliminate confusion when two related I&C concepts blend together.",
+  "steps": [
+   "Define [concept A] and [concept B] from memory and state the key distinction in one sentence.",
+   "Categorize 6 short scenarios as A, B, BOTH, or NEITHER with a one-sentence justification for each.",
+   "Review a tailored comparison table containing only the distinctions you missed."
+  ],
+  "whyItWorks": "Uses interleaving and discriminative practice. The learner must identify which concept applies instead of recalling definitions in isolation.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.4-5"
+ },
+ {
+  "id": "drill-006",
+  "name": "Instrument Principle to Real Device",
+  "whenToUse": "Connect theoretical physical principles to field devices and controller behavior.",
+  "steps": [
+   "Map the missing measurement stages from memory: PROCESS CONDITION → Sensor → Transmitter → Signal → CONTROLLER VALUE.",
+   "Analyze a specific field instrument by answering: sensing quantity, internal conversion, output signal, controller interpretation, and installation error risks."
+  ],
+  "whyItWorks": "Uses dual coding and elaboration by connecting physical process behavior, sensing principle, signal conversion, and displayed value.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.5"
+ },
+ {
+  "id": "drill-007",
+  "name": "60-Second Fundamentals Sprint",
+  "whenToUse": "Speed up retrieval latency for known fundamental concepts.",
+  "steps": [
+   "Answer 12 rapid-fire questions in ~5 seconds each (covering definitions, signals, equations, components, calculations, and what-if scenarios).",
+   "Track performance across CORRECT, HESITANT, and WRONG categories.",
+   "Retest HESITANT and WRONG items using newly worded questions."
+  ],
+  "whyItWorks": "Uses rapid-fire timed retrieval and error-based repetition to reduce recall latency under pressure.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.5"
+ },
+ {
+  "id": "drill-008",
+  "name": "Blank Drawing Reconstruction",
+  "whenToUse": "Learn to mentally navigate control schematics and P&IDs without pre-labeled references.",
+  "steps": [
+   "Draw a complete text schematic from memory based on a process description, including tags, symbols, signal types, direction, and controllers.",
+   "Audit the drawing for missing elements, incorrect signal flow, or symbol errors.",
+   "Redraw a second similar scenario without referencing earlier solutions."
+  ],
+  "whyItWorks": "Uses no-lookup reconstruction, dual coding, and error correction. Generating the drawing forces spatial and functional retrieval together.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.5-6"
+ },
+ {
+  "id": "drill-009",
+  "name": "Operator Calls: What Do You Know?",
+  "whenToUse": "Practice loading correct core principles immediately when presented with a process complaint.",
+  "steps": [
+   "List relevant measurement principles, signal ranges, devices involved, controller input, and necessary facts within 90 seconds of receiving a symptom.",
+   "Evaluate whether your recalled fundamentals support a logical diagnostic approach before attempting troubleshooting."
+  ],
+  "whyItWorks": "Uses retrieval under contextual pressure. It trains the habit of loading the correct mental model before acting on a symptom.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.6"
+ },
+ {
+  "id": "drill-010",
+  "name": "Build and Prove a 4–20 mA Loop",
+  "whenToUse": "Mentally rehearse setting up, wiring, and calculating values across an analog loop.",
+  "steps": [
+   "Specify device wiring type (2/3/4-wire), power source, supply voltage, current flow, receiver terminals, and meter test location.",
+   "Correct wiring errors inserted into a sample terminal diagram.",
+   "Calculate expected mA outputs across 0%, 25%, 50%, 75%, and 100% process points, then convert given mA values back into span percentages."
+  ],
+  "whyItWorks": "Uses deliberate practice, calculation retrieval, and application to a physical loop instead of isolated 4–20 mA facts.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.6-7"
+ },
+ {
+  "id": "drill-011",
+  "name": "Calibration Bench Simulation",
+  "whenToUse": "Practice transmitter calibration logic, error evaluation, and documentation.",
+  "steps": [
+   "Calculate expected output values and tolerance limits for a 5-point calibration table (0% to 100%).",
+   "Judge as-found test data to classify zero errors, span errors, or linearity problems.",
+   "Document a final calibration log with as-found data, work performed, as-left results, and pass/fail status."
+  ],
+  "whyItWorks": "Uses deliberate practice and error classification. Calculating, judging tolerance, and documenting results links calibration theory to actual bench work.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.7"
+ },
+ {
+  "id": "drill-012",
+  "name": "Touch the Loop: Measurement Point Drill",
+  "whenToUse": "Verify physical measurement expectations and meter placement at distinct circuit points.",
+  "steps": [
+   "Predict expected readings across labeled test points (A, B, C, D) for voltage, current, resistance, or pressure.",
+   "Specify meter mode, lead placement, baseline reading, and diagnosis for abnormal high/low values.",
+   "Identify an intentionally unsafe or invalid measurement practice inserted into the drill."
+  ],
+  "whyItWorks": "Uses applied retrieval and elaboration. The learner must connect circuit theory to an actual measurement location and expected observation.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.7"
+ },
+ {
+  "id": "drill-013",
+  "name": "Evidence Before Cause",
+  "whenToUse": "Eliminate guessing by using diagnostic measurements to isolate system faults systematically.",
+  "steps": [
+   "Select one diagnostic check based solely on an initial symptom.",
+   "Analyze test results by declaring: OBSERVATION (what showed), PROVES (conclusions), DOES NOT PROVE (remaining causes), and NEXT CHECK.",
+   "Isolate the exact fault without replacing evidence with assumptions."
+  ],
+  "whyItWorks": "Uses error-based learning and deliberate diagnostic practice. Each measurement must reduce uncertainty rather than simply generate activity.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.7-8"
+ },
+ {
+  "id": "drill-014",
+  "name": "Fault Path From a Blank Page",
+  "whenToUse": "Construct a logical troubleshooting tree before evaluating physical diagnostic choices.",
+  "steps": [
+   "Map a blank-page fault tree: SYMPTOM → Expected Behavior → Proving Signal → Test Location → Next Step (Present/Absent).",
+   "Critique the efficiency and signal-path logic of your chosen testing order."
+  ],
+  "whyItWorks": "Uses no-lookup recall and chunking. Building the diagnostic tree strengthens a reusable signal-path troubleshooting model.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.8"
+ },
+ {
+  "id": "drill-015",
+  "name": "Inject One Fault",
+  "whenToUse": "Recognize specific fault symptoms by analyzing behavior in a baseline-healthy system.",
+  "steps": [
+   "Establish baseline conditions for process, field device, signal, PLC, and final element.",
+   "Diagnose a hidden injected fault based strictly on resulting symptom output.",
+   "Verify the affected system layer, supporting observations, and confirming tests."
+  ],
+  "whyItWorks": "Uses error-based learning and causal reasoning. Symptoms become attached to system behavior instead of memorized as disconnected fault lists.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.8"
+ },
+ {
+  "id": "drill-016",
+  "name": "One-Page Fundamental From Memory",
+  "whenToUse": "Build a concise field reference sheet while testing recall completeness.",
+  "steps": [
+   "Draft a one-page reference from memory using: PURPOSE, CORE PRINCIPLE, NORMAL VALUES, BASIC DIAGRAM, FIELD CHECKS, COMMON FAILURES, and ONE RULE.",
+   "Audit the draft by marking each item as KEEP, CORRECT, or ADD.",
+   "Finalize a compressed 2-minute field reference containing a practical example."
+  ],
+  "whyItWorks": "Uses blank-page recall, compression, and generation. Creating the reference before seeing the answer exposes weak knowledge instead of hiding it.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.9"
+ },
+ {
+  "id": "drill-017",
+  "name": "Signal Chain Compression",
+  "whenToUse": "Simplify complex systems down to essential functional stages and energy boundaries.",
+  "steps": [
+   "Compress the system into max 7 functional blocks (Process → Sensor → Transmitter → Signal → Controller → Output → Final Element).",
+   "Annotate each connecting arrow with the physical quantity crossing the boundary (pressure, mA, VDC, air psi, etc.).",
+   "Target which block to investigate first for a given symptom."
+  ],
+  "whyItWorks": "Uses chunking and dual coding. Compression separates functional stages while preserving the physical signal relationships between them.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.9"
+ },
+ {
+  "id": "drill-018",
+  "name": "Build the Pocket Tables",
+  "whenToUse": "Commit high-frequency baseline numbers and scaling ratios to automatic memory.",
+  "steps": [
+   "Fill in quick-reference values from memory for 4–20 mA points (0–100%), Ohm's law formulas, span/LRV/URV equations, and sensor principles.",
+   "Verify responses against the corrected pocket reference table.",
+   "Apply at least two values from memory to solve a practical field scenario."
+  ],
+  "whyItWorks": null,
+  "source": "I&C Fundamentals Drill Pack.pdf p.9"
+ }
+];
+const DRILL_INPUTS = {
+ "source": "IC_Fundamentals_Drill_Input_Library.pdf",
+ "fundamental": [
+  {
+   "text": "Ohm's law",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Voltage",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Current",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Resistance",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Electrical power",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Voltage drop",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Series circuits",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Parallel circuits",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Series-parallel circuits",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Open circuits",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Short circuits",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Continuity",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "DC polarity",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "24 VDC control power",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Fuse protection",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Circuit common",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Ground vs common",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Normally open contacts",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Normally closed contacts",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Sourcing inputs",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Sinking inputs",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "PNP devices",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "NPN devices",
+   "category": "Electrical fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "4-20 mA current loop",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Live zero",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Loop power",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Loop resistance",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Loop burden",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Compliance voltage",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "0-10 V signals",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Current vs voltage signals",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "2-wire transmitters",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "3-wire transmitters",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "4-wire transmitters",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Active analog signals",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Passive analog signals",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Analog signal scaling",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Percent-of-span conversion",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "HART fundamentals",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "HART communication over 4-20 mA",
+   "category": "Analog signal fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.3"
+  },
+  {
+   "text": "Sensor vs transmitter",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Process variable",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "LRV",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "URV",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Range",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Span",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Zero",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Zero suppression",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Zero elevation",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Direct acting transmitter",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Reverse acting transmitter",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Engineering-unit scaling",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Transmitter accuracy",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Calibration tolerance",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Linearity",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Repeatability",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Hysteresis",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Sensor error",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Transmitter error",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "As-found condition",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "As-left condition",
+   "category": "Transmitter fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Gauge pressure",
+   "category": "Pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Absolute pressure",
+   "category": "Pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Differential pressure",
+   "category": "Pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Atmospheric pressure",
+   "category": "Pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Static pressure",
+   "category": "Pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Differential-pressure transmitter",
+   "category": "Pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Pressure transmitter",
+   "category": "Pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Impulse lines",
+   "category": "Pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "High-pressure side",
+   "category": "Pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Low-pressure side",
+   "category": "Pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Wet leg",
+   "category": "Pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Dry leg",
+   "category": "Pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Pressure measurement using diaphragms",
+   "category": "Pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Hydrostatic level measurement",
+   "category": "Level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Differential-pressure level",
+   "category": "Level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Open-tank DP level",
+   "category": "Level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Closed-tank DP level",
+   "category": "Level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Wet-leg level measurement",
+   "category": "Level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Dry-leg level measurement",
+   "category": "Level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Specific gravity effects",
+   "category": "Level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Density effects on DP level",
+   "category": "Level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Float level measurement",
+   "category": "Level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Displacer fundamentals",
+   "category": "Level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Ultrasonic level fundamentals",
+   "category": "Level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Radar level fundamentals",
+   "category": "Level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Guided-wave radar fundamentals",
+   "category": "Level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Differential-pressure flow",
+   "category": "Flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.4"
+  },
+  {
+   "text": "Orifice plates",
+   "category": "Flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Primary flow elements",
+   "category": "Flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Square-root relationship",
+   "category": "Flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Volumetric flow",
+   "category": "Flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Mass flow",
+   "category": "Flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Magnetic flowmeter principle",
+   "category": "Flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Vortex flowmeter principle",
+   "category": "Flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Coriolis principle",
+   "category": "Flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Turbine flowmeter principle",
+   "category": "Flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Straight-run effects",
+   "category": "Flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Flow direction",
+   "category": "Flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "RTD principle",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Resistance vs temperature",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "2-wire RTD",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "3-wire RTD",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "4-wire RTD",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Lead-wire resistance",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Thermocouple principle",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Seebeck effect",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Thermocouple polarity",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Cold-junction compensation",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Thermowells",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Temperature transmitters",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Sensor vs process temperature",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Sensor response time",
+   "category": "Temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Control valve purpose",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Valve actuator",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Pneumatic actuator",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Spring-and-diaphragm actuator",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "I/P converter",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Valve positioner",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Valve position feedback",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Air-to-open",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Air-to-close",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Fail-open",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Fail-closed",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Fail-in-place",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Direct valve action",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Reverse valve action",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Cv",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Valve travel",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Valve stiction",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Valve deadband",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Instrument air",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "3-15 psi pneumatic signal",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "4-20 mA to pneumatic conversion",
+   "category": "Control valves",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Process variable",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Setpoint",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Manipulated variable",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Control output",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Error",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Open-loop control",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.5"
+  },
+  {
+   "text": "Closed-loop control",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Feedback",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Negative feedback",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Controller action",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Direct acting controller",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Reverse acting controller",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Proportional control",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Proportional gain",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Proportional band",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Integral control",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Reset",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Derivative control",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Rate",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "PID control",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Dead time",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Process lag",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Oscillation",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Offset",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Integral windup",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Cascade control",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Feedforward control",
+   "category": "Basic process control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Digital input",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Digital output",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Analog input",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Analog output",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "PLC input card",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "PLC output card",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Field input",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Field output",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Input image/table fundamentals",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Output image/table fundamentals",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Ladder logic",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Examine-if-closed concept",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Examine-if-open concept",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Output coil",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Seal-in circuit",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Start-stop logic",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Permissive",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Interlock",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Alarm",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Trip",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "PLC scan cycle",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Analog scaling in PLC logic",
+   "category": "PLC/control-system fundamentals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "P&ID",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Process flow diagram",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Instrument loop diagram",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Electrical schematic",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Wiring diagram",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Termination drawing",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "I/O list",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Instrument index",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Instrument datasheet",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Cause-and-effect diagram",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Ladder diagram",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "I&C FUNDAMENTALS / DRILL INPUT LIBRARY",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Panel drawing",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Cable schedule",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Instrument tag identification",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "ISA instrument symbols",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Signal-line symbols",
+   "category": "Documentation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Grounding",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Shielding",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Single-point shield grounding",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Ground loops",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Electrical noise",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "EMI",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "RFI",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Twisted-pair wiring",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Cable segregation",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Signal isolation",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Instrument grounding",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Intrinsic safety",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Intrinsically safe circuit",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Intrinsic safety barrier",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Galvanic isolator",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Hazardous area classification",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Class/Division fundamentals",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Zone fundamentals",
+   "category": "Installation and signal integrity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Calibration",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Verification",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Functional test",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Loop check",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Point-to-point check",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Five-point calibration",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Zero check",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Span check",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Rising calibration",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Falling calibration",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Calibration tolerance",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Error calculation",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Percent-of-span error",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Simulating mA",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Sourcing mA",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Measuring mA",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Loop power",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Calibration standard",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Traceability",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "As-found readings",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "As-left readings",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Loop-check documentation",
+   "category": "Calibration and commissioning",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  }
+ ],
+ "concept": [
+  {
+   "text": "Why current is the same throughout a series 4-20 mA loop",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.7"
+  },
+  {
+   "text": "Why 4 mA is used instead of 0 mA",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "How voltage drops distribute around a current loop",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Why excessive loop resistance causes problems",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "How a 2-wire transmitter powers itself",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Active vs passive current signals",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Sourcing vs sinking",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "NO vs NC as physical state versus PLC logic state",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Why fail-safe contacts are often normally closed",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "How a transmitter converts a process variable into 4-20 mA",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "LRV vs URV",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Range vs span",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Zero shift vs span error",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Accuracy vs precision",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Calibration vs verification",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "As-found vs as-left",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "How an RTD measures temperature",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "How a thermocouple produces a signal",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Why thermocouples require cold-junction compensation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Why 3-wire RTDs compensate for lead resistance",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Why thermowell installation affects response",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "How pressure creates force on a sensing element",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "How hydrostatic pressure indicates level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Why density affects DP level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "How differential pressure represents flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Why DP flow has a square-root relationship",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Sensor measurement vs inferred process measurement",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "How an I/P works",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "How a valve positioner closes its own position loop",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Air-to-open vs fail-closed",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Air-to-close vs fail-open",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Cv and valve capacity",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Feedback control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Process variable vs setpoint",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Controller output vs final valve position",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Direct vs reverse controller action",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "What proportional action does",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "What integral action does",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "What derivative action does",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Why excessive gain causes oscillation",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Why excessive integral action can cause cycling",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Dead time vs lag",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Open vs closed loop",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Cascade control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Feedforward control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Permissive vs interlock",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Analog input scaling",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "PLC scan sequence",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Ground vs common",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Shielding vs grounding",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Why ground loops create measurement errors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  },
+  {
+   "text": "Intrinsic safety principle",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  }
+ ],
+ "conceptPairs": [
+  {
+   "a": "Voltage",
+   "b": "Current",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Series circuit",
+   "b": "Parallel circuit",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Open circuit",
+   "b": "Short circuit",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Sourcing",
+   "b": "Sinking",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "PNP",
+   "b": "NPN",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Normally open",
+   "b": "Normally closed",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Ground",
+   "b": "DC common",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Current signal",
+   "b": "Voltage signal",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Active signal",
+   "b": "Passive signal",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "2-wire transmitter",
+   "b": "4-wire transmitter",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Measuring mA",
+   "b": "Sourcing mA",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Sourcing mA",
+   "b": "Simulating mA",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "LRV",
+   "b": "URV",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Range",
+   "b": "Span",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Zero error",
+   "b": "Span error",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Accuracy",
+   "b": "Precision",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Repeatability",
+   "b": "Accuracy",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Calibration",
+   "b": "Verification",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Calibration",
+   "b": "Loop check",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "As-found",
+   "b": "As-left",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "RTD",
+   "b": "Thermocouple",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "2-wire RTD",
+   "b": "3-wire RTD",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "3-wire RTD",
+   "b": "4-wire RTD",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Sensor",
+   "b": "Transmitter",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Gauge pressure",
+   "b": "Absolute pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Gauge pressure",
+   "b": "Differential pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Wet leg",
+   "b": "Dry leg",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Pressure",
+   "b": "Differential pressure",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Mass flow",
+   "b": "Volumetric flow",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Radar",
+   "b": "Ultrasonic level",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.9"
+  },
+  {
+   "a": "Air-to-open",
+   "b": "Air-to-close",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Fail-open",
+   "b": "Fail-closed",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "I/P",
+   "b": "Positioner",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Valve command",
+   "b": "Valve position",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Direct acting",
+   "b": "Reverse acting",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Open-loop control",
+   "b": "Closed-loop control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Proportional",
+   "b": "Integral",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Integral",
+   "b": "Derivative",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Dead time",
+   "b": "Process lag",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Cascade",
+   "b": "Feedforward",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Process variable",
+   "b": "Setpoint",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Permissive",
+   "b": "Interlock",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Alarm",
+   "b": "Trip",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Digital input",
+   "b": "Digital output",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Analog input",
+   "b": "Analog output",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "P&ID",
+   "b": "Loop drawing",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "P&ID",
+   "b": "Electrical schematic",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Grounding",
+   "b": "Shielding",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "a": "Intrinsic safety barrier",
+   "b": "Galvanic isolator",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  }
+ ],
+ "device": [
+  {
+   "text": "24 VDC power supply",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "text": "Fuse",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "text": "Circuit breaker",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "text": "Terminal block",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "text": "Relay",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "text": "Interposing relay",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "text": "Control relay",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "text": "Selector switch",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "text": "Pushbutton",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "text": "Limit switch",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "text": "Proximity switch",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "text": "Inductive proximity sensor",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "text": "Photoelectric sensor",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.10"
+  },
+  {
+   "text": "Float switch",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Pressure switch",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Temperature switch",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Solenoid valve",
+   "category": "Basic electrical/control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Pressure transmitter",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Differential-pressure transmitter",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Level transmitter",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Flow transmitter",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Temperature transmitter",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "RTD",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Thermocouple",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Thermowell",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Magnetic flowmeter",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Coriolis flowmeter",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Vortex flowmeter",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "DP flow transmitter",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Radar level transmitter",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Guided-wave radar transmitter",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Ultrasonic level transmitter",
+   "category": "Transmitters and sensors",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Control valve",
+   "category": "Final control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Pneumatic control valve",
+   "category": "Final control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Valve actuator",
+   "category": "Final control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "I/P converter",
+   "category": "Final control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Valve positioner",
+   "category": "Final control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Solenoid-operated valve",
+   "category": "Final control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Position feedback transmitter",
+   "category": "Final control",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "PLC",
+   "category": "Control system",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Remote I/O rack",
+   "category": "Control system",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Digital input module",
+   "category": "Control system",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Digital output module",
+   "category": "Control system",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Analog input module",
+   "category": "Control system",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Analog output module",
+   "category": "Control system",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "HMI",
+   "category": "Control system",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "PID controller",
+   "category": "Control system",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Signal isolator",
+   "category": "Control system",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "intrinsic-safety barrier",
+   "category": "Control system",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Digital multimeter",
+   "category": "Test equipment",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Loop calibrator",
+   "category": "Test equipment",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Process calibrator",
+   "category": "Test equipment",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Pressure calibrator",
+   "category": "Test equipment",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Pressure source",
+   "category": "Test equipment",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Temperature calibrator",
+   "category": "Test equipment",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "RTD simulator",
+   "category": "Test equipment",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  },
+  {
+   "text": "Thermocouple simulator",
+   "category": "Test equipment",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.11"
+  }
+ ],
+ "loop": [
+  {
+   "text": "2-wire pressure transmitter -> PLC analog input",
+   "category": "Analog measurement loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "2-wire DP transmitter -> PLC analog input",
+   "category": "Analog measurement loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Level transmitter -> PLC analog input",
+   "category": "Analog measurement loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Flow transmitter -> PLC analog input",
+   "category": "Analog measurement loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Temperature transmitter -> PLC analog input",
+   "category": "Analog measurement loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "RTD -> temperature transmitter -> PLC analog input",
+   "category": "Analog measurement loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Thermocouple -> temperature transmitter -> PLC analog input",
+   "category": "Analog measurement loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Magnetic flowmeter -> PLC analog input",
+   "category": "Analog measurement loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Radar level transmitter -> PLC analog input",
+   "category": "Analog measurement loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "PLC analog output -> I/P -> pneumatic control valve",
+   "category": "Control loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "PLC analog output -> smart positioner -> control valve",
+   "category": "Control loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Pressure transmitter -> PID controller -> control valve",
+   "category": "Control loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Flow transmitter -> PID controller -> control valve",
+   "category": "Control loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Level transmitter -> PID controller -> control valve",
+   "category": "Control loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Temperature transmitter -> PID controller -> control valve",
+   "category": "Control loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Limit switch -> PLC digital input",
+   "category": "Discrete loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Proximity sensor -> PLC digital input",
+   "category": "Discrete loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Pressure switch -> PLC digital input",
+   "category": "Discrete loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Float switch -> PLC digital input",
+   "category": "Discrete loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "PLC digital output -> interposing relay -> solenoid",
+   "category": "Discrete loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "PLC digital output -> solenoid valve",
+   "category": "Discrete loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "PLC output -> relay -> motor starter",
+   "category": "Discrete loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Emergency/permissive contact -> PLC input",
+   "category": "Discrete loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "24 VDC supply -> transmitter -> analog input -> DC common",
+   "category": "More useful combined loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Sensor -> transmitter -> PLC -> HMI",
+   "category": "More useful combined loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "PLC -> I/P -> actuator -> valve -> process",
+   "category": "More useful combined loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Level transmitter -> PLC -> high-level alarm",
+   "category": "More useful combined loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Pressure switch -> PLC -> permissive logic -> motor",
+   "category": "More useful combined loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Limit switch -> PLC -> interlock -> output",
+   "category": "More useful combined loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "text": "Temperature sensor -> transmitter -> PLC -> PID -> control valve",
+   "category": "More useful combined loops",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  }
+ ],
+ "tag": [
+  {
+   "letters": "PT",
+   "example": "PT-101",
+   "meaning": "Pressure transmitter",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "letters": "PI",
+   "example": "PI-101",
+   "meaning": "Pressure indicator",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "letters": "PIC",
+   "example": "PIC-101",
+   "meaning": "Pressure indicating controller",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "letters": "PSH",
+   "example": "PSH-101",
+   "meaning": "Pressure switch high",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "letters": "PSL",
+   "example": "PSL-101",
+   "meaning": "Pressure switch low",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "letters": "PDT",
+   "example": "PDT-101",
+   "meaning": "Differential-pressure transmitter",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+  },
+  {
+   "letters": "TT",
+   "example": "TT-101",
+   "meaning": "Temperature transmitter",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "TI",
+   "example": "TI-101",
+   "meaning": "Temperature indicator",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "TIC",
+   "example": "TIC-101",
+   "meaning": "Temperature indicating controller",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "TSH",
+   "example": "TSH-101",
+   "meaning": "Temperature switch high",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "FT",
+   "example": "FT-101",
+   "meaning": "Flow transmitter",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "FI",
+   "example": "FI-101",
+   "meaning": "Flow indicator",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "FIC",
+   "example": "FIC-101",
+   "meaning": "Flow indicating controller",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "FSL",
+   "example": "FSL-101",
+   "meaning": "Flow switch low",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "LT",
+   "example": "LT-101",
+   "meaning": "Level transmitter",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "LI",
+   "example": "LI-101",
+   "meaning": "Level indicator",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "LIC",
+   "example": "LIC-101",
+   "meaning": "Level indicating controller",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "LSH",
+   "example": "LSH-101",
+   "meaning": "Level switch high",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "LSL",
+   "example": "LSL-101",
+   "meaning": "Level switch low",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "FV",
+   "example": "FV-101",
+   "meaning": "Flow control valve",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "PV",
+   "example": "PV-101",
+   "meaning": "Pressure control valve",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "LV",
+   "example": "LV-101",
+   "meaning": "Level control valve",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "TV",
+   "example": "TV-101",
+   "meaning": "Temperature control valve",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "XV",
+   "example": "XV-101",
+   "meaning": "On/off valve",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "ZS",
+   "example": "ZS-101",
+   "meaning": "Position switch",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "ZSO",
+   "example": "ZSO-101",
+   "meaning": "Open position switch",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  },
+  {
+   "letters": "ZSC",
+   "example": "ZSC-101",
+   "meaning": "Closed position switch",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"
+  }
+ ],
+ "drawing": [
+  {
+   "text": "P&ID",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "Process flow diagram",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "Instrument loop diagram",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "Loop sheet",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "Electrical schematic",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "Wiring diagram",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "Termination diagram",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "Control panel drawing",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "Junction-box drawing",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "PLC I/O drawing",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "Ladder logic diagram",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "Cause-and-effect diagram",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "I/O list",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "Instrument index",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "Cable schedule",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  },
+  {
+   "text": "Instrument datasheet",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"
+  }
+ ],
+ "rotation": [
+  {
+   "items": [
+    "Ohm's law",
+    "4-20 mA scaling",
+    "RTD principle",
+    "control valve fail action",
+    "PLC permissives"
+   ],
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.17"
+  },
+  {
+   "items": [
+    "sourcing vs sinking",
+    "DP level",
+    "thermocouple cold junction",
+    "proportional control",
+    "P&ID tag identification"
+   ],
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.17"
+  },
+  {
+   "items": [
+    "series vs parallel",
+    "flow measurement",
+    "LRV/URV/span",
+    "I/P operation",
+    "intrinsic safety"
+   ],
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.17"
+  }
+ ],
+ "howToUse": {
+  "text": "Pick one input, retrieve it cold, apply it to a real loop or symptom, correct the miss, then revisit it later.",
+  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.1"
+ }
+};
+const DRILL_SYMPTOMS = [{"id": "sig-001", "symptom": "Analog input reads 0 mA", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"}, {"id": "sig-002", "symptom": "Analog input reads approximately 4 mA regardless of process", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"}, {"id": "sig-003", "symptom": "Analog input reads approximately 20 mA regardless of process", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"}, {"id": "sig-004", "symptom": "Signal is below 4 mA", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"}, {"id": "sig-005", "symptom": "Signal is above 20 mA", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"}, {"id": "sig-006", "symptom": "Transmitter display is correct but PLC value is wrong", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.13"}, {"id": "sig-007", "symptom": "Transmitter output is correct but HMI value is wrong", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-008", "symptom": "Field mA differs from PLC-indicated mA", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-009", "symptom": "Loop works with calibrator but not transmitter", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-010", "symptom": "Transmitter will not power up", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-011", "symptom": "Loop voltage is too low", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-012", "symptom": "Current signal fluctuates", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-013", "symptom": "Signal changes when another machine starts", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-014", "symptom": "Reading is noisy", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-015", "symptom": "Input LED is off when sensor is made", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-016", "symptom": "Input LED is on but PLC logic does not respond", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-017", "symptom": "Field switch changes but PLC input does not", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-018", "symptom": "PLC output is on but field device is off", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-019", "symptom": "PLC output LED is off despite command", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-020", "symptom": "Solenoid is energized but valve does not move", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-021", "symptom": "Motor will not start because permissive is missing", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-022", "symptom": "Interlock will not clear", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-023", "symptom": "Limit switch shows wrong state", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-024", "symptom": "Proximity switch LED changes but PLC input does not", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-025", "symptom": "Pressure reading stuck", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-026", "symptom": "Pressure reading zero", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-027", "symptom": "Pressure reads higher than expected", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-028", "symptom": "Pressure reads lower than expected", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-029", "symptom": "DP transmitter reads backwards", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-030", "symptom": "Reading changes slowly", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-031", "symptom": "Pressure transmitter passes calibration but process reading is wrong", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-032", "symptom": "Impulse line is plugged", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-033", "symptom": "One DP impulse line is leaking", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-034", "symptom": "Level reads zero on a full vessel", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-035", "symptom": "Level reads full on an empty vessel", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-036", "symptom": "Level changes in the wrong direction", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-037", "symptom": "DP level changes when vessel pressure changes", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-038", "symptom": "Level reading is consistently offset", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-039", "symptom": "Level transmitter responds slowly", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-040", "symptom": "Radar level is unstable", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-041", "symptom": "Flow reads zero while process is clearly flowing", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-042", "symptom": "Flow shows when process is stopped", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-043", "symptom": "Flow reading is unstable", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-044", "symptom": "DP flow reads incorrectly at low flow", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-045", "symptom": "Flow reading is lower than expected", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-046", "symptom": "Flow reading changes after process density changes", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-047", "symptom": "RTD reads open circuit", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-048", "symptom": "Temperature reads extremely high", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-049", "symptom": "Temperature reads extremely low", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-050", "symptom": "Temperature jumps intermittently", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-051", "symptom": "Temperature transmitter reads correctly but PLC does not", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-052", "symptom": "Thermocouple polarity is reversed", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-053", "symptom": "Temperature responds very slowly", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-054", "symptom": "RTD lead resistance causes measurement error", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"}, {"id": "sig-055", "symptom": "Valve does not move", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-056", "symptom": "Valve only partially strokes", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-057", "symptom": "Valve moves opposite the command", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-058", "symptom": "Valve command changes but position does not", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-059", "symptom": "Valve position changes but process does not respond", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-060", "symptom": "Valve oscillates", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-061", "symptom": "Valve sticks", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-062", "symptom": "Valve reaches 100% command but not 100% travel", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-063", "symptom": "Valve fails closed unexpectedly", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-064", "symptom": "Valve fails open unexpectedly", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-065", "symptom": "I/P receives 4-20 mA but produces no air output", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-066", "symptom": "Positioner input is correct but valve position is wrong", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-067", "symptom": "Instrument air is lost", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-068", "symptom": "Process continuously oscillates", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-069", "symptom": "Process responds too slowly", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-070", "symptom": "Controller output hunts", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-071", "symptom": "Process never reaches setpoint", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-072", "symptom": "Large overshoot after setpoint change", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-073", "symptom": "Integral action keeps driving output", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-074", "symptom": "Controller responds in the wrong direction", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-075", "symptom": "Output reaches 100% but PV does not reach setpoint", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-076", "symptom": "Process reacts long after output changes", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}, {"id": "sig-077", "symptom": "Loop works manually but poorly in automatic", "source": "IC_Fundamentals_Drill_Input_Library.pdf p.15"}];
+const BENCH = {
+ "constructed": true,
+ "source": "constructed — training scenario, no source citation",
+ "tagNumber": {
+  "min": 102,
+  "max": 499,
+  "rule": "ISA-5.1 letters and meaning from the [tag] bank; the loop number is generated.",
+  "constructed": true,
+  "source": "constructed — training scenario, no source citation"
+ },
+ "spacingDays": [
+  1,
+  3,
+  7
+ ],
+ "spacingSource": "I&C Fundamentals Drill Pack.pdf p.4, drill-003 step 4 (1 day, 3 days, 1 week)",
+ "xp": {
+  "first": 25,
+  "repeat": 5
+ },
+ "selfDirectedNote": "The sources don't include material for this step. Use your own bench, notes, or a colleague, then record what you did.",
+ "drills": {
+  "drill-001": {
+   "inputs": [
+    "fundamental"
+   ],
+   "basis": "bracket in the drill",
+   "ribbon": null
+  },
+  "drill-002": {
+   "inputs": [
+    "loop"
+   ],
+   "basis": "bracket in the drill",
+   "ribbon": 3,
+   "refs": {
+    "3": "loop"
+   }
+  },
+  "drill-003": {
+   "inputs": [
+    "rotation"
+   ],
+   "basis": "IC_Fundamentals_Drill_Input_Library.pdf p.16, spaced-rotation prompt",
+   "ribbon": null,
+   "classify": {
+    "2": [
+     "SOLID",
+     "SLOW",
+     "MISS"
+    ]
+   }
+  },
+  "drill-004": {
+   "inputs": [
+    "concept",
+    "deviceOrLoop"
+   ],
+   "basis": "I&C Fundamentals Drill Pack.pdf p.10",
+   "ribbon": null,
+   "deviceCats": [
+    "Basic electrical/control",
+    "Transmitters and sensors",
+    "Final control",
+    "Control system"
+   ]
+  },
+  "drill-005": {
+   "inputs": [
+    "conceptPair"
+   ],
+   "basis": "brackets in the drill",
+   "ribbon": null,
+   "self": [
+    2
+   ]
+  },
+  "drill-006": {
+   "inputs": [
+    "device"
+   ],
+   "basis": "constructed — training scenario, no source citation",
+   "ribbon": 3,
+   "deviceCats": [
+    "Transmitters and sensors",
+    "Final control"
+   ]
+  },
+  "drill-007": {
+   "inputs": [
+    "fundamental"
+   ],
+   "basis": "I&C Fundamentals Drill Pack.pdf p.11",
+   "ribbon": null,
+   "self": [
+    1
+   ]
+  },
+  "drill-008": {
+   "inputs": [
+    "drawing",
+    "loop"
+   ],
+   "basis": "[drawing]: I&C Fundamentals Drill Pack.pdf p.11. [loop] as the process to draw: constructed — training scenario, no source citation",
+   "ribbon": 3
+  },
+  "drill-009": {
+   "inputs": [
+    "symptom"
+   ],
+   "basis": "the drill's step text (a symptom)",
+   "ribbon": 1
+  },
+  "drill-010": {
+   "inputs": [
+    "deviceOrLoop"
+   ],
+   "basis": "I&C Fundamentals Drill Pack.pdf p.11",
+   "ribbon": 3,
+   "self": [
+    2
+   ],
+   "deviceCats": [
+    "Transmitters and sensors"
+   ],
+   "loopCats": [
+    "Analog measurement loops"
+   ]
+  },
+  "drill-011": {
+   "inputs": [
+    "tagRange"
+   ],
+   "basis": "I&C Fundamentals Drill Pack.pdf p.11 ([device]); ranges from IC_Fundamentals_Drill_Input_Library.pdf p.16; tag pairing: constructed — training scenario, no source citation",
+   "ribbon": 6,
+   "refs": {
+    "2": "calRecord"
+   }
+  },
+  "drill-012": {
+   "inputs": [
+    "loop"
+   ],
+   "basis": "I&C Fundamentals Drill Pack.pdf p.11",
+   "ribbon": 2,
+   "self": [
+    1,
+    3
+   ]
+  },
+  "drill-013": {
+   "inputs": [
+    "symptom"
+   ],
+   "basis": "I&C Fundamentals Drill Pack.pdf p.11",
+   "ribbon": 4,
+   "self": [
+    2
+   ]
+  },
+  "drill-014": {
+   "inputs": [
+    "symptom"
+   ],
+   "basis": "the drill's step text (SYMPTOM)",
+   "ribbon": 1
+  },
+  "drill-015": {
+   "inputs": [
+    "loop"
+   ],
+   "basis": "constructed — training scenario, no source citation",
+   "ribbon": 5,
+   "self": [
+    2
+   ]
+  },
+  "drill-016": {
+   "inputs": [
+    "fundamental"
+   ],
+   "basis": "I&C Fundamentals Drill Pack.pdf p.11",
+   "ribbon": 6
+  },
+  "drill-017": {
+   "inputs": [
+    "loop",
+    "symptom"
+   ],
+   "basis": "constructed — training scenario, no source citation",
+   "ribbon": 3
+  },
+  "drill-018": {
+   "inputs": [],
+   "basis": "no bracket",
+   "ribbon": null,
+   "refs": {
+    "2": "pocketTable"
+   }
+  }
+ },
+ "tagRange": {
+  "PT": "Pressure",
+  "PDT": "Differential pressure",
+  "TT": "Temperature",
+  "FT": "Flow",
+  "LT": "Level"
+ },
+ "filterNote": "Device/loop category filters per drill and the transmitter-tag to range pairing are constructed.",
+ "ribbonNote": "Ribbon step per drill: constructed mapping (user-approved 2026-09-25)."
+};
+</script>
 <script type="text/babel">
 /* The COST_CONSEQUENCE object below is tool-authored interface copy.
    It names the tool's own category for each wrong-move type so the
@@ -163,6 +2963,12 @@ const LAYERS = [
       { id: "4.3", name: "Change Control Gate" },
     ],
   },
+  {
+    id: "drill", num: 5, name: "Drill", accent: "lime",
+    tools: [
+      { id: "5.1", name: "The Bench" },
+    ],
+  },
 ];
 
 // Socratic prompts only. No field values here; those come from sources/.
@@ -186,6 +2992,12 @@ const HELPER_PROMPTS = {
     "What else reads or writes this tag before you change it?",
     "How will you prove the change did only what you intended?",
     "Who needs to know before this goes live?",
+  ],
+  // Built from IC_Fundamentals_Drill_Input_Library.pdf p.1: retrieve cold, apply, correct, revisit.
+  drill: [
+    "Can you answer it cold, before you look anything up?",
+    "Where would this show up on a real loop or symptom?",
+    "What did you miss, and when will you come back to it?",
   ],
 };
 
@@ -9905,6 +12717,500 @@ function ChangeControlGate({ onResult }) {
   );
 }
 
+/* --------------------------------------------------------------------------
+   Tool 5.1: The Bench
+   Randomized practice across the 18 Drill Pack templates. Each run draws its
+   inputs from the Drill Input Library banks, walks the drill's steps one at a
+   time (answer before moving on), and only then shows why the drill works.
+   Repeats are suggested on 1 / 3 / 7 day spacing.
+   -------------------------------------------------------------------------- */
+
+const BENCH_KEY = STORAGE_KEY + ".drill";
+const BENCH_RADAR = 0.5;
+const RADAR_AXES = ["electrical", "instrumentation", "plc", "programming"];
+const DRILL_BY_ID = Object.fromEntries(DRILLS.map(d => [d.id, d]));
+const DAY_MS = 24 * 60 * 60 * 1000;
+// Upper-case words that are signals or units in step text, not answer fields.
+const BENCH_NOT_FIELDS = ["PLC", "HMI", "VDC", "RTD", "DP", "PID", "LRV", "URV", "I/O", "ISA", "HART"];
+
+function pickOne(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function benchDevice(cats) {
+  const pool = DRILL_INPUTS.device.filter(d => !cats || cats.includes(d.category));
+  const d = pickOne(pool);
+  return { bracket: "[device]", text: d.text, note: d.category, source: d.source };
+}
+
+function benchLoop(cats) {
+  const pool = DRILL_INPUTS.loop.filter(l => !cats || cats.includes(l.category));
+  const l = pickOne(pool);
+  return { bracket: "[loop]", text: l.text, note: l.category, source: l.source };
+}
+
+// Draw a fresh input for each bank the drill uses.
+function benchInputs(id) {
+  const cfg = BENCH.drills[id];
+  return cfg.inputs.map(kind => {
+    if (kind === "fundamental") {
+      const f = pickOne(DRILL_INPUTS.fundamental);
+      return { bracket: "[fundamental]", text: f.text, note: f.category, source: f.source };
+    }
+    if (kind === "concept") {
+      const c = pickOne(DRILL_INPUTS.concept);
+      return { bracket: "[concept]", text: c.text, source: c.source };
+    }
+    if (kind === "conceptPair") {
+      const p = pickOne(DRILL_INPUTS.conceptPairs);
+      return { bracket: "[concept A] vs [concept B]", text: `${p.a} vs ${p.b}`, a: p.a, b: p.b, source: p.source };
+    }
+    if (kind === "device") return benchDevice(cfg.deviceCats);
+    if (kind === "loop") return benchLoop(cfg.loopCats);
+    if (kind === "deviceOrLoop") return Math.random() < 0.5 ? benchDevice(cfg.deviceCats) : benchLoop(cfg.loopCats);
+    if (kind === "drawing") {
+      const d = pickOne(DRILL_INPUTS.drawing);
+      return { bracket: "[drawing]", text: d.text, source: d.source };
+    }
+    if (kind === "symptom") {
+      const s = pickOne(DRILL_SYMPTOMS);
+      return { bracket: "[symptom]", text: s.symptom, source: s.source };
+    }
+    if (kind === "rotation") {
+      const r = pickOne(DRILL_INPUTS.rotation);
+      return { bracket: "[fundamental 1] through [fundamental 5]", text: r.items.join(", "), items: r.items, source: r.source };
+    }
+    if (kind === "tagRange") {
+      const letters = pickOne(Object.keys(BENCH.tagRange));
+      const tag = DRILL_INPUTS.tag.find(t => t.letters === letters);
+      const range = pickOne(LRV_URV.items.filter(r => r.measurement === BENCH.tagRange[letters]));
+      const n = BENCH.tagNumber.min + Math.floor(Math.random() * (BENCH.tagNumber.max - BENCH.tagNumber.min + 1));
+      return {
+        bracket: "[tag] + [LRV] / [URV]",
+        text: `${letters}-${n}, ${tag.meaning.toLowerCase()}, ${range.lrv} to ${range.urv} ${range.units}`,
+        source: `${tag.source} (letters and meaning); ${LRV_URV.source} (range)`,
+        constructed: `${BENCH.tagNumber.rule} Tag-to-range pairing: ${BENCH.source}`,
+      };
+    }
+    return null;
+  }).filter(Boolean);
+}
+
+// Put the drawn inputs into the step text where the drill has brackets.
+function benchFill(text, inputs) {
+  let out = text;
+  inputs.forEach(i => {
+    if (i.a) out = out.replace("[concept A]", i.a).replace("[concept B]", i.b);
+    else out = out.replace(i.bracket, i.text);
+  });
+  return out;
+}
+
+// Upper-case labels the step itself names (KNOWN, MISSING, WRONG) become answer fields.
+function benchFields(step) {
+  const found = (step.match(/\b[A-Z]{3,}(?: [A-Z]{2,})*\b/g) || []).filter(w => !BENCH_NOT_FIELDS.includes(w));
+  const uniq = [...new Set(found)];
+  return uniq.length >= 3 ? uniq : null;
+}
+
+function benchStatus(c, now) {
+  if (!c) return { label: "New", due: true, days: 0 };
+  const gap = BENCH.spacingDays[Math.min(c.count, BENCH.spacingDays.length) - 1];
+  const dueAt = new Date(c.last).getTime() + gap * DAY_MS;
+  const days = Math.ceil((dueAt - now) / DAY_MS);
+  return days <= 0 ? { label: `Due · done ${c.count}×`, due: true, days: 0 } : { label: `Review in ${days} day${days === 1 ? "" : "s"} · done ${c.count}×`, due: false, days };
+}
+
+function benchNewSession(id) {
+  return { id, inputs: benchInputs(id), step: 0, answers: {}, done: null };
+}
+
+function benchLoad() {
+  const t = loadTool(BENCH_KEY) || {};
+  const s = t.session;
+  const ok = s && DRILL_BY_ID[s.id] && Array.isArray(s.inputs) && typeof s.step === "number" && s.answers;
+  return {
+    session: ok ? s : null,
+    completions: t.completions && typeof t.completions === "object" ? t.completions : {},
+    log: Array.isArray(t.log) ? t.log : [],
+  };
+}
+
+function BenchRef({ kind, inputs }) {
+  const C = useC();
+  if (kind === "loop") {
+    const l = inputs.find(i => i.bracket === "[loop]");
+    return (
+      <div>
+        <p style={{ margin: 0, fontFamily: MONO_FONT, fontSize: 14, color: C.signal_cyan }}>{l.text}</p>
+        <Cites cites={[l.source]} />
+      </div>
+    );
+  }
+  if (kind === "calRecord") {
+    const cal = CAL_SCENARIOS.find(c => c.id === "PT-101");
+    const pts = ["0%", "25%", "50%", "75%", "100%", "50% (down)", "0% (down)"];
+    return (
+      <div>
+        <p style={{ margin: "0 0 6px", fontSize: 13, color: C.text_mute }}>
+          {cal.tag}, {cal.lrv} to {cal.urv} {cal.units}, as-found:
+        </p>
+        <div className="tool-scroll">
+          <table style={{ borderCollapse: "collapse", fontSize: 13 }}>
+            <tbody>
+              <tr>
+                {pts.map(p => (
+                  <th key={p} scope="col" style={{ padding: "3px 8px", fontWeight: 600, color: C.text_dim, whiteSpace: "nowrap" }}>{p}</th>
+                ))}
+              </tr>
+              <tr>
+                {cal.asFoundMA.map((v, i) => (
+                  <td key={i} style={{ padding: "3px 8px", fontFamily: MONO_FONT, color: C.text }}>{v.toFixed(2)} mA</td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <Cites cites={[cal.source]} />
+      </div>
+    );
+  }
+  if (kind === "pocketTable") {
+    return (
+      <div>
+        <div className="tool-scroll">
+          <table style={{ borderCollapse: "collapse", fontSize: 13 }}>
+            <tbody>
+              <tr>
+                <th scope="row" style={{ padding: "3px 8px", color: C.text_dim, textAlign: "left" }}>% span</th>
+                {CALC.mAConverter.referenceTable.filter(r => r.pct % 25 === 0).map(r => (
+                  <td key={r.pct} style={{ padding: "3px 8px", fontFamily: MONO_FONT, color: C.text_mute }}>{r.pct}</td>
+                ))}
+              </tr>
+              <tr>
+                <th scope="row" style={{ padding: "3px 8px", color: C.text_dim, textAlign: "left" }}>mA</th>
+                {CALC.mAConverter.referenceTable.filter(r => r.pct % 25 === 0).map(r => (
+                  <td key={r.pct} style={{ padding: "3px 8px", fontFamily: MONO_FONT, color: C.signal_cyan }}>{r.mA.toFixed(2)}</td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style={{ margin: "6px 0 0", fontSize: 13, color: C.text_mute }}>Formulas: {CALC.mAConverter.formulas.slice(0, 3).join(" ")}</p>
+        <Cites cites={[CALC.mAConverter.referenceSource, CALC.mAConverter.formulasSource]} />
+      </div>
+    );
+  }
+  return null;
+}
+
+function BenchInputs({ inputs }) {
+  const C = useC();
+  return (
+    <ul style={{ margin: "8px 0 0", padding: 0, listStyle: "none", display: "grid", gap: 6 }}>
+      {inputs.map(i => (
+        <li key={i.bracket} style={{ padding: "8px 12px", border: `1px solid ${C.border}`, borderRadius: 4, background: C.bg }}>
+          <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: C.text_dim }}>{i.bracket}</span>
+          <div style={{ fontFamily: MONO_FONT, fontSize: 14, color: C.signal_cyan, marginTop: 2 }}>{i.text}</div>
+          {i.note && <div style={{ fontSize: 12, color: C.text_mute }}>{i.note}</div>}
+          <Cites cites={[i.source]} />
+          {i.constructed && <ConstructedNote source={i.constructed} />}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function TheBench({ onResult, onStep }) {
+  const C = useC();
+  const [t, setT] = useState(benchLoad);
+  const [msg, setMsg] = useState(null);
+  const headRef = useRef(null);
+  useEffect(() => saveTool(BENCH_KEY, t), [t]);
+  const s = t.session;
+  const drill = s && DRILL_BY_ID[s.id];
+  const cfg = s && BENCH.drills[s.id];
+  const now = Date.now();
+
+  const ribbonStep = s && cfg.ribbon ? cfg.ribbon : null;
+  useEffect(() => {
+    if (onStep) onStep(ribbonStep);
+  }, [ribbonStep, s && s.id]);
+  useEffect(() => {
+    if (headRef.current) headRef.current.focus();
+  }, [s && s.id, s && s.step, s && !!s.done]);
+
+  const start = id => {
+    setT(x => ({ ...x, session: benchNewSession(id) }));
+    setMsg(null);
+  };
+  const random = () => {
+    const due = DRILLS.filter(d => benchStatus(t.completions[d.id], now).due);
+    start(pickOne(due.length ? due : DRILLS).id);
+  };
+  const leave = () => {
+    setT(x => ({ ...x, session: null }));
+    setMsg(null);
+  };
+
+  const stepText = s && !s.done ? drill.steps[s.step] : "";
+  const fields = s && !s.done ? benchFields(stepText) : null;
+  const classify = s && !s.done && cfg.classify && cfg.classify[String(s.step + 1)];
+  const rotation = s && s.inputs.find(i => i.items);
+  const ans = (s && s.answers[s.step]) || {};
+  const setAns = (k, v) => setT(x => ({ ...x, session: { ...x.session, answers: { ...x.session.answers, [x.session.step]: { ...(x.session.answers[x.session.step] || {}), [k]: v } } } }));
+
+  const answered = () => {
+    if (classify && rotation) return rotation.items.every(it => ans[it]);
+    return Object.values(ans).some(v => typeof v === "string" && v.trim().length >= 2);
+  };
+
+  const finish = () => {
+    const prev = t.completions[s.id];
+    const count = (prev ? prev.count : 0) + 1;
+    const first = !prev;
+    const gap = BENCH.spacingDays[Math.min(count, BENCH.spacingDays.length) - 1];
+    const xp = first ? BENCH.xp.first : BENCH.xp.repeat;
+    const inputText = s.inputs.map(i => i.text).join("; ") || "no input";
+    const note = `The Bench ${drill.id.replace("drill-", "Drill ")}: ${drill.name} — ${inputText}. Run ${count}; next review in ${gap} day${gap === 1 ? "" : "s"}.`;
+    onResult({ xp, firstPass: first, radar: BENCH_RADAR, radarAxes: RADAR_AXES, note: { tool: "5.1", tag: null, text: note } });
+    const at = new Date().toISOString();
+    setT(x => ({
+      ...x,
+      completions: { ...x.completions, [s.id]: { count, last: at } },
+      log: [{ id: drill.id, name: drill.name, input: inputText, run: count, next: gap, at }, ...x.log].slice(0, 30),
+      session: { ...x.session, done: { xp, count, gap, note } },
+    }));
+  };
+
+  const next = () => {
+    if (!answered()) {
+      setMsg(classify ? `Classify all ${rotation.items.length} items first.` : "Write your answer before moving on. Answer first, then check.");
+      return;
+    }
+    setMsg(null);
+    if (s.step + 1 < drill.steps.length) setT(x => ({ ...x, session: { ...x.session, step: x.session.step + 1 } }));
+    else finish();
+  };
+  const back = () => setT(x => ({ ...x, session: { ...x.session, step: Math.max(0, x.session.step - 1) } }));
+
+  useEffect(() => {
+    const onKey = e => {
+      if (!s || s.done) return;
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        next();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  const badgeRow = (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+      <Chip color={C.lime}>DRILLS DONE {Object.keys(t.completions).length} / {DRILLS.length}</Chip>
+      <Chip color={C.amber}>DUE {DRILLS.filter(d => t.completions[d.id] && benchStatus(t.completions[d.id], now).due).length}</Chip>
+      {s && !s.done && <Chip color={C.signal_cyan}>STEP {s.step + 1} / {drill.steps.length}</Chip>}
+    </div>
+  );
+
+  // ---- picker ----
+  if (!s) {
+    return (
+      <div style={{ display: "grid", gap: 20 }}>
+        {badgeRow}
+        <section aria-labelledby="bench-pick">
+          <H as="h3">Pick a drill</H>
+          <p id="bench-pick" ref={headRef} tabIndex={-1} style={{ margin: "6px 0 0", fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 20, color: C.text, outline: "none" }}>
+            {DRILLS.length} drills. Inputs are drawn at random each run.
+          </p>
+          <p style={{ margin: "6px 0 0", fontSize: 13, color: C.text_mute }}>{DRILL_INPUTS.howToUse.text}</p>
+          <Cites cites={[DRILL_INPUTS.howToUse.source]} />
+          <div style={{ marginTop: 12 }}>
+            <Btn onClick={random} ariaLabel="Random drill: picks a due or new drill">Random</Btn>
+          </div>
+        </section>
+        <ol aria-label="Drills" style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 8 }}>
+          {DRILLS.map((d, i) => {
+            const st = benchStatus(t.completions[d.id], now);
+            return (
+              <li key={d.id}>
+                <button
+                  type="button"
+                  onClick={() => start(d.id)}
+                  aria-label={`Drill ${i + 1}: ${d.name}. ${st.label}`}
+                  style={{ width: "100%", minHeight: TOUCH_MIN, display: "grid", gridTemplateColumns: "auto 1fr auto", gap: 12, alignItems: "center", padding: "10px 12px", border: `1px solid ${C.border}`, borderRadius: 4, background: C.bg, color: C.text, cursor: "pointer", textAlign: "left" }}
+                >
+                  <span style={{ fontFamily: MONO_FONT, fontSize: 12, color: C.text_dim }}>{String(i + 1).padStart(2, "0")}</span>
+                  <span>
+                    <span style={{ display: "block", fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 15 }}>{d.name}</span>
+                    <span style={{ display: "block", fontSize: 13, color: C.text_mute }}>{d.whenToUse}</span>
+                    <span style={{ display: "block", fontFamily: MONO_FONT, fontSize: 10, color: C.text_dim, marginTop: 2 }}>SOURCE: {d.source}</span>
+                  </span>
+                  <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: !t.completions[d.id] ? C.signal_cyan : st.due ? C.amber : C.text_dim, whiteSpace: "nowrap" }}>{st.label}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+        <ConstructedNote source={`Review spacing ${BENCH.spacingDays.join(" / ")} days: ${BENCH.spacingSource}.`} />
+        {t.log.length > 0 && (
+          <div>
+            <H as="h3">Bench log</H>
+            <div className="tool-scroll" style={{ marginTop: 8 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                <thead>
+                  <tr style={{ color: C.text_dim, textAlign: "left" }}>
+                    {["Drill", "Input", "Run", "Next review"].map(h => (
+                      <th key={h} scope="col" style={{ padding: "4px 8px", fontWeight: 600, borderBottom: `1px solid ${C.border}` }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {t.log.slice(0, 8).map(r => (
+                    <tr key={r.at}>
+                      <td style={{ padding: "4px 8px", color: C.text }}>{r.name}</td>
+                      <td style={{ padding: "4px 8px", color: C.text_mute }}>{r.input}</td>
+                      <td style={{ padding: "4px 8px", fontFamily: MONO_FONT, color: r.run === 1 ? C.lime : C.amber }}>{r.run}</td>
+                      <td style={{ padding: "4px 8px", fontFamily: MONO_FONT, color: C.text_mute, whiteSpace: "nowrap" }}>{r.next} d</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const refKind = cfg.refs && cfg.refs[String(s.step + 1)];
+  const selfDirected = cfg.self && cfg.self.includes(s.step + 1);
+  const fieldStyle = { width: "100%", boxSizing: "border-box", minHeight: 88, padding: 10, background: C.bg, color: C.text, border: `1px solid ${C.border}`, borderRadius: 4, fontFamily: UI_FONT, fontSize: 14, resize: "vertical" };
+
+  // ---- done ----
+  if (s.done) {
+    return (
+      <div style={{ display: "grid", gap: 20 }}>
+        {badgeRow}
+        <section aria-labelledby="bench-done">
+          <H as="h3">{drill.name}</H>
+          <p id="bench-done" ref={headRef} tabIndex={-1} style={{ margin: "6px 0 0", fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 20, color: C.text, outline: "none" }}>
+            Drill complete. Run {s.done.count}.
+          </p>
+        </section>
+        <Verdict ok title={`+${s.done.xp} XP${s.done.count === 1 ? ", first completion" : ", repeat"}`}>
+          <p style={{ margin: 0, fontWeight: 600 }}>Why it works</p>
+          <p style={{ margin: "4px 0 0" }}>{drill.whyItWorks || "The Drill Pack gives no \"why it works\" for this drill."}</p>
+          <Cites cites={[drill.source]} />
+          <p style={{ margin: "10px 0 0", fontWeight: 600 }}>Field Notes</p>
+          <p style={{ margin: "4px 0 0", fontFamily: MONO_FONT, fontSize: 13 }}>{s.done.note}</p>
+          <p style={{ margin: "10px 0 0", color: C.text_mute }}>
+            Next review in {s.done.gap} day{s.done.gap === 1 ? "" : "s"} ({BENCH.spacingDays.join(" / ")} day spacing).
+          </p>
+          <Cites cites={[BENCH.spacingSource]} />
+        </Verdict>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          <Btn onClick={leave} ariaLabel="Back to the drill list">Back to drills</Btn>
+          <Btn variant="ghost" onClick={() => start(s.id)} ariaLabel="Run this drill again with new inputs">Run again</Btn>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- run ----
+  return (
+    <div style={{ display: "grid", gap: 20 }}>
+      {badgeRow}
+      <section aria-label={`Drill: ${drill.name}`}>
+        <H as="h3">{drill.name}</H>
+        <p style={{ margin: "4px 0 0", fontSize: 13, color: C.text_mute }}>{drill.whenToUse}</p>
+        <Cites cites={[drill.source]} />
+        {s.inputs.length > 0 && (
+          <div style={{ marginTop: 12 }}>
+            <span style={{ fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 11, letterSpacing: "2px", textTransform: "uppercase", color: C.text_mute }}>Your input</span>
+            <BenchInputs inputs={s.inputs} />
+            <ConstructedNote source={`Which bank feeds this drill: ${cfg.basis}.`} />
+          </div>
+        )}
+      </section>
+
+      <section aria-labelledby="bench-step" style={{ borderLeft: `3px solid ${C.signal_cyan}`, paddingLeft: 14 }}>
+        <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: C.text_dim }}>
+          STEP {s.step + 1} OF {drill.steps.length}
+        </span>
+        <p id="bench-step" ref={headRef} tabIndex={-1} style={{ margin: "4px 0 0", fontSize: 17, lineHeight: 1.5, color: C.text, outline: "none" }}>
+          {benchFill(stepText, s.inputs)}
+        </p>
+        <Cites cites={[drill.source]} />
+        {selfDirected && (
+          <div style={{ marginTop: 10, padding: "8px 12px", border: `1px solid ${C.amber}`, borderRadius: 4 }}>
+            <span style={{ fontSize: 13, color: C.text }}>{BENCH.selfDirectedNote}</span>
+            <ConstructedNote source={BENCH.source} />
+          </div>
+        )}
+        {refKind && (
+          <div style={{ marginTop: 10, padding: "8px 12px", border: `1px solid ${C.border}`, borderRadius: 4 }}>
+            <span style={{ fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 11, letterSpacing: "2px", textTransform: "uppercase", color: C.text_mute }}>Reference</span>
+            <div style={{ marginTop: 6 }}>
+              <BenchRef kind={refKind} inputs={s.inputs} />
+            </div>
+          </div>
+        )}
+      </section>
+
+      <div style={{ display: "grid", gap: 10 }}>
+        <H as="h3">Your answer</H>
+        {classify && rotation ? (
+          rotation.items.map((it, i) => (
+            <label key={it} style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center", fontSize: 14, color: C.text }}>
+              <span style={{ flex: "1 1 200px" }}>
+                {i + 1}. {it}
+              </span>
+              <select
+                value={ans[it] || ""}
+                onChange={e => setAns(it, e.target.value)}
+                aria-label={`Classify ${it}`}
+                style={{ minHeight: TOUCH_MIN, minWidth: 140, background: C.bg, color: C.text, border: `1px solid ${C.border}`, borderRadius: 4, fontFamily: MONO_FONT, fontSize: 13 }}
+              >
+                <option value="">choose…</option>
+                {classify.map(o => (
+                  <option key={o} value={o}>{o}</option>
+                ))}
+              </select>
+            </label>
+          ))
+        ) : fields ? (
+          fields.map(f => (
+            <label key={f} style={{ display: "grid", gap: 4 }}>
+              <span style={{ fontFamily: MONO_FONT, fontSize: 12, color: C.text_mute }}>{f}</span>
+              <textarea value={ans[f] || ""} onChange={e => setAns(f, e.target.value)} aria-label={`${f}: your answer for step ${s.step + 1}`} style={{ ...fieldStyle, minHeight: 64 }} />
+            </label>
+          ))
+        ) : (
+          <textarea value={ans.text || ""} onChange={e => setAns("text", e.target.value)} aria-label={`Your answer for step ${s.step + 1}`} style={fieldStyle} />
+        )}
+        <p aria-live="polite" style={{ margin: 0, minHeight: 20, fontSize: 13, color: C.rose }}>{msg || ""}</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+          <Btn onClick={next} ariaLabel={s.step + 1 < drill.steps.length ? "Next step" : "Finish the drill"}>
+            {s.step + 1 < drill.steps.length ? "Next step" : "Finish drill"}
+          </Btn>
+          {s.step > 0 && (
+            <Btn variant="ghost" onClick={back} ariaLabel="Previous step">
+              Back
+            </Btn>
+          )}
+          <Btn variant="ghost" onClick={leave} ariaLabel="Leave this drill and return to the list">
+            Leave
+          </Btn>
+          <span style={{ fontSize: 12, color: C.text_dim }}>Ctrl/Cmd + Enter: next step</span>
+        </div>
+        <p style={{ margin: 0, fontSize: 12, color: C.text_dim }}>Answers are yours to check: the Drill Pack gives no answer key, so The Bench records your work without grading it.</p>
+      </div>
+    </div>
+  );
+}
+
 const TOOLS = {
   "1.1": {
     component: WireItLive,
@@ -9955,6 +13261,11 @@ const TOOLS = {
   "4.3": {
     component: ChangeControlGate,
     source: "Change requests, steps, and reasons: constructed — training scenario, no source citation. Lessons: Field Troubleshooting Template Pack.pdf p.5–6 (Form 4) and p.9 (Form 7); Field Learning Plan.pdf p.12; IC_Fundamentals_Drill_Input_Library.pdf p.14.",
+  },
+  "5.1": {
+    component: TheBench,
+    ribbon: true,
+    source: "Drills: I&C Fundamentals Drill Pack.pdf p.3–9. Inputs: IC_Fundamentals_Drill_Input_Library.pdf p.1–17. Bank-to-drill mapping for drills without brackets, filters, ribbon map, and tag numbers: constructed — training scenario, no source citation.",
   },
 };
 
@@ -10559,15 +13870,19 @@ function App() {
   };
   const testXP = () => setState(s => awardXP(s, 25));
   // Tools report each solved item here: XP, streak, skill radar, Field Notes.
-  const recordResult = ({ xp, firstTry, firstPass, note, radar = RADAR_STEP }) => {
+  // radarAxes: a cross-domain tool (The Bench) credits every axis instead of the current layer.
+  const recordResult = ({ xp, firstTry, firstPass, note, radar = RADAR_STEP, radarAxes }) => {
     if (note) logFieldNote(note);
     setState(s => {
       let next = awardXP(s, xp);
       const streak = firstTry === undefined ? s.streak : firstTry ? s.streak + 1 : 0;
       next = { ...next, streak, bestStreak: Math.max(s.bestStreak, streak) };
       if (firstPass) {
-        const v = Math.min(100, Math.round((next.skillRadar[layer.id] + radar) * 10) / 10);
-        next.skillRadar = { ...next.skillRadar, [layer.id]: v };
+        const radarUpdate = {};
+        (radarAxes || [layer.id]).forEach(a => {
+          radarUpdate[a] = Math.min(100, Math.round((next.skillRadar[a] + radar) * 10) / 10);
+        });
+        next.skillRadar = { ...next.skillRadar, ...radarUpdate };
       }
       return next;
     });
