@@ -209,3 +209,14 @@
 - Log housekeeping: the two entries above ("Cross-cutting: diagnostic ribbon..." and "Diagnostic ribbon + Field Notes drawer") describe the same build.
 - Still open: test24v2 and test34 read field notes from app state (report 0). test_cross covers notes.
 - File: output/tech-dev-lab.html (unchanged)
+
+## 2026-09-24 — Day/night theme toggle
+- Palette split into C_DARK (unchanged values) and C_LIGHT (user-specified). Same shape and token names as before (signal_cyan kept, not renamed to cyan). ThemeCtx provides the active palette; every component that used C (33) now reads it with useC(). The module-level C is gone, so a missed use throws instead of silently staying dark.
+- H, Btn, Chip took palette defaults in their parameter lists; those defaults moved into the body (color ?? C.x). LAYERS accents are now token names ("signal_cyan", "violet") resolved as C[layer.accent].
+- Toggle: ghost button in the status strip between Sound and Reset. Sun icon in dark (switches to light), moon in light. SVG, no emoji. Ctrl/Cmd + J toggles. Stored as plain "dark" | "light" under techDevLab.v3.theme; default dark.
+- 200 ms fade on background, border, and text color, applied only while switching (html.theme-fade class, removed after 220 ms); skipped with reduced motion.
+- Reset: clearToolStorage() skips techDevLab.v3.theme, which the techDevLab.v3.* sweep would otherwise erase.
+- A one-line script at the top of the body paints the light background before React mounts, so light-mode users don't get a dark flash.
+- Contrast (WCAG): body text 15.9:1 dark / 16.7:1 light on bg; text_mute 5.3 / 7.1. Light accents on bg: cyan 5.0, amber 4.7, lime 4.7, rose 5.9, violet 6.7. text_dim is 2.5 dark / 2.4 light on bg: below 4.5 in both themes, same as the existing dark design. It is used for labels, not body text. Not changed.
+- Verified headless (test_theme): default dark with key written; all 8 tools render in both themes; ribbon uses each theme's cyan and mute; no colors from the other palette in any tool or the drawer; drawer bg/title follow the theme; fade class on during switch and off after; persists across reload; Ctrl+J and Cmd+J toggle; Reset keeps theme=light and clears progress; phone width no overflow, toggle 44 px tall. Regressions 1.1, 1.4, 2.2/2.3, 2.4, 3.1/3.2, 3.4, cross-cutting pass; differences from the previous run are only in randomly dealt content. No console errors in either theme.
+- File: output/tech-dev-lab.html (343,165 bytes)

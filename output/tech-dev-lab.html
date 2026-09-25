@@ -16,9 +16,11 @@
 @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
 @keyframes flow { to { stroke-dashoffset: -32; } }
 @keyframes shieldPop { 0% { opacity: 0; transform: scale(0.85); } 60% { opacity: 1; transform: scale(1.04); } 100% { opacity: 1; transform: scale(1); } }
+html.theme-fade, html.theme-fade * { transition: background-color 200ms ease-out, border-color 200ms ease-out, color 200ms ease-out !important; }
 </style>
 </head>
 <body style="margin:0;background:#0a0e14;">
+<script>try { if (localStorage.getItem("techDevLab.v3.theme") === "light") document.body.style.background = "#f7f8fa"; } catch (e) {}</script>
 <div id="root"></div>
 <script type="text/babel">
 /* The COST_CONSEQUENCE object below is tool-authored interface copy.
@@ -48,7 +50,9 @@ const { useState, useEffect, useRef, createContext, useContext } = React;
    ========================================================================== */
 
 // Design tokens: context/design_system.md
-const C = {
+// Two palettes, same shape. Components read the active one with useC().
+// Light-mode signal colors are darker so they still read as accents on white.
+const C_DARK = {
   bg: "#0a0e14",
   panel: "#121821",
   border: "#1e2836",
@@ -62,6 +66,45 @@ const C = {
   text_dim: "#4a5464",
 };
 
+const C_LIGHT = {
+  bg: "#f7f8fa",
+  panel: "#ffffff",
+  border: "#e2e5ea",
+  signal_cyan: "#0e7490",
+  amber: "#b45309",
+  lime: "#4d7c0f",
+  rose: "#be123c",
+  violet: "#6d28d9",
+  text: "#111827",
+  text_mute: "#4b5563",
+  text_dim: "#9ca3af",
+};
+
+const THEMES = { dark: C_DARK, light: C_LIGHT };
+// UI preference, not progress: Reset leaves it alone.
+const THEME_KEY = "techDevLab.v3.theme";
+const THEME_FADE_MS = 200;
+const ThemeCtx = React.createContext(C_DARK);
+function useC() {
+  return React.useContext(ThemeCtx);
+}
+
+function loadTheme() {
+  try {
+    return localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark";
+  } catch (e) {
+    return "dark";
+  }
+}
+
+function saveTheme(theme) {
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch (e) {
+    // Storage blocked: the theme still applies for this session.
+  }
+}
+
 const HEAD_FONT = "'Space Grotesk', sans-serif";
 const MONO_FONT = "'JetBrains Mono', monospace";
 const UI_FONT = "'Inter', system-ui, sans-serif";
@@ -74,7 +117,7 @@ const TOUCH_MIN = 44;
 // Layers and tool slots: skills/orchestrator-build-lab/SKILL.md, Step 2
 const LAYERS = [
   {
-    id: "electrical", num: 1, name: "Electrical", accent: C.signal_cyan,
+    id: "electrical", num: 1, name: "Electrical", accent: "signal_cyan",
     tools: [
       { id: "1.1", name: "Wire It Live", sub: "24 VDC Start/Stop" },
       { id: "1.2", name: "Sourcing or Sinking?" },
@@ -83,7 +126,7 @@ const LAYERS = [
     ],
   },
   {
-    id: "instrumentation", num: 2, name: "Instrumentation", accent: C.signal_cyan,
+    id: "instrumentation", num: 2, name: "Instrumentation", accent: "signal_cyan",
     tools: [
       { id: "2.1", name: "Wire Count Detective" },
       { id: "2.2", name: "Scaling Bench" },
@@ -92,7 +135,7 @@ const LAYERS = [
     ],
   },
   {
-    id: "plc", num: 3, name: "PLC", accent: C.signal_cyan,
+    id: "plc", num: 3, name: "PLC", accent: "signal_cyan",
     tools: [
       { id: "3.1", name: "I/O Map Inspector" },
       { id: "3.2", name: "Permissive Detective" },
@@ -101,7 +144,7 @@ const LAYERS = [
     ],
   },
   {
-    id: "programming", num: 4, name: "Programming", accent: C.violet,
+    id: "programming", num: 4, name: "Programming", accent: "violet",
     tools: [
       { id: "4.1", name: "Rung Editor" },
       { id: "4.2", name: "HMI Tag Bind" },
@@ -210,7 +253,7 @@ function saveTool(key, value) {
 function clearToolStorage() {
   try {
     Object.keys(localStorage)
-      .filter(k => k.startsWith(STORAGE_KEY + ".") || EXTRA_TOOL_KEYS.includes(k))
+      .filter(k => k !== THEME_KEY && (k.startsWith(STORAGE_KEY + ".") || EXTRA_TOOL_KEYS.includes(k)))
       .forEach(k => localStorage.removeItem(k));
   } catch (e) {
     // Nothing stored, or storage blocked.
@@ -289,6 +332,7 @@ function glow(color) {
 }
 
 function Panel({ children, source, style, ...rest }) {
+  const C = useC();
   return (
     <section
       {...rest}
@@ -320,7 +364,9 @@ function Panel({ children, source, style, ...rest }) {
 }
 
 // Engraved label plate: uppercase, letter-spacing 2px.
-function H({ children, as: Tag = "h2", color = C.text_mute, style }) {
+function H({ children, as: Tag = "h2", color: colorProp, style }) {
+  const C = useC();
+  const color = colorProp ?? C.text_mute;
   return (
     <Tag
       style={{
@@ -339,7 +385,9 @@ function H({ children, as: Tag = "h2", color = C.text_mute, style }) {
   );
 }
 
-function Btn({ children, onClick, variant = "primary", color = C.signal_cyan, ariaLabel, pressed, style, ...rest }) {
+function Btn({ children, onClick, variant = "primary", color: colorProp, ariaLabel, pressed, style, ...rest }) {
+  const C = useC();
+  const color = colorProp ?? C.signal_cyan;
   const reduced = useReducedMotion();
   const [hover, setHover] = useState(false);
   const primary = variant === "primary";
@@ -376,7 +424,9 @@ function Btn({ children, onClick, variant = "primary", color = C.signal_cyan, ar
   );
 }
 
-function Chip({ children, color = C.text_mute, style }) {
+function Chip({ children, color: colorProp, style }) {
+  const C = useC();
+  const color = colorProp ?? C.text_mute;
   return (
     <span
       style={{
@@ -397,6 +447,7 @@ function Chip({ children, color = C.text_mute, style }) {
 }
 
 function Verdict({ ok, title, children }) {
+  const C = useC();
   const reduced = useReducedMotion();
   const color = ok ? C.lime : C.rose;
   return (
@@ -417,6 +468,7 @@ function Verdict({ ok, title, children }) {
 }
 
 function Scanline() {
+  const C = useC();
   const reduced = useReducedMotion();
   if (reduced) return null;
   return (
@@ -437,13 +489,14 @@ function Scanline() {
 }
 
 function Helper({ layer, tool }) {
+  const C = useC();
   const prompts = HELPER_PROMPTS[layer.id] || [];
   return (
     <aside aria-label="Helper" aria-live="polite">
       <Panel>
         <H as="h2">Helper</H>
         <p style={{ margin: "12px 0 16px", fontSize: 13, color: C.text_mute }}>
-          <span style={{ fontFamily: MONO_FONT, color: layer.accent }}>{tool.id}</span> {tool.name}
+          <span style={{ fontFamily: MONO_FONT, color: C[layer.accent] }}>{tool.id}</span> {tool.name}
           {TOOLS[tool.id] ? "." : " is not built yet."}
           Questions to carry into this layer:
         </p>
@@ -458,6 +511,7 @@ function Helper({ layer, tool }) {
 }
 
 function Radar({ values, size = 56 }) {
+  const C = useC();
   const axes = ["electrical", "instrumentation", "plc", "programming"];
   const labels = { electrical: "Electrical", instrumentation: "Instrumentation", plc: "PLC", programming: "Programming" };
   const c = size / 2;
@@ -487,6 +541,7 @@ function Radar({ values, size = 56 }) {
    -------------------------------------------------------------------------- */
 
 function LayerNav({ active, onSelect, mobile }) {
+  const C = useC();
   const reduced = useReducedMotion();
 
   if (mobile) {
@@ -518,9 +573,9 @@ function LayerNav({ active, onSelect, mobile }) {
               style={{
                 minHeight: 56,
                 border: "none",
-                borderTop: `2px solid ${on ? l.accent : "transparent"}`,
-                background: on ? `${l.accent}12` : "transparent",
-                color: on ? l.accent : C.text_mute,
+                borderTop: `2px solid ${on ? C[l.accent] : "transparent"}`,
+                background: on ? `${C[l.accent]}12` : "transparent",
+                color: on ? C[l.accent] : C.text_mute,
                 fontFamily: UI_FONT,
                 fontSize: 12,
                 fontWeight: 600,
@@ -528,7 +583,7 @@ function LayerNav({ active, onSelect, mobile }) {
                 transition: transition(reduced, ["background", "color", "border-color"]),
               }}
             >
-              <div style={{ fontFamily: MONO_FONT, fontSize: 10, color: on ? l.accent : C.text_dim }}>L{l.num}</div>
+              <div style={{ fontFamily: MONO_FONT, fontSize: 10, color: on ? C[l.accent] : C.text_dim }}>L{l.num}</div>
               {l.name}
             </button>
           );
@@ -557,10 +612,10 @@ function LayerNav({ active, onSelect, mobile }) {
                 minHeight: TOUCH_MIN,
                 padding: "8px 10px",
                 textAlign: "left",
-                border: `1px solid ${on ? l.accent : "transparent"}`,
+                border: `1px solid ${on ? C[l.accent] : "transparent"}`,
                 borderRadius: 4,
-                background: on ? `${l.accent}12` : "transparent",
-                boxShadow: on ? glow(l.accent) : "none",
+                background: on ? `${C[l.accent]}12` : "transparent",
+                boxShadow: on ? glow(C[l.accent]) : "none",
                 color: on ? C.text : C.text_mute,
                 fontFamily: UI_FONT,
                 fontSize: 14,
@@ -569,7 +624,7 @@ function LayerNav({ active, onSelect, mobile }) {
                 transition: transition(reduced, ["background", "color", "border-color", "box-shadow"]),
               }}
             >
-              <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: on ? l.accent : C.text_dim }}>L{l.num}</span>
+              <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: on ? C[l.accent] : C.text_dim }}>L{l.num}</span>
               <span style={{ flex: 1 }}>{l.name}</span>
               <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: C.text_dim }}>{l.tools.length}</span>
             </button>
@@ -585,13 +640,14 @@ function LayerNav({ active, onSelect, mobile }) {
    ========================================================================== */
 
 function ToolTabs({ layer, activeId, onSelect }) {
+  const C = useC();
   return (
     <div role="group" aria-label={`${layer.name} tools`} style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
       {layer.tools.map(t => (
         <Btn
           key={t.id}
           variant="ghost"
-          color={layer.accent}
+          color={C[layer.accent]}
           pressed={t.id === activeId}
           ariaLabel={`Tool ${t.id}: ${t.name}`}
           onClick={() => onSelect(t.id)}
@@ -3287,6 +3343,7 @@ function sfmScheduleRecall(deck, pos, symptom) {
 }
 
 function Cites({ cites }) {
+  const C = useC();
   return (
     <ul style={{ margin: "6px 0 0", padding: 0, listStyle: "none", display: "grid", gap: 2 }}>
       {cites.map(c => (
@@ -3297,6 +3354,7 @@ function Cites({ cites }) {
 }
 
 function SignalChain({ cut, basis, lead = "This move cleared" }) {
+  const C = useC();
   const reduced = useReducedMotion();
   const known = Array.isArray(cut);
   return (
@@ -3340,6 +3398,7 @@ function SignalChain({ cut, basis, lead = "This move cleared" }) {
 }
 
 function OptionButton({ n, option, state, onPick }) {
+  const C = useC();
   const reduced = useReducedMotion();
   const color = state === "miss" ? C.rose : state === "hit" ? C.lime : state === "used" ? C.text_dim : C.signal_cyan;
   const active = state === "hit";
@@ -3381,6 +3440,7 @@ function OptionButton({ n, option, state, onPick }) {
 // Evidence trail shared by the decision tools: the latest 8 solved cards.
 // cells(row) returns the first two columns; Tries and First pick are common.
 function DecisionLog({ title, headers, log, cells, empty }) {
+  const C = useC();
   const rows = log.slice(0, 8);
   return (
     <div>
@@ -3415,6 +3475,7 @@ function DecisionLog({ title, headers, log, cells, empty }) {
 }
 
 function SymptomFirstMove({ onResult, onStep }) {
+  const C = useC();
   const [t, setT] = useState(sfmLoad);
   const [choosing, setChoosing] = useState(false);
   useEffect(() => setChoosing(false), [t.pos]);
@@ -3715,6 +3776,7 @@ function tsScheduleRecall(deck, pos, id) {
 }
 
 function TrapSpotter({ onResult }) {
+  const C = useC();
   const [t, setT] = useState(tsLoad);
   const headRef = useRef(null);
   const moved = useRef(false);
@@ -4350,6 +4412,7 @@ function sphLoad() {
 }
 
 function SphChain({ s, r, onProbe, canProbe }) {
+  const C = useC();
   const reduced = useReducedMotion();
   const revealed = r.outcome && r.outcome.correct;
   return (
@@ -4408,6 +4471,7 @@ function SphChain({ s, r, onProbe, canProbe }) {
 }
 
 function SplitHalf({ onResult, onStep }) {
+  const C = useC();
   const [t, setT] = useState(sphLoad);
   const headRef = useRef(null);
   const moved = useRef(false);
@@ -5116,6 +5180,7 @@ function wilWireName(w) {
 }
 
 function WireItLive({ onResult }) {
+  const C = useC();
   const reduced = useReducedMotion();
   const [t, setT] = useState(wilLoad);
   const [pending, setPending] = useState(null);
@@ -6271,6 +6336,7 @@ function sbChallenge(c) {
 }
 
 function Formula({ text, work }) {
+  const C = useC();
   return (
     <div style={{ fontFamily: MONO_FONT, fontSize: 13, lineHeight: 1.6, overflowX: "auto" }}>
       <div style={{ color: C.text_mute }}>{text}</div>
@@ -6280,6 +6346,7 @@ function Formula({ text, work }) {
 }
 
 function ScalingBench({ onResult, onStep }) {
+  const C = useC();
   const [t, setT] = useState(sbLoad);
   const inputRef = useRef(null);
   useEffect(() => saveTool(SB_KEY, t), [t]);
@@ -6622,6 +6689,7 @@ function crPrint(s, round, a, action, asLeft) {
 }
 
 function CalRecordBuilder({ onResult, onStep }) {
+  const C = useC();
   const reduced = useReducedMotion();
   const [t, setT] = useState(crLoad);
   const [shown, setShown] = useState(null); // output reading on the bench, mA
@@ -7521,10 +7589,12 @@ const PLC_LESSONS = {
 };
 
 function TrainingBadge() {
+  const C = useC();
   return <Chip color={C.amber}>TRAINING CONTENT</Chip>;
 }
 
 function ConstructedNote({ source }) {
+  const C = useC();
   return <div style={{ marginTop: 6, fontFamily: MONO_FONT, fontSize: 11, color: C.text_dim }}>SOURCE: {source}</div>;
 }
 
@@ -7598,6 +7668,7 @@ function iomLoad() {
 }
 
 function IOMapInspector({ onResult, onStep }) {
+  const C = useC();
   const [t, setT] = useState(iomLoad);
   useEffect(() => saveTool(IOM_KEY, t), [t]);
   const set = patch => setT(s => ({ ...s, ...patch }));
@@ -7928,6 +7999,7 @@ function pdContact(p, good) {
 }
 
 function RungContact({ p, n, phase, marked, closed, bit, onClick }) {
+  const C = useC();
   const showTruth = phase !== "diagnose";
   const color = showTruth ? (closed ? C.lime : C.rose) : marked ? C.amber : C.text;
   return (
@@ -7963,6 +8035,7 @@ function RungContact({ p, n, phase, marked, closed, bit, onClick }) {
 }
 
 function PermissiveDetective({ onResult, onStep }) {
+  const C = useC();
   const [t, setT] = useState(pdLoad);
   useEffect(() => saveTool(PD_KEY, t), [t]);
   const s = t.session;
@@ -8258,6 +8331,7 @@ const TOOLS = {
 
 // A built tool renders from TOOLS; every other slot is a placeholder.
 function ToolSlot({ layer, tool, onTestXP, onResult }) {
+  const C = useC();
   const reduced = useReducedMotion();
   const built = TOOLS[tool.id];
   const Tool = built && built.component;
@@ -8278,7 +8352,7 @@ function ToolSlot({ layer, tool, onTestXP, onResult }) {
       style={{ animation: reduced ? "none" : `fadeIn ${DUR_SLOW}ms ease-out` }}
     >
       <header style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
-        <Chip color={layer.accent}>TOOL {tool.id}</Chip>
+        <Chip color={C[layer.accent]}>TOOL {tool.id}</Chip>
         <h3 style={{ margin: 0, fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 22, letterSpacing: "-0.02em", color: C.text }}>
           {tool.name}
         </h3>
@@ -8383,6 +8457,7 @@ const TEMPLATE_FORMS = [
 ];
 
 function DiagnosticRibbon({ active, visited }) {
+  const C = useC();
   const reduced = useReducedMotion();
   return (
     <nav
@@ -8488,7 +8563,25 @@ function BookIcon() {
   );
 }
 
+function SunIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style={{ display: "block" }}>
+      <circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" strokeWidth="1.3" />
+      <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.4 1.4M11.55 11.55l1.4 1.4M3.05 12.95l1.4-1.4M11.55 4.45l1.4-1.4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style={{ display: "block" }}>
+      <path d="M13.5 9.6A5.6 5.6 0 0 1 6.4 2.5a5.6 5.6 0 1 0 7.1 7.1z" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function FieldNotesDrawer({ open, onClose, notes, state, mobile, onClear }) {
+  const C = useC();
   const headRef = useRef(null);
   const [armed, setArmed] = useState(false);
   const [msg, setMsg] = useState("");
@@ -8605,6 +8698,7 @@ function FieldNotesDrawer({ open, onClose, notes, state, mobile, onClear }) {
    ========================================================================== */
 
 function XPReadout({ xp, level }) {
+  const C = useC();
   const floor = LEVEL_XP[level - 1];
   const ceil = LEVEL_XP[level];
   const pct = ceil === undefined ? 100 : Math.round(((xp - floor) / (ceil - floor)) * 100);
@@ -8645,6 +8739,7 @@ function XPReadout({ xp, level }) {
 }
 
 function ResetButton({ onReset }) {
+  const C = useC();
   const [armed, setArmed] = useState(false);
   const timer = useRef(null);
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -8671,7 +8766,8 @@ function ResetButton({ onReset }) {
   );
 }
 
-function StatusStrip({ state, layer, onToggleMute, onReset, onNotes, notesCount }) {
+function StatusStrip({ state, layer, theme, onToggleTheme, onToggleMute, onReset, onNotes, notesCount }) {
+  const C = useC();
   return (
     <header
       style={{
@@ -8688,7 +8784,7 @@ function StatusStrip({ state, layer, onToggleMute, onReset, onNotes, notesCount 
         Tech Dev Lab
       </h1>
       <div aria-label="Current layer" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Chip color={layer.accent}>L{layer.num}</Chip>
+        <Chip color={C[layer.accent]}>L{layer.num}</Chip>
         <span style={{ fontFamily: UI_FONT, fontSize: 13, color: C.text_mute }}>{layer.name}</span>
       </div>
       <div style={{ flex: 1 }} />
@@ -8709,6 +8805,14 @@ function StatusStrip({ state, layer, onToggleMute, onReset, onNotes, notesCount 
       >
         {state.muted ? "Sound: Off" : "Sound: On"}
       </Btn>
+      <Btn
+        variant="ghost"
+        onClick={onToggleTheme}
+        ariaLabel={theme === "dark" ? "Dark mode is on. Switch to light mode (Ctrl or Cmd + J)" : "Light mode is on. Switch to dark mode (Ctrl or Cmd + J)"}
+        title={theme === "dark" ? "Switch to light mode (Ctrl/Cmd + J)" : "Switch to dark mode (Ctrl/Cmd + J)"}
+      >
+        {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+      </Btn>
       <ResetButton onReset={onReset} />
     </header>
   );
@@ -8720,10 +8824,27 @@ function App() {
   const [resetCount, setResetCount] = useState(0);
   const [notes, setNotes] = useState(loadNotes);
   const [notesOpen, setNotesOpen] = useState(false);
+  const [theme, setTheme] = useState(loadTheme);
+  const C = THEMES[theme];
+  const fadeTimer = useRef(null);
   const mobile = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
   const reduced = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   useEffect(() => save(state), [state]);
+  useEffect(() => {
+    saveTheme(theme);
+    document.body.style.background = THEMES[theme].bg;
+  }, [theme]);
+  // The 200 ms color fade runs only while switching, so no other change animates with it.
+  const toggleTheme = () => {
+    const root = document.documentElement;
+    clearTimeout(fadeTimer.current);
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      root.classList.add("theme-fade");
+      fadeTimer.current = setTimeout(() => root.classList.remove("theme-fade"), THEME_FADE_MS + 20);
+    }
+    setTheme(t => (t === "dark" ? "light" : "dark"));
+  };
 
   // Field Notes live under their own key; notes from earlier builds (kept in
   // the app state) move over once.
@@ -8751,6 +8872,10 @@ function App() {
       if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === "b" || e.key === "B")) {
         e.preventDefault();
         setNotesOpen(o => !o);
+      }
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === "j" || e.key === "J")) {
+        e.preventDefault();
+        toggleTheme();
       }
     };
     window.addEventListener("keydown", onKey);
@@ -8793,16 +8918,17 @@ function App() {
 
   const main = (
     <main style={{ padding: mobile ? 16 : 24, display: "grid", gap: 16, alignContent: "start", minWidth: 0 }}>
-      <H as="h2" color={layer.accent}>Layer {layer.num} &middot; {layer.name}</H>
+      <H as="h2" color={C[layer.accent]}>Layer {layer.num} &middot; {layer.name}</H>
       <ToolTabs layer={layer} activeId={tool.id} onSelect={selectTool} />
       <ToolSlot key={`${tool.id}-${resetCount}`} layer={layer} tool={tool} onTestXP={testXP} onResult={recordResult} />
     </main>
   );
 
   return (
+    <ThemeCtx.Provider value={C}>
     <MotionCtx.Provider value={reduced}>
       <div style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: UI_FONT }}>
-        <StatusStrip state={state} layer={layer} onToggleMute={toggleMute} onReset={reset} onNotes={() => setNotesOpen(true)} notesCount={notes.length} />
+        <StatusStrip state={state} layer={layer} theme={theme} onToggleTheme={toggleTheme} onToggleMute={toggleMute} onReset={reset} onNotes={() => setNotesOpen(true)} notesCount={notes.length} />
         <FieldNotesDrawer open={notesOpen} onClose={() => setNotesOpen(false)} notes={notes} state={state} mobile={mobile} onClear={clearNotes} />
         {mobile ? (
           <div style={{ paddingBottom: 72 }}>
@@ -8823,6 +8949,7 @@ function App() {
         )}
       </div>
     </MotionCtx.Provider>
+    </ThemeCtx.Provider>
   );
 }
 
