@@ -8300,6 +8300,1611 @@ function PermissiveDetective({ onResult, onStep }) {
   );
 }
 
+// Generated from output/content-library.json. Do not edit by hand.
+const RUNG = {
+ "platform": "Allen-Bradley CompactLogix",
+ "tags": [
+  {
+   "tag": "CONV_START",
+   "type": "BOOL",
+   "role": "input",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "ESTOP_OK",
+   "type": "BOOL",
+   "role": "input",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "ZS_101",
+   "type": "BOOL",
+   "role": "input",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "LSL_201",
+   "type": "BOOL",
+   "role": "input",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "PSH_302",
+   "type": "BOOL",
+   "role": "input",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "CONV_RUN",
+   "type": "BOOL",
+   "role": "output",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "M201_RUN",
+   "type": "BOOL",
+   "role": "output",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "T4_0",
+   "type": "TIMER",
+   "role": "timer",
+   "preS": 5,
+   "members": [
+    "DN",
+    "PRE",
+    "ACC"
+   ],
+   "units": "s",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "instructions": [
+  {
+   "ins": "XIC",
+   "kind": "condition",
+   "symbol": "] [",
+   "behavior": "true when its bit is ON",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "ins": "XIO",
+   "kind": "condition",
+   "symbol": "]/[",
+   "behavior": "true when its bit is OFF",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "ins": "OTE",
+   "kind": "output",
+   "symbol": "( )",
+   "behavior": "writes the rung state to its bit every scan",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "ins": "TON",
+   "kind": "output",
+   "symbol": "TON",
+   "behavior": "while the rung is true, ACC counts up; DN turns ON when ACC reaches PRE; a false rung resets ACC and DN",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "ins": "OTL",
+   "kind": "output",
+   "symbol": "(L)",
+   "behavior": "turns its bit ON when the rung is true; the bit stays ON after the rung goes false",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "ins": "OTU",
+   "kind": "output",
+   "symbol": "(U)",
+   "behavior": "turns its bit OFF when the rung is true",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "instructionNote": "Rockwell instruction behavior (platform convention).",
+ "conditionSlots": 4,
+ "challenges": [
+  {
+   "id": "c1",
+   "goal": "CONV_RUN energizes when CONV_START AND ESTOP_OK are true",
+   "output": "CONV_RUN",
+   "rungs": 1,
+   "all": [
+    "CONV_START",
+    "ESTOP_OK"
+   ],
+   "none": [],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "c2",
+   "goal": "M201_RUN energizes when CONV_START AND ESTOP_OK AND NOT ZS_101",
+   "output": "M201_RUN",
+   "rungs": 1,
+   "all": [
+    "CONV_START",
+    "ESTOP_OK"
+   ],
+   "none": [
+    "ZS_101"
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "c3",
+   "goal": "Use a TON so M201_RUN energizes 5 seconds after CONV_START",
+   "output": "M201_RUN",
+   "rungs": 2,
+   "all": [
+    "CONV_START"
+   ],
+   "none": [],
+   "timer": {
+    "tag": "T4_0",
+    "preS": 5,
+    "steps": [
+     {
+      "on": false,
+      "dt": 0,
+      "label": "off",
+      "expect": false
+     },
+     {
+      "on": true,
+      "dt": 0,
+      "label": "on, 0 s",
+      "expect": false
+     },
+     {
+      "on": true,
+      "dt": 3,
+      "label": "held 3 s",
+      "expect": false
+     },
+     {
+      "on": true,
+      "dt": 2,
+      "label": "held 5 s",
+      "expect": true
+     },
+     {
+      "on": false,
+      "dt": 0,
+      "label": "released",
+      "expect": false
+     }
+    ]
+   },
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "constructed": true,
+ "source": "constructed — training scenario, no source citation"
+};
+const HMI = {
+ "tags": [
+  {
+   "tag": "LT_101",
+   "type": "REAL",
+   "min": 0,
+   "max": 100,
+   "units": "%",
+   "value": 62.0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "PT_201",
+   "type": "REAL",
+   "min": 0,
+   "max": 200,
+   "units": "psig",
+   "value": 148.0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "TT_301",
+   "type": "REAL",
+   "min": -20,
+   "max": 200,
+   "units": "°C",
+   "value": 145.0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "FT_401",
+   "type": "REAL",
+   "min": 0,
+   "max": 500,
+   "units": "GPM",
+   "value": 312.0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "P201_RUN",
+   "type": "BOOL",
+   "value": 1,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "XV_203_POS",
+   "type": "BOOL",
+   "value": 0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "elements": [
+  {
+   "id": "tank",
+   "label": "Feed tank level bar",
+   "shape": "tank",
+   "expects": "analog",
+   "min": 0,
+   "max": 100,
+   "units": "%",
+   "answer": "LT_101",
+   "field": "Local level gauge reads 62 %",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "pump",
+   "label": "Transfer pump run indicator",
+   "shape": "pump",
+   "expects": "bool",
+   "on": "RUN",
+   "off": "STOP",
+   "answer": "P201_RUN",
+   "field": "Transfer pump running, local run light on",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "valve",
+   "label": "Feed valve position indicator",
+   "shape": "valve",
+   "expects": "bool",
+   "on": "OPEN",
+   "off": "CLOSED",
+   "answer": "XV_203_POS",
+   "field": "Feed valve closed",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "num",
+   "label": "Header pressure display",
+   "shape": "numeric",
+   "expects": "analog",
+   "min": 0,
+   "max": 200,
+   "units": "psig",
+   "answer": "PT_201",
+   "field": "Local pressure gauge reads 148 psig",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "trend",
+   "label": "Reactor temperature trend",
+   "shape": "trend",
+   "expects": "analog",
+   "min": -20,
+   "max": 200,
+   "units": "°C",
+   "answer": "TT_301",
+   "field": "Local temperature indicator reads 145 °C",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "constructed": true,
+ "source": "constructed — training scenario, no source citation"
+};
+const CCG = {
+ "requests": [
+  {
+   "id": "r1",
+   "text": "Change T4_0.PRE from 5 s to 8 s on Line 2 fill timer",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "r2",
+   "text": "Add a new permissive contact to the M-401 start rung",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "r3",
+   "text": "Modify AI scaling for PT-101 from 0-100 to 0-150 psig",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "text": "Verify current logic",
+   "needs": [],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 2,
+   "text": "Document the change request",
+   "needs": [
+    {
+     "step": 1,
+     "why": "You can't write the change against logic you haven't confirmed. The request would describe a guess."
+    }
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 3,
+   "text": "Get approval",
+   "needs": [
+    {
+     "step": 2,
+     "why": "Approvers sign what's written. There's nothing to approve until the request is documented."
+    }
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 4,
+   "text": "Back up the current program",
+   "needs": [],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 5,
+   "text": "Edit offline",
+   "needs": [
+    {
+     "step": 3,
+     "why": "Editing before approval is an unapproved change."
+    },
+    {
+     "step": 4,
+     "why": "The backup is the known-good copy. Take it before you touch the program."
+    }
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 6,
+   "text": "Download to the PLC",
+   "needs": [
+    {
+     "step": 4,
+     "why": "You can't download before backing up: if the change breaks something, you have no rollback."
+    },
+    {
+     "step": 5,
+     "why": "There's nothing to download until the edit is made."
+    }
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 7,
+   "text": "Verify the change works",
+   "needs": [
+    {
+     "step": 6,
+     "why": "The change isn't running until it's downloaded."
+    }
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 8,
+   "text": "Update documentation",
+   "needs": [
+    {
+     "step": 7,
+     "why": "Documents record what was proven to work, not what was intended."
+    }
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "orderRule": "A step is rejected only when a step it needs has not been placed. Back up can go anywhere before Edit offline.",
+ "constructed": true,
+ "source": "constructed — training scenario, no source citation"
+};
+const PROG_LESSONS = {
+ "concepts": {
+  "items": [
+   "Examine-if-closed concept",
+   "Examine-if-open concept",
+   "Output coil",
+   "Seal-in circuit",
+   "Start-stop logic",
+   "PLC scan cycle",
+   "Analog scaling in PLC logic"
+  ],
+  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+ },
+ "hmiChain": {
+  "text": "Sensor -> transmitter -> PLC -> HMI",
+  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+ },
+ "hmiSymptom": {
+  "text": "Transmitter output is correct but HMI value is wrong",
+  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"
+ },
+ "scalingFailure": {
+  "text": "calibrating a good transmitter because the scaling was wrong.",
+  "source": "Field Troubleshooting Template Pack.pdf p.9, Form 7, \"Reading is wrong but stable\", failure mode"
+ },
+ "approved": {
+  "text": "Operations notified, loop out of service or bypassed as approved",
+  "source": "Field Troubleshooting Template Pack.pdf p.5, Form 4 Loop Check, pre-check"
+ },
+ "revision": {
+  "text": "Tag, terminal numbers, and drawing revision match the field",
+  "source": "Field Troubleshooting Template Pack.pdf p.5, Form 4 Loop Check, pre-check"
+ },
+ "documentation": {
+  "text": "Documentation filed, CMMS closed",
+  "source": "Field Troubleshooting Template Pack.pdf p.6, Form 4 Loop Check, restore"
+ }
+};
+
+/* --------------------------------------------------------------------------
+   Layer 4 shared
+   -------------------------------------------------------------------------- */
+
+const L4_XP_FIRST = 20;
+const L4_XP_RETRY = 8;
+const L4_RADAR = 0.5;
+
+function l4Xp(fresh, firstTry) {
+  return fresh ? (firstTry ? L4_XP_FIRST : L4_XP_RETRY) : 0;
+}
+
+// Keys that belong to a text control or a button keep their own meaning.
+function l4KeyTarget(e) {
+  if (e.altKey || e.ctrlKey || e.metaKey) return null;
+  const tag = e.target.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return null;
+  return tag;
+}
+
+function L4Status({ msg }) {
+  const C = useC();
+  return (
+    <p aria-live="polite" style={{ margin: 0, minHeight: 20, fontSize: 13, color: msg && msg.bad ? C.rose : C.text_mute }}>
+      {msg ? msg.text : ""}
+    </p>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Tool 4.1: Rung Editor
+   Build a rung that meets a written goal. Instructions go into slots; the
+   truth table replays the rung over every input combination (Gray-code
+   order, one input changes per step, as a scan would see it). Test compares
+   the rung against the goal.
+   -------------------------------------------------------------------------- */
+
+const RE_KEY = STORAGE_KEY + ".rungEditor";
+const RE_INS = Object.fromEntries(RUNG.instructions.map(i => [i.ins, i]));
+const RE_TIMER = RUNG.tags.find(t => t.role === "timer");
+const RE_DN = `${RE_TIMER.tag}.DN`;
+const RE_COND_TAGS = [...RUNG.tags.filter(t => t.role === "input").map(t => t.tag), RE_DN];
+const RE_OUT_TAGS = RUNG.tags.filter(t => t.role === "output").map(t => t.tag);
+
+function reTagOptions(ins) {
+  if (ins === "TON") return [RE_TIMER.tag];
+  return RE_INS[ins].kind === "condition" ? RE_COND_TAGS : RE_OUT_TAGS;
+}
+
+function reBlankRungs(ch) {
+  return Array.from({ length: ch.rungs }, () => ({ cond: Array(RUNG.conditionSlots).fill(null), out: null }));
+}
+
+function reSession(i) {
+  return { ch: i, rungs: reBlankRungs(RUNG.challenges[i]), tries: 0, first: null, phase: "build", last: null };
+}
+
+function reLoad() {
+  const t = loadTool(RE_KEY) || {};
+  const s = t.session;
+  const ch = s && RUNG.challenges[s.ch];
+  const ok = ch && Array.isArray(s.rungs) && s.rungs.length === ch.rungs && s.rungs.every(r => Array.isArray(r.cond) && r.cond.length === RUNG.conditionSlots);
+  return {
+    session: ok ? s : reSession(0),
+    played: Array.isArray(t.played) ? t.played : [],
+    log: Array.isArray(t.log) ? t.log : [],
+  };
+}
+
+function reRungText(r) {
+  const conds = r.cond.filter(Boolean).map(c => `${c.ins} ${c.tag || "?"}`);
+  const out = r.out ? `${r.out.ins} ${r.out.tag || "?"}` : "no output";
+  return `${conds.length ? conds.join(", ") : "always true"} → ${out}`;
+}
+
+// Test steps: every combination of the inputs the goal or the rung uses.
+function reRows(ch, rungs) {
+  const used = rungs.flatMap(r => r.cond.filter(c => c && c.tag && c.tag !== RE_DN).map(c => c.tag));
+  const gray = vars =>
+    Array.from({ length: 2 ** vars.length }, (_, i) => {
+      const g = i ^ (i >> 1);
+      return Object.fromEntries(vars.map((v, j) => [v, !!(g & (1 << j))]));
+    });
+  if (ch.timer) {
+    const extra = [...new Set(used)].filter(v => !ch.all.includes(v));
+    return gray(extra).flatMap(fixed =>
+      ch.timer.steps.map(st => ({ vals: { ...fixed, [ch.all[0]]: st.on }, dt: st.dt, label: st.label, expect: st.expect }))
+    );
+  }
+  const vars = [...new Set([...ch.all, ...ch.none, ...used])];
+  return gray(vars).map(vals => ({
+    vals,
+    dt: 0,
+    label: "",
+    expect: ch.all.every(v => vals[v]) && ch.none.every(v => !vals[v]),
+  }));
+}
+
+// Two scans per step so rung order doesn't matter; time only advances on the first.
+function reSimulate(ch, rungs, rows) {
+  const bits = {};
+  const tmr = { acc: 0, dn: false };
+  return rows.map(row => {
+    Object.assign(bits, row.vals);
+    for (let scan = 0; scan < 2; scan++) {
+      rungs.forEach(r => {
+        let on = true;
+        r.cond.forEach(c => {
+          if (!c || !c.tag) return;
+          const v = c.tag === RE_DN ? tmr.dn : !!bits[c.tag];
+          on = on && (c.ins === "XIC" ? v : !v);
+        });
+        const o = r.out;
+        if (!o || !o.tag) return;
+        if (o.ins === "OTE") bits[o.tag] = on;
+        else if (o.ins === "OTL" && on) bits[o.tag] = true;
+        else if (o.ins === "OTU" && on) bits[o.tag] = false;
+        else if (o.ins === "TON") {
+          tmr.acc = on ? Math.min(RE_TIMER.preS, tmr.acc + (scan === 0 ? row.dt : 0)) : 0;
+          tmr.dn = tmr.acc >= RE_TIMER.preS;
+        }
+      });
+    }
+    return { out: !!bits[ch.output], acc: tmr.acc, dn: tmr.dn };
+  });
+}
+
+function reHints(ch, rungs, rows, sim) {
+  const hints = [];
+  const outs = rungs.map(r => r.out).filter(Boolean);
+  if (rungs.some(r => !r.out)) hints.push("Every rung needs an output instruction in its last slot.");
+  if (!outs.some(o => o.tag === ch.output && o.ins !== "TON")) hints.push(`No rung writes ${ch.output}. The goal is about ${ch.output}.`);
+  const latch = outs.find(o => o.ins === "OTL" && o.tag === ch.output);
+  if (latch && !outs.some(o => o.ins === "OTU" && o.tag === ch.output)) {
+    const stuck = rows.findIndex((row, i) => sim[i].out && !row.expect);
+    hints.push(`OTL ${ch.output}: once latched, nothing unlatches it${stuck >= 0 ? `, so it is still ON at step ${stuck + 1}` : ""}. OTL ${RE_INS.OTL.behavior}.`);
+  }
+  if (ch.timer) {
+    const ton = outs.find(o => o.ins === "TON");
+    if (!ton) hints.push("The goal needs a delay. Only a TON counts time.");
+    else if (!rungs.some(r => r.cond.some(c => c && c.tag === RE_DN))) hints.push(`The TON counts, but no rung reads ${RE_DN}, so ${ch.output} never sees the delay.`);
+  }
+  return hints;
+}
+
+function RePlaced({ item, where, onRemove, onTag }) {
+  const C = useC();
+  const ins = RE_INS[item.ins];
+  const opts = reTagOptions(item.ins);
+  return (
+    <div style={{ display: "grid", justifyItems: "center", gap: 4, width: "100%" }}>
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label={`Remove ${item.ins} ${item.tag || "(no tag)"} from ${where}`}
+        title="Click to remove"
+        style={{ minHeight: TOUCH_MIN, minWidth: TOUCH_MIN, padding: "0 8px", border: `1px solid ${C.border}`, borderRadius: 4, background: "transparent", cursor: "pointer", fontFamily: MONO_FONT, fontSize: 16, color: item.tag ? C.signal_cyan : C.amber }}
+      >
+        {ins.symbol}
+      </button>
+      <span style={{ fontFamily: MONO_FONT, fontSize: 10, color: C.text_dim }}>{item.ins}</span>
+      <select
+        value={item.tag || ""}
+        onChange={e => onTag(e.target.value || null)}
+        aria-label={`Tag for ${item.ins} in ${where}`}
+        style={{ width: "100%", minHeight: 32, background: C.bg, color: C.text, border: `1px solid ${item.tag ? C.border : C.amber}`, borderRadius: 4, fontFamily: MONO_FONT, fontSize: 11 }}
+      >
+        <option value="">tag…</option>
+        {opts.map(o => (
+          <option key={o} value={o}>{o}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function ReSlot({ label, kind, item, sel, onPlace, onRemove, onTag, locked }) {
+  const C = useC();
+  const [over, setOver] = useState(false);
+  // Offer the selected instruction only where it fits.
+  const fits = sel && RE_INS[sel] && RE_INS[sel].kind === kind;
+  return (
+    <div
+      onDragOver={e => {
+        if (locked) return;
+        e.preventDefault();
+        setOver(true);
+      }}
+      onDragLeave={() => setOver(false)}
+      onDrop={e => {
+        e.preventDefault();
+        setOver(false);
+        if (!locked) onPlace(e.dataTransfer.getData("text/plain"));
+      }}
+      style={{
+        width: 112,
+        flex: "0 0 112px",
+        minHeight: 108,
+        display: "grid",
+        alignItems: "center",
+        justifyItems: "center",
+        padding: 6,
+        boxSizing: "border-box",
+        border: `1px dashed ${over ? C.signal_cyan : item ? "transparent" : C.border}`,
+        borderRadius: 4,
+        background: over ? `${C.signal_cyan}10` : "transparent",
+      }}
+    >
+      {item ? (
+        <RePlaced item={item} where={label} onRemove={locked ? () => {} : onRemove} onTag={onTag} />
+      ) : (
+        <button
+          type="button"
+          disabled={locked}
+          onClick={() => onPlace(sel)}
+          aria-label={`${label}, empty${fits ? `: place ${sel}` : ""}`}
+          style={{ width: "100%", minHeight: TOUCH_MIN, border: "none", background: "transparent", color: C.text_dim, fontFamily: MONO_FONT, fontSize: 10, cursor: locked ? "default" : "pointer" }}
+        >
+          {kind === "output" ? "OUTPUT" : "CONDITION"}
+          <br />
+          {fits && !locked ? `place ${sel}` : "drop here"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function RungEditor({ onResult }) {
+  const C = useC();
+  const [t, setT] = useState(reLoad);
+  const [sel, setSel] = useState(null);
+  const [msg, setMsg] = useState(null);
+  useEffect(() => saveTool(RE_KEY, t), [t]);
+  const s = t.session;
+  const ch = RUNG.challenges[s.ch];
+  const locked = s.phase !== "build";
+  const setS = patch => setT(x => ({ ...x, session: { ...x.session, ...patch } }));
+
+  const rows = reRows(ch, s.rungs);
+  const sim = reSimulate(ch, s.rungs, rows);
+  const vars = ch.timer ? [...new Set(rows.flatMap(r => Object.keys(r.vals)))] : Object.keys(rows[0].vals);
+
+  const setRung = (ri, fn) => setS({ rungs: s.rungs.map((r, i) => (i === ri ? fn(r) : r)), last: null });
+
+  const place = (ri, slot, ins) => {
+    if (locked) return;
+    if (!ins || !RE_INS[ins]) {
+      setMsg({ text: "Pick an instruction from the palette first (keys 1-6), or drag one here.", bad: true });
+      return;
+    }
+    const kind = RE_INS[ins].kind;
+    const want = slot === "out" ? "output" : "condition";
+    if (kind !== want) {
+      setMsg({ text: kind === "condition" ? `${ins} is a condition. Conditions go in the first ${RUNG.conditionSlots} slots.` : `${ins} is an output. Outputs go in the last slot, at the right end of the rung.`, bad: true });
+      return;
+    }
+    const opts = reTagOptions(ins);
+    const item = { ins, tag: opts.length === 1 ? opts[0] : null };
+    setRung(ri, r => (slot === "out" ? { ...r, out: item } : { ...r, cond: r.cond.map((c, i) => (i === slot ? item : c)) }));
+    setMsg({ text: `${ins} placed on rung ${ri}. ${item.tag ? "" : "Pick its tag."}`, bad: false });
+  };
+  const remove = (ri, slot) => {
+    if (locked) return;
+    setRung(ri, r => (slot === "out" ? { ...r, out: null } : { ...r, cond: r.cond.map((c, i) => (i === slot ? null : c)) }));
+    setMsg({ text: `Removed from rung ${ri}.`, bad: false });
+  };
+  const setTag = (ri, slot, tag) =>
+    setRung(ri, r => (slot === "out" ? { ...r, out: { ...r.out, tag } } : { ...r, cond: r.cond.map((c, i) => (i === slot ? { ...c, tag } : c)) }));
+
+  const test = () => {
+    if (locked) return;
+    const items = s.rungs.flatMap(r => [...r.cond.filter(Boolean), ...(r.out ? [r.out] : [])]);
+    if (items.some(i => !i.tag)) {
+      setMsg({ text: "Every instruction needs a tag before you test.", bad: true });
+      return;
+    }
+    const tries = s.tries + 1;
+    const first = s.first || s.rungs.map(reRungText).join(" | ");
+    const bad = rows.map((row, i) => (sim[i].out === row.expect ? null : i)).filter(i => i !== null);
+    const hints = reHints(ch, s.rungs, rows, sim);
+    if (!bad.length && !hints.some(h => h.startsWith("Every rung"))) {
+      const fresh = !t.played.includes(ch.id);
+      const text = s.rungs.map(reRungText).join(" | ");
+      onResult({
+        xp: l4Xp(fresh, tries === 1),
+        firstTry: tries === 1,
+        firstPass: fresh && tries === 1,
+        radar: L4_RADAR,
+        note: { tool: "4.1", tag: ch.output, text: `Rung Editor ${ch.output}: ${text} — ${ch.goal}` },
+      });
+      setT(x => ({
+        ...x,
+        played: fresh ? [...x.played, ch.id] : x.played,
+        log: [{ id: ch.id.toUpperCase(), rung: text, attempts: tries, first, at: new Date().toISOString() }, ...x.log],
+        session: { ...x.session, tries, first, phase: "passed", last: null },
+      }));
+      setMsg(null);
+      return;
+    }
+    setS({ tries, first, last: { bad, hints } });
+    setMsg(null);
+  };
+
+  const next = () => {
+    setT(x => ({ ...x, session: reSession((x.session.ch + 1) % RUNG.challenges.length) }));
+    setSel(null);
+    setMsg(null);
+  };
+  const clear = () => {
+    setS({ rungs: reBlankRungs(ch), last: null });
+    setMsg({ text: "Rungs cleared.", bad: false });
+  };
+
+  useEffect(() => {
+    const onKey = e => {
+      const tag = l4KeyTarget(e);
+      if (tag === null) return;
+      if (/^[1-6]$/.test(e.key) && !locked) {
+        e.preventDefault();
+        const ins = RUNG.instructions[Number(e.key) - 1].ins;
+        setSel(v => (v === ins ? null : ins));
+      } else if (e.key === "Enter" && tag !== "BUTTON") {
+        e.preventDefault();
+        if (locked) next();
+        else test();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  const rail = { width: 3, alignSelf: "stretch", background: C.text_mute, borderRadius: 1 };
+  const wire = on => <div aria-hidden="true" style={{ flex: "1 0 8px", height: 2, background: on ? C.signal_cyan : C.text_dim }} />;
+  const showGoal = locked || !!s.last;
+
+  return (
+    <div style={{ display: "grid", gap: 20 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+        <TrainingBadge />
+        <Chip color={C.violet}>CHALLENGE {s.ch + 1} / {RUNG.challenges.length}</Chip>
+        <Chip color={C.lime}>SOLVED {t.played.length} / {RUNG.challenges.length}</Chip>
+        <span style={{ fontSize: 12, color: C.text_dim }}>Keys: 1-6 pick an instruction, then a slot; Enter tests</span>
+      </div>
+
+      <section aria-labelledby="re-goal">
+        <H as="h3">Goal</H>
+        <p id="re-goal" style={{ margin: "6px 0 0", fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 20, color: C.text }}>
+          {ch.goal}
+        </p>
+        <ConstructedNote source={`${ch.source}. Platform: ${RUNG.platform}.`} />
+      </section>
+
+      <div>
+        <H as="h3">Instruction palette</H>
+        <div role="group" aria-label="Instruction palette" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+          {RUNG.instructions.map((ins, i) => (
+            <button
+              key={ins.ins}
+              type="button"
+              draggable={!locked}
+              disabled={locked}
+              onDragStart={e => {
+                e.dataTransfer.setData("text/plain", ins.ins);
+                setSel(ins.ins);
+              }}
+              onClick={() => setSel(v => (v === ins.ins ? null : ins.ins))}
+              aria-pressed={sel === ins.ins}
+              aria-label={`${i + 1}: ${ins.ins}, ${ins.kind}`}
+              style={{
+                minHeight: TOUCH_MIN,
+                minWidth: 72,
+                padding: "4px 10px",
+                display: "grid",
+                justifyItems: "center",
+                border: `1px solid ${sel === ins.ins ? C.signal_cyan : C.border}`,
+                borderRadius: 4,
+                background: sel === ins.ins ? `${C.signal_cyan}14` : C.bg,
+                color: C.text,
+                cursor: locked ? "default" : "grab",
+                opacity: locked ? 0.5 : 1,
+              }}
+            >
+              <span style={{ fontFamily: MONO_FONT, fontSize: 15, color: sel === ins.ins ? C.signal_cyan : C.text }}>{ins.symbol}</span>
+              <span style={{ fontFamily: MONO_FONT, fontSize: 10, color: C.text_dim }}>
+                {i + 1} {ins.ins}
+              </span>
+            </button>
+          ))}
+        </div>
+        <ConstructedNote source={`${RUNG.source}. ${RUNG.instructionNote}`} />
+      </div>
+
+      <div>
+        <H as="h3">{ch.rungs > 1 ? "Rungs" : "Rung"}</H>
+        <div className="tool-scroll" style={{ marginTop: 8, border: `1px solid ${C.border}`, borderRadius: 4, background: C.bg, padding: "10px 8px" }}>
+          <div style={{ display: "grid", gap: 10, minWidth: 700 }}>
+            {s.rungs.map((r, ri) => {
+              return (
+                <div key={ri} style={{ display: "flex", alignItems: "center", gap: 0 }}>
+                  <span style={{ width: 28, fontFamily: MONO_FONT, fontSize: 11, color: C.text_dim }}>{ri}</span>
+                  <div style={rail} aria-hidden="true" />
+                  {r.cond.map((c, i) => (
+                    <React.Fragment key={i}>
+                      {wire(false)}
+                      <ReSlot
+                        label={`rung ${ri} condition slot ${i + 1}`}
+                        kind="condition"
+                        item={c}
+                        sel={sel}
+                        locked={locked}
+                        onPlace={ins => place(ri, i, ins)}
+                        onRemove={() => remove(ri, i)}
+                        onTag={tag => setTag(ri, i, tag)}
+                      />
+                    </React.Fragment>
+                  ))}
+                  {wire(false)}
+                  <ReSlot
+                    label={`rung ${ri} output slot`}
+                    kind="output"
+                    item={r.out}
+                    sel={sel}
+                    locked={locked}
+                    onPlace={ins => place(ri, "out", ins)}
+                    onRemove={() => remove(ri, "out")}
+                    onTag={tag => setTag(ri, "out", tag)}
+                  />
+                  {wire(false)}
+                  <div style={rail} aria-hidden="true" />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <L4Status msg={msg} />
+      </div>
+
+      <div>
+        <H as="h3">Truth table: {ch.output}</H>
+        <div className="tool-scroll" style={{ marginTop: 8 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ color: C.text_dim, textAlign: "left" }}>
+                {["Step", ...vars, ...(ch.timer ? ["Time", `${RE_TIMER.tag}.ACC`] : []), `Yours: ${ch.output}`, ...(showGoal ? ["Goal"] : [])].map(h => (
+                  <th key={h} scope="col" style={{ padding: "4px 8px", fontWeight: 600, fontFamily: MONO_FONT, fontSize: 11, borderBottom: `1px solid ${C.border}`, whiteSpace: "nowrap" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => {
+                const miss = showGoal && sim[i].out !== row.expect;
+                return (
+                  <tr key={i} style={{ background: miss ? `${C.rose}10` : "transparent" }}>
+                    <td style={{ padding: "3px 8px", fontFamily: MONO_FONT, color: C.text_dim }}>{i + 1}</td>
+                    {vars.map(v => (
+                      <td key={v} style={{ padding: "3px 8px", fontFamily: MONO_FONT, color: row.vals[v] ? C.text : C.text_dim }}>{row.vals[v] ? 1 : 0}</td>
+                    ))}
+                    {ch.timer && <td style={{ padding: "3px 8px", color: C.text_mute, whiteSpace: "nowrap" }}>{row.label}</td>}
+                    {ch.timer && <td style={{ padding: "3px 8px", fontFamily: MONO_FONT, color: C.text_mute }}>{sim[i].acc} {RE_TIMER.units}</td>}
+                    <td style={{ padding: "3px 8px", fontFamily: MONO_FONT, fontWeight: 700, color: sim[i].out ? C.signal_cyan : C.text_dim }}>{sim[i].out ? "ON" : "OFF"}</td>
+                    {showGoal && (
+                      <td style={{ padding: "3px 8px", fontFamily: MONO_FONT, color: miss ? C.rose : C.lime }}>
+                        {row.expect ? "ON" : "OFF"}
+                        {miss ? " ✕" : ""}
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <p style={{ margin: "6px 0 0", fontSize: 12, color: C.text_dim }}>
+          One input changes per step, the way a running scan would see it. {ch.timer ? `${RE_TIMER.tag} preset ${RE_TIMER.preS} ${RE_TIMER.units}.` : ""}
+        </p>
+      </div>
+
+      <div aria-live="polite" style={{ display: "grid", gap: 12 }}>
+        {!locked && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <Btn onClick={test} ariaLabel="Test the rung against the goal">Test</Btn>
+            <Btn variant="ghost" onClick={clear} ariaLabel="Clear all rungs">Clear</Btn>
+          </div>
+        )}
+        {!locked && s.last && (
+          <Verdict key={s.tries} ok={false} title="Doesn't meet the goal yet.">
+            {s.last.hints.map(h => (
+              <p key={h} style={{ margin: "0 0 4px" }}>{h}</p>
+            ))}
+            {s.last.bad.length > 0 && (
+              <p style={{ margin: 0 }}>
+                {s.last.bad.slice(0, 3).map(i => `Step ${i + 1}: goal ${rows[i].expect ? "ON" : "OFF"}, yours ${sim[i].out ? "ON" : "OFF"}`).join(". ")}
+                {s.last.bad.length > 3 ? `, and ${s.last.bad.length - 3} more` : ""}.
+              </p>
+            )}
+            <p style={{ margin: "6px 0 0", fontWeight: 600 }}>A retry is worth {L4_XP_RETRY} XP.</p>
+          </Verdict>
+        )}
+        {locked && (
+          <Verdict ok title={s.tries === 1 ? "Goal met, first test." : `Goal met on test ${s.tries}.`}>
+            <p style={{ margin: 0 }}>{s.rungs.map((r, i) => `Rung ${i}: ${reRungText(r)}`).join(". ")}.</p>
+            <p style={{ margin: "6px 0 0", color: C.text_mute }}>
+              {[...new Set(s.rungs.flatMap(r => [...r.cond.filter(Boolean), r.out].filter(Boolean).map(x => x.ins)))].map(ins => `${ins}: ${RE_INS[ins].behavior}`).join("; ")}.
+            </p>
+            <ConstructedNote source={`${RUNG.source}. ${RUNG.instructionNote}`} />
+            <p style={{ margin: "8px 0 0", color: C.text_mute }}>Concepts: {PROG_LESSONS.concepts.items.slice(0, 6).join("; ")}.</p>
+            <Cites cites={[PROG_LESSONS.concepts.source]} />
+          </Verdict>
+        )}
+        {locked && (
+          <div>
+            <Btn onClick={next} ariaLabel="Next challenge">Next challenge</Btn>
+          </div>
+        )}
+      </div>
+
+      <div>
+        <H as="h3">Tag database</H>
+        <div className="tool-scroll" style={{ marginTop: 8 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ color: C.text_dim, textAlign: "left" }}>
+                {["Tag", "Type", "Use"].map(h => (
+                  <th key={h} scope="col" style={{ padding: "4px 8px", fontWeight: 600, borderBottom: `1px solid ${C.border}` }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {RUNG.tags.map(tg => (
+                <tr key={tg.tag}>
+                  <td style={{ padding: "3px 8px", fontFamily: MONO_FONT, color: C.signal_cyan }}>{tg.tag}</td>
+                  <td style={{ padding: "3px 8px", fontFamily: MONO_FONT, color: C.text_mute }}>{tg.type}</td>
+                  <td style={{ padding: "3px 8px", color: C.text_mute }}>
+                    {tg.role === "timer" ? `members ${tg.members.map(m => `.${m}`).join(" ")}; PRE ${tg.preS} ${tg.units}` : tg.role}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <ConstructedNote source={RUNG.source} />
+      </div>
+
+      <DecisionLog
+        title="Rung log"
+        headers={["Goal", "Rung"]}
+        log={t.log}
+        cells={r => [r.id, r.rung]}
+        empty="Each goal you meet is logged here and in Field Notes."
+      />
+    </div>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Tool 4.2: HMI Tag Bind
+   Bind each HMI element to the tag that feeds it. A wrong tag still shows a
+   number; the field panel shows what the plant is really doing.
+   -------------------------------------------------------------------------- */
+
+const HB_KEY = STORAGE_KEY + ".hmiTagBind";
+const HB_TAG = Object.fromEntries(HMI.tags.map(t => [t.tag, t]));
+
+function hbFmt(v) {
+  return (Math.round(v * 10) / 10).toFixed(1);
+}
+
+function hbRange(tg) {
+  return tg.type === "BOOL" ? "BOOL, 0 or 1" : `${tg.min} to ${tg.max} ${tg.units}`;
+}
+
+// What the element shows when fed this tag.
+function hbShow(el, tg) {
+  const v = tg.value;
+  if (el.expects === "bool") {
+    if (tg.type === "BOOL") return v ? el.on : el.off;
+    return el.shape === "valve" ? `POS ${hbFmt(v)} %` : `STATE ${hbFmt(v)}`;
+  }
+  return `${hbFmt(v)} ${el.units}`;
+}
+
+function hbWhy(el, tg) {
+  const shows = hbShow(el, tg);
+  if (el.expects === "bool" && tg.type !== "BOOL")
+    return `${tg.tag} is an analog value (${hbRange(tg)}), not an on/off state. The indicator shows ${shows}, which means nothing for this device. Field: ${el.field}.`;
+  if (el.expects === "analog" && tg.type === "BOOL")
+    return `${tg.tag} is a BOOL: only 0 or 1. The ${el.label.toLowerCase()} shows ${shows}. It looks like a reading, but it's a state bit. Field: ${el.field}.`;
+  if (el.expects === "bool")
+    return `${tg.tag} is a real on/off bit, so the indicator looks normal, but it's the wrong device: it shows ${shows}. Field: ${el.field}.`;
+  const outside = tg.value < el.min || tg.value > el.max;
+  return `${tg.tag} is ${hbRange(tg)}. The ${el.label.toLowerCase()} is scaled ${el.min} to ${el.max} ${el.units}, so it shows ${shows}${
+    outside ? ": outside anything the element can show." : ". That's inside the scale, so only the field reading exposes it."
+  } Field: ${el.field}.`;
+}
+
+function hbSession() {
+  return { idx: 0, binds: {}, tries: {}, firsts: {}, last: null };
+}
+
+function hbLoad() {
+  const t = loadTool(HB_KEY) || {};
+  const s = t.session;
+  const ok = s && typeof s.idx === "number" && s.idx >= 0 && s.idx <= HMI.elements.length && s.binds && s.tries;
+  return {
+    session: ok ? { firsts: {}, ...s } : hbSession(),
+    played: Array.isArray(t.played) ? t.played : [],
+    log: Array.isArray(t.log) ? t.log : [],
+  };
+}
+
+function HbTrend({ tg, el }) {
+  const C = useC();
+  const W = 220;
+  const HT = 90;
+  const span = el.max - el.min;
+  const pts = Array.from({ length: 12 }, (_, i) => {
+    const v = tg ? (tg.type === "BOOL" ? tg.value : tg.value + Math.sin(i * 0.9) * 0.01 * (tg.max - tg.min)) : null;
+    return v;
+  });
+  const y = v => Math.max(2, Math.min(HT - 2, HT - ((v - el.min) / span) * HT));
+  return (
+    <svg viewBox={`0 0 ${W} ${HT}`} width="100%" height={HT} role="img" aria-label={tg ? `Trend of ${tg.tag}` : "Trend, unbound"} style={{ display: "block" }}>
+      <rect x="0" y="0" width={W} height={HT} fill="none" stroke={C.border} />
+      {[0.25, 0.5, 0.75].map(f => (
+        <line key={f} x1="0" x2={W} y1={HT * f} y2={HT * f} stroke={C.border} strokeDasharray="2 4" />
+      ))}
+      {tg && <polyline fill="none" stroke={C.signal_cyan} strokeWidth="2" points={pts.map((v, i) => `${(i / 11) * W},${y(v)}`).join(" ")} />}
+    </svg>
+  );
+}
+
+function HbElement({ el, tg, target, done, sel, onBind }) {
+  const C = useC();
+  const [over, setOver] = useState(false);
+  const correct = tg && tg.tag === el.answer;
+  const state = !tg ? "unbound" : correct ? "ok" : "bad";
+  const edge = target ? (over ? C.signal_cyan : C.violet) : C.border;
+  const valueColor = state === "bad" ? C.rose : state === "ok" ? C.text : C.text_dim;
+  const shows = tg ? hbShow(el, tg) : "####";
+  let pic = null;
+  if (el.shape === "tank") {
+    const pct = tg ? Math.max(0, Math.min(100, tg.value)) : 0;
+    pic = (
+      <div aria-hidden="true" style={{ width: 44, height: 90, border: `2px solid ${C.text_mute}`, borderRadius: "4px 4px 6px 6px", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: `${pct}%`, background: `${state === "bad" ? C.rose : C.signal_cyan}55` }} />
+      </div>
+    );
+  } else if (el.shape === "pump") {
+    const on = tg && tg.type === "BOOL" && tg.value;
+    pic = (
+      <svg aria-hidden="true" width="64" height="64" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="22" fill="none" stroke={C.text_mute} strokeWidth="2" />
+        <path d="M32 10 L54 32 L32 54" fill="none" stroke={C.text_mute} strokeWidth="2" />
+        <circle cx="32" cy="32" r="7" fill={on ? C.lime : "transparent"} stroke={C.text_mute} />
+      </svg>
+    );
+  } else if (el.shape === "valve") {
+    const open = tg && tg.type === "BOOL" && tg.value;
+    pic = (
+      <svg aria-hidden="true" width="72" height="48" viewBox="0 0 72 48">
+        <path d="M8 8 L36 24 L8 40 Z M64 8 L36 24 L64 40 Z" fill={open ? `${C.lime}55` : "transparent"} stroke={C.text_mute} strokeWidth="2" />
+        <line x1="36" y1="24" x2="36" y2="4" stroke={C.text_mute} strokeWidth="2" />
+      </svg>
+    );
+  } else if (el.shape === "trend") {
+    pic = <HbTrend tg={tg} el={el} />;
+  }
+  return (
+    <div
+      onDragOver={e => {
+        if (!target) return;
+        e.preventDefault();
+        setOver(true);
+      }}
+      onDragLeave={() => setOver(false)}
+      onDrop={e => {
+        e.preventDefault();
+        setOver(false);
+        if (target) onBind(e.dataTransfer.getData("text/plain"));
+      }}
+      style={{ display: "grid", gap: 6, alignContent: "start", justifyItems: "center", padding: 10, border: `${target ? 2 : 1}px ${target ? "dashed" : "solid"} ${edge}`, borderRadius: 4, background: over ? `${C.signal_cyan}10` : C.panel }}
+    >
+      <span style={{ fontSize: 12, color: C.text_mute, textAlign: "center" }}>{el.label}</span>
+      {pic}
+      <span style={{ fontFamily: MONO_FONT, fontSize: el.shape === "numeric" ? 26 : 15, fontWeight: 700, color: valueColor }}>{shows}</span>
+      <span style={{ fontFamily: MONO_FONT, fontSize: 10, color: C.text_dim }}>{tg ? tg.tag : done ? "" : "no tag"}</span>
+      {target && (
+        <button
+          type="button"
+          onClick={() => onBind(sel)}
+          aria-label={`Bind ${sel || "the selected tag"} to ${el.label}`}
+          style={{ minHeight: TOUCH_MIN, padding: "0 10px", border: `1px solid ${C.violet}`, borderRadius: 4, background: "transparent", color: C.violet, fontFamily: UI_FONT, fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+        >
+          {sel ? `Bind ${sel}` : "Drop a tag here"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function HmiTagBind({ onResult }) {
+  const C = useC();
+  const [t, setT] = useState(hbLoad);
+  const [sel, setSel] = useState(null);
+  const [msg, setMsg] = useState(null);
+  useEffect(() => saveTool(HB_KEY, t), [t]);
+  const s = t.session;
+  const el = HMI.elements[s.idx];
+  const solved = el && s.binds[el.id] === el.answer;
+  const finished = s.idx >= HMI.elements.length;
+
+  const bind = tag => {
+    if (!el || solved) return;
+    if (!tag || !HB_TAG[tag]) {
+      setMsg({ text: "Pick a tag first (keys 1-6), or drag one onto the element.", bad: true });
+      return;
+    }
+    const tries = (s.tries[el.id] || 0) + 1;
+    const firsts = s.firsts[el.id] ? s.firsts : { ...s.firsts, [el.id]: tag };
+    const right = tag === el.answer;
+    setMsg(null);
+    if (right) {
+      const fresh = !t.played.includes(el.id);
+      onResult({
+        xp: l4Xp(fresh, tries === 1),
+        firstTry: tries === 1,
+        firstPass: fresh && tries === 1,
+        radar: L4_RADAR,
+        note: { tool: "4.2", tag, text: `HMI Tag Bind ${el.label}: ${tag} (${hbRange(HB_TAG[tag])}) — ${el.field}` },
+      });
+      setT(x => ({
+        ...x,
+        played: fresh ? [...x.played, el.id] : x.played,
+        log: [{ id: tag, el: el.label, attempts: tries, first: firsts[el.id], at: new Date().toISOString() }, ...x.log],
+        session: { ...x.session, binds: { ...x.session.binds, [el.id]: tag }, tries: { ...x.session.tries, [el.id]: tries }, firsts, last: { ok: true, tag } },
+      }));
+    } else {
+      setT(x => ({
+        ...x,
+        session: { ...x.session, binds: { ...x.session.binds, [el.id]: tag }, tries: { ...x.session.tries, [el.id]: tries }, firsts, last: { ok: false, tag } },
+      }));
+    }
+    setSel(null);
+  };
+
+  const next = () => setT(x => ({ ...x, session: { ...x.session, idx: x.session.idx + 1, last: null } }));
+  const again = () => setT(x => ({ ...x, session: hbSession() }));
+
+  useEffect(() => {
+    const onKey = e => {
+      const tag = l4KeyTarget(e);
+      if (tag === null) return;
+      if (/^[1-6]$/.test(e.key) && el && !solved) {
+        e.preventDefault();
+        const tg = HMI.tags[Number(e.key) - 1].tag;
+        setSel(v => (v === tg ? null : tg));
+      } else if (e.key === "Enter" && tag !== "BUTTON") {
+        e.preventDefault();
+        if (finished) again();
+        else if (solved) next();
+        else bind(sel);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  const elTries = el ? s.tries[el.id] || 0 : 0;
+
+  return (
+    <div style={{ display: "grid", gap: 20 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+        <TrainingBadge />
+        <Chip color={C.violet}>ELEMENT {Math.min(s.idx + 1, HMI.elements.length)} / {HMI.elements.length}</Chip>
+        <Chip color={C.lime}>BOUND {t.played.length} / {HMI.elements.length}</Chip>
+        <span style={{ fontSize: 12, color: C.text_dim }}>Keys: 1-6 pick a tag, Enter binds it</span>
+      </div>
+
+      <section aria-labelledby="hb-brief">
+        <H as="h3">Binding</H>
+        <p id="hb-brief" style={{ margin: "6px 0 0", fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 20, color: C.text }}>
+          {finished ? "Every element is bound." : `Bind the ${el.label.toLowerCase()}. Then check it against the field.`}
+        </p>
+        <ConstructedNote source={HMI.source} />
+      </section>
+
+      <div>
+        <H as="h3">Tags</H>
+        <div role="group" aria-label="PLC tags" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+          {HMI.tags.map((tg, i) => (
+            <button
+              key={tg.tag}
+              type="button"
+              draggable={!finished && !solved}
+              disabled={finished || solved}
+              onDragStart={e => {
+                e.dataTransfer.setData("text/plain", tg.tag);
+                setSel(tg.tag);
+              }}
+              onClick={() => setSel(v => (v === tg.tag ? null : tg.tag))}
+              aria-pressed={sel === tg.tag}
+              aria-label={`${i + 1}: ${tg.tag}, ${hbRange(tg)}`}
+              style={{
+                minHeight: TOUCH_MIN,
+                padding: "4px 10px",
+                display: "grid",
+                justifyItems: "start",
+                border: `1px solid ${sel === tg.tag ? C.signal_cyan : C.border}`,
+                borderRadius: 4,
+                background: sel === tg.tag ? `${C.signal_cyan}14` : C.bg,
+                color: C.text,
+                cursor: finished || solved ? "default" : "grab",
+                opacity: finished || solved ? 0.5 : 1,
+                textAlign: "left",
+              }}
+            >
+              <span style={{ fontFamily: MONO_FONT, fontSize: 13, color: sel === tg.tag ? C.signal_cyan : C.text }}>
+                {i + 1} {tg.tag}
+              </span>
+              <span style={{ fontFamily: MONO_FONT, fontSize: 10, color: C.text_dim }}>{hbRange(tg)}</span>
+            </button>
+          ))}
+        </div>
+        <L4Status msg={msg} />
+      </div>
+
+      <div>
+        <H as="h3">HMI screen</H>
+        <div className="tool-scroll" style={{ marginTop: 8, border: `1px solid ${C.border}`, borderRadius: 4, background: C.bg, padding: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(120px, 1fr)) minmax(220px, 1.6fr)", gap: 8, minWidth: 760 }}>
+            {HMI.elements.map((e, i) => {
+              const bound = s.binds[e.id];
+              return (
+                <HbElement
+                  key={e.id}
+                  el={e}
+                  tg={bound ? HB_TAG[bound] : null}
+                  target={!finished && i === s.idx && !solved}
+                  done={i < s.idx}
+                  sel={sel}
+                  onBind={bind}
+                />
+              );
+            })}
+          </div>
+        </div>
+        <ConstructedNote source={HMI.source} />
+      </div>
+
+      <div>
+        <H as="h3">Field</H>
+        <ul style={{ margin: "8px 0 0", padding: 0, listStyle: "none", display: "grid", gap: 4 }}>
+          {HMI.elements.map(e => (
+            <li key={e.id} style={{ fontSize: 14, color: C.text, padding: "6px 10px", border: `1px solid ${C.border}`, borderRadius: 4 }}>
+              {e.field}
+            </li>
+          ))}
+        </ul>
+        <ConstructedNote source={HMI.source} />
+      </div>
+
+      <div aria-live="polite" style={{ display: "grid", gap: 12 }}>
+        {el && s.last && !s.last.ok && (
+          <Verdict key={elTries} ok={false} title={`${s.last.tag} doesn't belong on the ${el.label.toLowerCase()}.`}>
+            <p style={{ margin: 0 }}>{hbWhy(el, HB_TAG[s.last.tag])}</p>
+            <ConstructedNote source={HMI.source} />
+            <p style={{ margin: "6px 0 0", fontWeight: 600 }}>Bind another tag. A retry is worth {L4_XP_RETRY} XP.</p>
+          </Verdict>
+        )}
+        {el && solved && (
+          <Verdict ok title={elTries === 1 ? "Bound, first try." : `Bound on try ${elTries}.`}>
+            <p style={{ margin: 0 }}>
+              {el.answer} is {hbRange(HB_TAG[el.answer])}, and the {el.label.toLowerCase()} now matches the field: {el.field}.
+            </p>
+            <ConstructedNote source={HMI.source} />
+            <p style={{ margin: "8px 0 0", color: C.text_mute }}>The binding is the last link: {PROG_LESSONS.hmiChain.text}.</p>
+            <Cites cites={[PROG_LESSONS.hmiChain.source]} />
+            <div style={{ marginTop: 10 }}>
+              <Btn onClick={next} ariaLabel={s.idx + 1 < HMI.elements.length ? "Next element" : "Finish"}>
+                {s.idx + 1 < HMI.elements.length ? "Next element" : "Finish"}
+              </Btn>
+            </div>
+          </Verdict>
+        )}
+        {finished && (
+          <Verdict ok title="Screen bound and checked against the field.">
+            <p style={{ margin: 0 }}>Symptom: "{PROG_LESSONS.hmiSymptom.text}."</p>
+            <Cites cites={[PROG_LESSONS.hmiSymptom.source]} />
+            <p style={{ margin: "8px 0 0" }}>Documented wrong move: {PROG_LESSONS.scalingFailure.text}</p>
+            <Cites cites={[PROG_LESSONS.scalingFailure.source]} />
+            <p style={{ margin: "8px 0 0", color: C.text_mute }}>A wrong tag binding is one way an HMI value goes wrong while the transmitter is fine.</p>
+            <div style={{ marginTop: 10 }}>
+              <Btn onClick={again} ariaLabel="Bind the screen again">Bind again</Btn>
+            </div>
+          </Verdict>
+        )}
+      </div>
+
+      <DecisionLog
+        title="Binding log"
+        headers={["Tag", "Element"]}
+        log={t.log}
+        cells={r => [r.id, r.el]}
+        empty="Each element you bind is logged here and in Field Notes."
+      />
+    </div>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Tool 4.3: Change Control Gate
+   Put the 8 change steps in order for a change request. A step placed before
+   a step it needs is rejected with the reason.
+   -------------------------------------------------------------------------- */
+
+const CCG_KEY = STORAGE_KEY + ".changeControlGate";
+const CCG_STEP = Object.fromEntries(CCG.steps.map(s => [s.n, s]));
+
+// Sourced lesson shown when each request is completed.
+function ccgLesson(id) {
+  if (id === "r1") return { text: `${RE_TIMER.tag} is the same timer tag you used in the Rung Editor (4.1).`, cites: [] };
+  if (id === "r2") return { text: `${PLC_LESSONS.permissiveBlock.task} ${PLC_LESSONS.permissiveBlock.output}`, cites: [PLC_LESSONS.permissiveBlock.source] };
+  return { text: `Symptom: "${PROG_LESSONS.hmiSymptom.text}." Documented wrong move: ${PROG_LESSONS.scalingFailure.text}`, cites: [PROG_LESSONS.hmiSymptom.source, PROG_LESSONS.scalingFailure.source] };
+}
+
+function ccgSession(i) {
+  return { idx: i, bank: shuffled(CCG.steps.map(s => s.n)), plan: [], misses: 0, firstMiss: null, last: null, done: false };
+}
+
+function ccgLoad() {
+  const t = loadTool(CCG_KEY) || {};
+  const s = t.session;
+  const ok = s && CCG.requests[s.idx] && Array.isArray(s.bank) && Array.isArray(s.plan) && s.bank.length + s.plan.length === CCG.steps.length;
+  return {
+    session: ok ? s : ccgSession(0),
+    played: Array.isArray(t.played) ? t.played : [],
+    log: Array.isArray(t.log) ? t.log : [],
+  };
+}
+
+function ChangeControlGate({ onResult }) {
+  const C = useC();
+  const [t, setT] = useState(ccgLoad);
+  const [over, setOver] = useState(false);
+  useEffect(() => saveTool(CCG_KEY, t), [t]);
+  const s = t.session;
+  const req = CCG.requests[s.idx];
+  const bankLeft = s.bank.filter(n => !s.plan.includes(n));
+
+  const add = n => {
+    if (s.done || !CCG_STEP[n] || s.plan.includes(n)) return;
+    const step = CCG_STEP[n];
+    const missing = step.needs.filter(x => !s.plan.includes(x.step));
+    if (missing.length) {
+      setT(x => ({
+        ...x,
+        session: { ...x.session, misses: x.session.misses + 1, firstMiss: x.session.firstMiss || step.text, last: { ok: false, step: n, need: missing[0].step, why: missing[0].why } },
+      }));
+      return;
+    }
+    const plan = [...s.plan, n];
+    if (plan.length < CCG.steps.length) {
+      setT(x => ({ ...x, session: { ...x.session, plan, last: { ok: true, step: n } } }));
+      return;
+    }
+    const fresh = !t.played.includes(req.id);
+    const clean = s.misses === 0;
+    const backup = CCG_STEP[6].needs.find(x => x.step === 4);
+    onResult({
+      xp: l4Xp(fresh, clean),
+      firstTry: clean,
+      firstPass: fresh && clean,
+      radar: L4_RADAR,
+      note: { tool: "4.3", tag: req.id.toUpperCase(), text: `Change Control Gate: "${req.text}" — ${plan.join("-")}, ${s.misses} rejected. ${backup.why}` },
+    });
+    setT(x => ({
+      ...x,
+      played: fresh ? [...x.played, req.id] : x.played,
+      log: [{ id: req.id.toUpperCase(), order: plan.join("-"), attempts: s.misses + 1, first: s.firstMiss ? `rejected: ${s.firstMiss}` : "clean", at: new Date().toISOString() }, ...x.log],
+      session: { ...x.session, plan, done: true, last: null },
+    }));
+  };
+
+  const next = () => setT(x => ({ ...x, session: ccgSession((x.session.idx + 1) % CCG.requests.length) }));
+  const restart = () => setT(x => ({ ...x, session: { ...ccgSession(x.session.idx), misses: x.session.misses, firstMiss: x.session.firstMiss } }));
+
+  useEffect(() => {
+    const onKey = e => {
+      const tag = l4KeyTarget(e);
+      if (tag === null) return;
+      if (/^[1-8]$/.test(e.key) && !s.done) {
+        const n = bankLeft[Number(e.key) - 1];
+        if (n) {
+          e.preventDefault();
+          add(n);
+        }
+      } else if (e.key === "Enter" && s.done && tag !== "BUTTON") {
+        e.preventDefault();
+        next();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  const lesson = ccgLesson(req.id);
+
+  return (
+    <div style={{ display: "grid", gap: 20 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+        <TrainingBadge />
+        <Chip color={C.violet}>REQUEST {s.idx + 1} / {CCG.requests.length}</Chip>
+        <Chip color={C.lime}>CLEARED {t.played.length} / {CCG.requests.length}</Chip>
+        <span style={{ fontSize: 12, color: C.text_dim }}>Keys: 1-8 add the numbered step to the plan</span>
+      </div>
+
+      <section aria-labelledby="ccg-req">
+        <H as="h3">Change request</H>
+        <p id="ccg-req" style={{ margin: "6px 0 0", fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 20, color: C.text }}>
+          {req.text}
+        </p>
+        <ConstructedNote source={req.source} />
+      </section>
+
+      <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+        <div>
+          <H as="h3">Steps</H>
+          <ol role="list" aria-label="Unplaced steps" style={{ margin: "8px 0 0", padding: 0, listStyle: "none", display: "grid", gap: 6 }}>
+            {bankLeft.map((n, i) => (
+              <li key={n}>
+                <button
+                  type="button"
+                  draggable={!s.done}
+                  onDragStart={e => e.dataTransfer.setData("text/plain", String(n))}
+                  onClick={() => add(n)}
+                  aria-label={`${i + 1}: ${CCG_STEP[n].text}. Add to plan`}
+                  style={{ width: "100%", minHeight: TOUCH_MIN, display: "flex", gap: 10, alignItems: "center", padding: "6px 10px", border: `1px solid ${s.last && !s.last.ok && s.last.step === n ? C.rose : C.border}`, borderRadius: 4, background: C.bg, color: C.text, cursor: "grab", textAlign: "left", fontFamily: UI_FONT, fontSize: 14 }}
+                >
+                  <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: C.text_dim, minWidth: 14 }}>{i + 1}</span>
+                  {CCG_STEP[n].text}
+                </button>
+              </li>
+            ))}
+            {bankLeft.length === 0 && <li style={{ fontSize: 13, color: C.text_mute }}>All steps placed.</li>}
+          </ol>
+        </div>
+        <div>
+          <H as="h3">Plan</H>
+          <ol
+            aria-label="Change plan, in order"
+            onDragOver={e => {
+              if (s.done) return;
+              e.preventDefault();
+              setOver(true);
+            }}
+            onDragLeave={() => setOver(false)}
+            onDrop={e => {
+              e.preventDefault();
+              setOver(false);
+              add(Number(e.dataTransfer.getData("text/plain")));
+            }}
+            style={{ margin: "8px 0 0", padding: 8, listStyle: "none", display: "grid", gap: 6, minHeight: 120, border: `1px dashed ${over ? C.signal_cyan : C.border}`, borderRadius: 4, background: over ? `${C.signal_cyan}10` : "transparent" }}
+          >
+            {s.plan.map((n, i) => (
+              <li key={n} style={{ display: "flex", gap: 10, alignItems: "center", padding: "6px 10px", border: `1px solid ${C.border}`, borderRadius: 4, fontSize: 14, color: C.text }}>
+                <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: C.lime, minWidth: 14 }}>{i + 1}</span>
+                {CCG_STEP[n].text}
+              </li>
+            ))}
+            {s.plan.length === 0 && <li style={{ fontSize: 13, color: C.text_mute, padding: 6 }}>Drop or click steps in the order you would do them.</li>}
+          </ol>
+        </div>
+      </div>
+
+      <div aria-live="polite" style={{ display: "grid", gap: 12 }}>
+        {s.last && !s.last.ok && (
+          <Verdict key={s.misses} ok={false} title={`Not yet: ${CCG_STEP[s.last.step].text}.`}>
+            <p style={{ margin: 0 }}>{s.last.why}</p>
+            <p style={{ margin: "4px 0 0", color: C.text_mute }}>It needs "{CCG_STEP[s.last.need].text}" first.</p>
+            <ConstructedNote source={CCG.source} />
+            <p style={{ margin: "6px 0 0", fontWeight: 600 }}>Finishing now is worth {t.played.includes(req.id) ? 0 : L4_XP_RETRY} XP.</p>
+          </Verdict>
+        )}
+        {s.done && (
+          <Verdict ok title={s.misses === 0 ? "Gate cleared, no rejected steps." : `Gate cleared with ${s.misses} rejected step${s.misses === 1 ? "" : "s"}.`}>
+            <p style={{ margin: 0 }}>Order: {s.plan.map(n => CCG_STEP[n].text).join(" → ")}.</p>
+            <ConstructedNote source={`${CCG.source}. ${CCG.orderRule}`} />
+            <p style={{ margin: "8px 0 0" }}>{lesson.text}</p>
+            {lesson.cites.length > 0 && <Cites cites={lesson.cites} />}
+            <p style={{ margin: "8px 0 0", color: C.text_mute }}>The same checkpoints on a loop check form:</p>
+            <ul style={{ margin: "4px 0 0", paddingLeft: 18, color: C.text_mute, fontSize: 13 }}>
+              <li>{PROG_LESSONS.approved.text}</li>
+              <li>{PROG_LESSONS.revision.text}</li>
+              <li>{PROG_LESSONS.documentation.text}</li>
+            </ul>
+            <Cites cites={[...new Set([PROG_LESSONS.approved.source, PROG_LESSONS.documentation.source])]} />
+            <div style={{ marginTop: 10 }}>
+              <Btn onClick={next} ariaLabel="Next change request">Next request</Btn>
+            </div>
+          </Verdict>
+        )}
+        {!s.done && s.plan.length > 0 && (
+          <div>
+            <Btn variant="ghost" onClick={restart} ariaLabel="Clear the plan and start this request over">Clear plan</Btn>
+          </div>
+        )}
+      </div>
+
+      <DecisionLog
+        title="Change log"
+        headers={["Request", "Order"]}
+        log={t.log}
+        cells={r => [r.id, r.order]}
+        empty="Each request you clear is logged here and in Field Notes."
+      />
+    </div>
+  );
+}
+
 const TOOLS = {
   "1.1": {
     component: WireItLive,
@@ -8338,6 +9943,18 @@ const TOOLS = {
     component: SymptomFirstMove,
     ribbon: true,
     source: "Symptoms: IC_Fundamentals_Drill_Input_Library.pdf p.13–15. Answers: cited on each option.",
+  },
+  "4.1": {
+    component: RungEditor,
+    source: "Tags, rungs, and goals: constructed — training scenario, no source citation. Instruction behavior: Rockwell platform convention. Concepts: IC_Fundamentals_Drill_Input_Library.pdf p.6.",
+  },
+  "4.2": {
+    component: HmiTagBind,
+    source: "HMI screen, tags, and field readings: constructed — training scenario, no source citation. Lessons: IC_Fundamentals_Drill_Input_Library.pdf p.12 and p.14; Field Troubleshooting Template Pack.pdf p.9 (Form 7).",
+  },
+  "4.3": {
+    component: ChangeControlGate,
+    source: "Change requests, steps, and reasons: constructed — training scenario, no source citation. Lessons: Field Troubleshooting Template Pack.pdf p.5–6 (Form 4) and p.9 (Form 7); Field Learning Plan.pdf p.12; IC_Fundamentals_Drill_Input_Library.pdf p.14.",
   },
 };
 

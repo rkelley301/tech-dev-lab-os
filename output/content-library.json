@@ -6463,5 +6463,489 @@
     "course-design.pdf",
     "80_20 Core Knowledge Domains.pdf",
     "tech-dev-lab.html"
-  ]
+  ],
+  "rungEditor": {
+    "platform": "Allen-Bradley CompactLogix",
+    "tags": [
+      {
+        "tag": "CONV_START",
+        "type": "BOOL",
+        "role": "input",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "tag": "ESTOP_OK",
+        "type": "BOOL",
+        "role": "input",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "tag": "ZS_101",
+        "type": "BOOL",
+        "role": "input",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "tag": "LSL_201",
+        "type": "BOOL",
+        "role": "input",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "tag": "PSH_302",
+        "type": "BOOL",
+        "role": "input",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "tag": "CONV_RUN",
+        "type": "BOOL",
+        "role": "output",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "tag": "M201_RUN",
+        "type": "BOOL",
+        "role": "output",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "tag": "T4_0",
+        "type": "TIMER",
+        "role": "timer",
+        "preS": 5,
+        "members": [
+          "DN",
+          "PRE",
+          "ACC"
+        ],
+        "units": "s",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      }
+    ],
+    "instructions": [
+      {
+        "ins": "XIC",
+        "kind": "condition",
+        "symbol": "] [",
+        "behavior": "true when its bit is ON",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "ins": "XIO",
+        "kind": "condition",
+        "symbol": "]/[",
+        "behavior": "true when its bit is OFF",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "ins": "OTE",
+        "kind": "output",
+        "symbol": "( )",
+        "behavior": "writes the rung state to its bit every scan",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "ins": "TON",
+        "kind": "output",
+        "symbol": "TON",
+        "behavior": "while the rung is true, ACC counts up; DN turns ON when ACC reaches PRE; a false rung resets ACC and DN",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "ins": "OTL",
+        "kind": "output",
+        "symbol": "(L)",
+        "behavior": "turns its bit ON when the rung is true; the bit stays ON after the rung goes false",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "ins": "OTU",
+        "kind": "output",
+        "symbol": "(U)",
+        "behavior": "turns its bit OFF when the rung is true",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      }
+    ],
+    "instructionNote": "Rockwell instruction behavior (platform convention).",
+    "conditionSlots": 4,
+    "challenges": [
+      {
+        "id": "c1",
+        "goal": "CONV_RUN energizes when CONV_START AND ESTOP_OK are true",
+        "output": "CONV_RUN",
+        "rungs": 1,
+        "all": [
+          "CONV_START",
+          "ESTOP_OK"
+        ],
+        "none": [],
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "id": "c2",
+        "goal": "M201_RUN energizes when CONV_START AND ESTOP_OK AND NOT ZS_101",
+        "output": "M201_RUN",
+        "rungs": 1,
+        "all": [
+          "CONV_START",
+          "ESTOP_OK"
+        ],
+        "none": [
+          "ZS_101"
+        ],
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "id": "c3",
+        "goal": "Use a TON so M201_RUN energizes 5 seconds after CONV_START",
+        "output": "M201_RUN",
+        "rungs": 2,
+        "all": [
+          "CONV_START"
+        ],
+        "none": [],
+        "timer": {
+          "tag": "T4_0",
+          "preS": 5,
+          "steps": [
+            {
+              "on": false,
+              "dt": 0,
+              "label": "off",
+              "expect": false
+            },
+            {
+              "on": true,
+              "dt": 0,
+              "label": "on, 0 s",
+              "expect": false
+            },
+            {
+              "on": true,
+              "dt": 3,
+              "label": "held 3 s",
+              "expect": false
+            },
+            {
+              "on": true,
+              "dt": 2,
+              "label": "held 5 s",
+              "expect": true
+            },
+            {
+              "on": false,
+              "dt": 0,
+              "label": "released",
+              "expect": false
+            }
+          ]
+        },
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      }
+    ],
+    "constructed": true,
+    "source": "constructed — training scenario, no source citation"
+  },
+  "hmiTagBind": {
+    "tags": [
+      {
+        "tag": "LT_101",
+        "type": "REAL",
+        "min": 0,
+        "max": 100,
+        "units": "%",
+        "value": 62.0,
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "tag": "PT_201",
+        "type": "REAL",
+        "min": 0,
+        "max": 200,
+        "units": "psig",
+        "value": 148.0,
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "tag": "TT_301",
+        "type": "REAL",
+        "min": -20,
+        "max": 200,
+        "units": "°C",
+        "value": 145.0,
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "tag": "FT_401",
+        "type": "REAL",
+        "min": 0,
+        "max": 500,
+        "units": "GPM",
+        "value": 312.0,
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "tag": "P201_RUN",
+        "type": "BOOL",
+        "value": 1,
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "tag": "XV_203_POS",
+        "type": "BOOL",
+        "value": 0,
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      }
+    ],
+    "elements": [
+      {
+        "id": "tank",
+        "label": "Feed tank level bar",
+        "shape": "tank",
+        "expects": "analog",
+        "min": 0,
+        "max": 100,
+        "units": "%",
+        "answer": "LT_101",
+        "field": "Local level gauge reads 62 %",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "id": "pump",
+        "label": "Transfer pump run indicator",
+        "shape": "pump",
+        "expects": "bool",
+        "on": "RUN",
+        "off": "STOP",
+        "answer": "P201_RUN",
+        "field": "Transfer pump running, local run light on",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "id": "valve",
+        "label": "Feed valve position indicator",
+        "shape": "valve",
+        "expects": "bool",
+        "on": "OPEN",
+        "off": "CLOSED",
+        "answer": "XV_203_POS",
+        "field": "Feed valve closed",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "id": "num",
+        "label": "Header pressure display",
+        "shape": "numeric",
+        "expects": "analog",
+        "min": 0,
+        "max": 200,
+        "units": "psig",
+        "answer": "PT_201",
+        "field": "Local pressure gauge reads 148 psig",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "id": "trend",
+        "label": "Reactor temperature trend",
+        "shape": "trend",
+        "expects": "analog",
+        "min": -20,
+        "max": 200,
+        "units": "°C",
+        "answer": "TT_301",
+        "field": "Local temperature indicator reads 145 °C",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      }
+    ],
+    "constructed": true,
+    "source": "constructed — training scenario, no source citation"
+  },
+  "changeControl": {
+    "requests": [
+      {
+        "id": "r1",
+        "text": "Change T4_0.PRE from 5 s to 8 s on Line 2 fill timer",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "id": "r2",
+        "text": "Add a new permissive contact to the M-401 start rung",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "id": "r3",
+        "text": "Modify AI scaling for PT-101 from 0-100 to 0-150 psig",
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      }
+    ],
+    "steps": [
+      {
+        "n": 1,
+        "text": "Verify current logic",
+        "needs": [],
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "n": 2,
+        "text": "Document the change request",
+        "needs": [
+          {
+            "step": 1,
+            "why": "You can't write the change against logic you haven't confirmed. The request would describe a guess."
+          }
+        ],
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "n": 3,
+        "text": "Get approval",
+        "needs": [
+          {
+            "step": 2,
+            "why": "Approvers sign what's written. There's nothing to approve until the request is documented."
+          }
+        ],
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "n": 4,
+        "text": "Back up the current program",
+        "needs": [],
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "n": 5,
+        "text": "Edit offline",
+        "needs": [
+          {
+            "step": 3,
+            "why": "Editing before approval is an unapproved change."
+          },
+          {
+            "step": 4,
+            "why": "The backup is the known-good copy. Take it before you touch the program."
+          }
+        ],
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "n": 6,
+        "text": "Download to the PLC",
+        "needs": [
+          {
+            "step": 4,
+            "why": "You can't download before backing up: if the change breaks something, you have no rollback."
+          },
+          {
+            "step": 5,
+            "why": "There's nothing to download until the edit is made."
+          }
+        ],
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "n": 7,
+        "text": "Verify the change works",
+        "needs": [
+          {
+            "step": 6,
+            "why": "The change isn't running until it's downloaded."
+          }
+        ],
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "n": 8,
+        "text": "Update documentation",
+        "needs": [
+          {
+            "step": 7,
+            "why": "Documents record what was proven to work, not what was intended."
+          }
+        ],
+        "constructed": true,
+        "source": "constructed — training scenario, no source citation"
+      }
+    ],
+    "orderRule": "A step is rejected only when a step it needs has not been placed. Back up can go anywhere before Edit offline.",
+    "constructed": true,
+    "source": "constructed — training scenario, no source citation"
+  },
+  "programmingLessons": {
+    "concepts": {
+      "items": [
+        "Examine-if-closed concept",
+        "Examine-if-open concept",
+        "Output coil",
+        "Seal-in circuit",
+        "Start-stop logic",
+        "PLC scan cycle",
+        "Analog scaling in PLC logic"
+      ],
+      "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+    },
+    "hmiChain": {
+      "text": "Sensor -> transmitter -> PLC -> HMI",
+      "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+    },
+    "hmiSymptom": {
+      "text": "Transmitter output is correct but HMI value is wrong",
+      "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"
+    },
+    "scalingFailure": {
+      "text": "calibrating a good transmitter because the scaling was wrong.",
+      "source": "Field Troubleshooting Template Pack.pdf p.9, Form 7, \"Reading is wrong but stable\", failure mode"
+    },
+    "approved": {
+      "text": "Operations notified, loop out of service or bypassed as approved",
+      "source": "Field Troubleshooting Template Pack.pdf p.5, Form 4 Loop Check, pre-check"
+    },
+    "revision": {
+      "text": "Tag, terminal numbers, and drawing revision match the field",
+      "source": "Field Troubleshooting Template Pack.pdf p.5, Form 4 Loop Check, pre-check"
+    },
+    "documentation": {
+      "text": "Documentation filed, CMMS closed",
+      "source": "Field Troubleshooting Template Pack.pdf p.6, Form 4 Loop Check, restore"
+    }
+  }
 }
