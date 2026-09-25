@@ -63,7 +63,7 @@ const C_DARK = {
   violet: "#a78bfa",
   text: "#e5e9f0",
   text_mute: "#7a8699",
-  text_dim: "#4a5464",
+  text_dim: "#7a8699",
 };
 
 const C_LIGHT = {
@@ -77,7 +77,7 @@ const C_LIGHT = {
   violet: "#6d28d9",
   text: "#111827",
   text_mute: "#4b5563",
-  text_dim: "#9ca3af",
+  text_dim: "#6b7280",
 };
 
 const THEMES = { dark: C_DARK, light: C_LIGHT };
@@ -8490,7 +8490,10 @@ function DiagnosticRibbon({ active, visited }) {
                 transition: reduced ? "none" : "color 180ms ease-out, border-color 180ms ease-out",
               }}
             >
-              {st.n}. {st.name}
+              {/* Passed steps get a 1 px underline so they read as passed without relying on color. */}
+              <span style={{ paddingBottom: 3, borderBottom: `1px solid ${done ? C.text_mute : "transparent"}` }}>
+                {st.n}. {st.name}
+              </span>
             </li>
           );
         })}
