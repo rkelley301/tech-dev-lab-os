@@ -227,3 +227,13 @@
 - Verified headless in both themes on tool 3.4 after one solved card (passed 1 and 4, active 5, upcoming 2, 3, 6): computed styles match; grayscale screenshots still separate the three states. Theme test and regressions (1.1, 1.4, 2.2/2.3, 2.4, 3.1/3.2, 3.4, cross) pass; no console errors. test_cross's dimmed-step detector still looks for the old #4a5464, so it now reports no dimmed steps; the underline check replaces it.
 - Found, not fixed (predates this change): at a 1400 px window the ribbon nav is 872 px wide and ends 52 px past the main column, so "6. DOCUMENT" is hidden under the helper column. It fits at 1920 px.
 - File: output/tech-dev-lab.html
+
+## 2026-09-25 — Ribbon overflow at mid widths
+- Cause: the tool panel is an item in main's CSS grid with min-width auto, so it grew to the ribbon's one-line label width (872 px) and slid under the helper column below about 1500 px. The ribbon's own overflow-x: auto never engaged.
+- ToolSlot panel: minWidth 0, so it stays in its column. Ribbon ol: min-width max-content (was 680), so the nav scrolls when the labels don't fit.
+- Ribbon labels: letter-spacing and padding moved to a .diag-step class (2px / 0 6px); below 1500 px: 1px / 0 2px. Vertical padding kept at 0 (not 6px) so the 1 px passed-step underline isn't clipped in the 32 px row when the scrollbar shows.
+- Scrollbar: .diag-ribbon, thin, 6 px webkit height, transparent until hover, then the theme's border color via a --rib-thumb custom property set from C.border.
+- Active step auto-centers when it changes. It scrolls the ribbon only (nav.scrollTo), not scrollIntoView: scrollIntoView would also scroll the page up to the ribbon whenever a step changes while the user is working lower down. Smooth, or instant with reduced motion.
+- Verified headless, both themes, at 900 / 1200 / 1400 / 1920: ribbon 32 px tall at every width; scrolls at 900 (275 px for 724 px of labels) and 1200 (575 px), with step 6 reachable and the active step fully visible after each change (steps 1, 4, 5 on tool 3.4); fits without scrolling at 1400 (775 of 775); 1920 unchanged (2px / 6px spacing, 1295 px, no scroll). Tool panel inside main on all six ribbon tools at every width. Theme test, ribbon underline check, and regressions (1.1, 1.4, 2.2/2.3, 2.4, 3.1/3.2, 3.4, cross) pass; no console errors.
+- Found, not fixed: at 900 and 1200 px, tool content wider than the panel spills past it. 2.4 diagnostic chain 700 px, 3.1 chassis 714 px, 3.2 rung 760 px, 2.3 31 px over at 900 only. At 900, 2.4 and 3.1 cause page horizontal scroll. The ribbon used to hide this by stretching every ribbon tool's panel (the page scrolled sideways on all six ribbon tools at 900 before this change). Fits at 1400 and up.
+- File: output/tech-dev-lab.html

@@ -16,6 +16,14 @@
 @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
 @keyframes flow { to { stroke-dashoffset: -32; } }
 @keyframes shieldPop { 0% { opacity: 0; transform: scale(0.85); } 60% { opacity: 1; transform: scale(1.04); } 100% { opacity: 1; transform: scale(1); } }
+/* Diagnostic ribbon: spacing tightens below 1500px so it fits at 1400px; the scrollbar shows on hover only. */
+.diag-step { letter-spacing: 2px; padding: 0 6px; }
+@media (max-width: 1499px) { .diag-step { letter-spacing: 1px; padding: 0 2px; } }
+.diag-ribbon { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+.diag-ribbon:hover { scrollbar-color: var(--rib-thumb) transparent; }
+.diag-ribbon::-webkit-scrollbar { height: 6px; background: transparent; }
+.diag-ribbon::-webkit-scrollbar-thumb { background: transparent; border-radius: 3px; }
+.diag-ribbon:hover::-webkit-scrollbar-thumb { background: var(--rib-thumb); }
 html.theme-fade, html.theme-fade * { transition: background-color 200ms ease-out, border-color 200ms ease-out, color 200ms ease-out !important; }
 </style>
 </head>
@@ -8349,7 +8357,7 @@ function ToolSlot({ layer, tool, onTestXP, onResult }) {
     <Panel
       aria-label={`Tool ${tool.id}: ${tool.name}`}
       source={built ? built.source : "pending (tool not built)"}
-      style={{ animation: reduced ? "none" : `fadeIn ${DUR_SLOW}ms ease-out` }}
+      style={{ animation: reduced ? "none" : `fadeIn ${DUR_SLOW}ms ease-out`, minWidth: 0 }}
     >
       <header style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
         <Chip color={C[layer.accent]}>TOOL {tool.id}</Chip>
@@ -8459,13 +8467,25 @@ const TEMPLATE_FORMS = [
 function DiagnosticRibbon({ active, visited }) {
   const C = useC();
   const reduced = useReducedMotion();
+  const navRef = useRef(null);
+  // Center the active step when the ribbon is narrower than its labels.
+  // Scrolls the ribbon only, never the page.
+  useEffect(() => {
+    const nav = navRef.current;
+    const li = nav && nav.querySelector('[aria-current="step"]');
+    if (!li || nav.scrollWidth <= nav.clientWidth) return;
+    const left = li.getBoundingClientRect().left - nav.getBoundingClientRect().left + nav.scrollLeft;
+    nav.scrollTo({ left: left - (nav.clientWidth - li.offsetWidth) / 2, behavior: reduced ? "auto" : "smooth" });
+  }, [active, reduced]);
   return (
     <nav
+      ref={navRef}
+      className="diag-ribbon"
       aria-label={`Six-step diagnostic sequence (${DIAG.source})`}
       title={`Six-step diagnostic sequence (${DIAG.source})`}
-      style={{ height: 32, boxSizing: "border-box", overflowX: "auto", overflowY: "hidden", borderBottom: `1px solid ${C.border}`, marginBottom: 16 }}
+      style={{ "--rib-thumb": C.border, height: 32, boxSizing: "border-box", overflowX: "auto", overflowY: "hidden", borderBottom: `1px solid ${C.border}`, marginBottom: 16 }}
     >
-      <ol style={{ display: "flex", height: "100%", margin: 0, padding: 0, listStyle: "none", minWidth: 680 }}>
+      <ol style={{ display: "flex", height: "100%", margin: 0, padding: 0, listStyle: "none", minWidth: "max-content" }}>
         {DIAG.steps.map(st => {
           const on = st.n === active;
           const done = !on && active !== null && st.n < active && visited.includes(st.n);
@@ -8474,16 +8494,15 @@ function DiagnosticRibbon({ active, visited }) {
               key={st.n}
               aria-current={on ? "step" : undefined}
               title={`${st.name}: ${st.text}`}
+              className="diag-step"
               style={{
                 flex: 1,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                padding: "0 6px",
                 whiteSpace: "nowrap",
                 fontFamily: MONO_FONT,
                 fontSize: 10,
-                letterSpacing: "2px",
                 textTransform: "uppercase",
                 color: on ? C.signal_cyan : done ? C.text_dim : C.text_mute,
                 borderBottom: `2px solid ${on ? C.signal_cyan : "transparent"}`,
