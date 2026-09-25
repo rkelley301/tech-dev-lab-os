@@ -200,3 +200,12 @@
 - Verified headless from disk: migration, ribbon states on all six tools, none on Layer 1, 9 notes written, drawer open/focus/entries, export file and content, Esc, two-step clear, phone width (drawer full width, no overflow) with reduced motion. Regressions 1.1, 1.4, 2.2, 2.3, 2.4, 3.1, 3.2, 3.4 pass. No console errors.
 - Known test debt: test24v2 and test34 still count notes in app state (they now read 0); notes live in techDevLab.v3.fieldNotes. The cross test covers them.
 - File: output/tech-dev-lab.html (338,799 bytes)
+
+## 2026-09-24 — Regression re-run after usage-limit interruption
+- The draft (draft-tech-dev-lab.html, 338,799 bytes) was still in the previous session's scratchpad. It is byte-identical to output/tech-dev-lab.html, which commit 6f8b239 already includes, so nothing needed copying.
+- Re-ran the full headless suite (Edge) against output/tech-dev-lab.html: 1.1, 1.4, 2.2/2.3, 2.4 (test24v2), 3.1/3.2, 3.4, and cross-cutting (ribbon on all six tools, none on Layer 1, notes migration, drawer, Markdown export, Esc, two-step clear). All pass. No console errors.
+- Drawer width measured at fixed viewports: 380 px at 1400 and 900; full width at 899 and 390; no horizontal scroll.
+- test24.mjs (v1) fails because it reads the retired key techDevLab.v3.splitHalfIsolator. test24v2 replaced it and confirms the old key is removed. This is obsolete test code, not an app regression.
+- Log housekeeping: the two entries above ("Cross-cutting: diagnostic ribbon..." and "Diagnostic ribbon + Field Notes drawer") describe the same build.
+- Still open: test24v2 and test34 read field notes from app state (report 0). test_cross covers notes.
+- File: output/tech-dev-lab.html (unchanged)
