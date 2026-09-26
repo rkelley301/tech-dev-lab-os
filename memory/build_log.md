@@ -309,3 +309,10 @@
 - Verified headless from disk: test_13_contact_logic (25 checks, incl. the displayed table against the spec file row by row and the equation on every row), test_33_timer_trace (29 checks, incl. regions against the spec file, readout sampled every 40 ms through a run, chart edges, exact PRE spacing, pause, no RTO, time passing while low), test_21_wire_count (33), test_render (16 slots, 15 built, 1.2 not built, both themes x 900 / 1200 / 1400 / 1920, phone 390). No console errors. Screenshots checked in both themes.
 - Deviation: skills/03-build-tool Step 5 skipped (build, commit, and push asked in one request).
 - File: output/tech-dev-lab.html (595,721 bytes; Babel block 330,723; 15 tools)
+
+## 2026-09-25 — Test suite rebuilt in tests/
+- The headless tests lost from Temp are rebuilt in the repo, with assertions (PASS / FAIL, non-zero exit) instead of printed JSON. `node tests/run.mjs` runs them all; filters by name (`node tests/run.mjs 21 cross`); TDL_FILE points at another build. Needs Node 22+ and Edge; no npm.
+- lib.mjs: headless Edge over DevTools; each run uses a throwaway profile in the OS temp folder, deleted on close (the old tests left one per run, which filled the disk).
+- Files and checks: test_11_wire_it_live (15), test_13_contact_logic (25), test_14_34_decks (21), test_21_wire_count (33), test_22_23_24_instrumentation (21), test_31_32_plc (18), test_33_timer_trace (29), test_41_42_43_programming (17), test_51_bench (15), test_cross (20: notes migration, ribbon states and passed-step underline, ribbon at 900 / 1920, focus scrolling in .tool-scroll, drawer Ctrl+B / Esc / 380 px / full width under 900, Markdown export, two-step clear, theme Ctrl+J / persistence / survives Reset), test_render (11: 16 slots x 2 themes x 900 / 1200 / 1400 / 1920, phone 390). shots.mjs takes screenshots.
+- Two full runs back to back: 11 / 11 files, 225 / 225 checks, no console errors.
+- Not rebuilt: test24.mjs (v1, retired earlier).
