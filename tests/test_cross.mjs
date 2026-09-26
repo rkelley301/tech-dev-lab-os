@@ -36,8 +36,15 @@ await run("cross-cutting", async (p, check) => {
   r = await ribbon();
   check("ribbon: solved lights step 5, steps 1 and 4 passed (text_dim + underline)", r.active === "5" && r.passed === "1,4", r);
   const none = [];
-  for (const [l, t] of [[1, "1.1"], [1, "1.3"], [1, "1.4"], [2, "2.1"], [3, "3.3"], [4, "4.1"]]) { await p.tool(l, t); if (await ribbon()) none.push(t); }
-  check("no ribbon on 1.1, 1.3, 1.4, 2.1, 3.3, 4.1", none.length === 0, none);
+  for (const [l, t] of [[1, "1.1"], [1, "1.4"], [2, "2.1"], [4, "4.1"]]) { await p.tool(l, t); if (await ribbon()) none.push(t); }
+  check("no ribbon on 1.1, 1.4, 2.1, 4.1", none.length === 0, none);
+  // One fixed step each (user-approved): 1.3 -> 4. Split the loop, 3.3 -> 5. Prove root cause.
+  await p.tool(1, "1.3");
+  r = await ribbon();
+  check("ribbon on 1.3 lights step 4", r && r.active === "4" && r.h === 32, r);
+  await p.tool(3, "3.3");
+  r = await ribbon();
+  check("ribbon on 3.3 lights step 5", r && r.active === "5" && r.h === 32, r);
 
   // Ribbon width: scrolls at 900 with the active step visible; fits at 1920.
   await p.tool(3, "3.4");

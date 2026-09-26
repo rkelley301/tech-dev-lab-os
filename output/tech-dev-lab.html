@@ -14329,8 +14329,12 @@ function ClTable({ s }) {
   );
 }
 
-function ContactLogic({ onResult }) {
+function ContactLogic({ onResult, onStep }) {
   const C = useC();
+  // Ribbon: one step for this tool, 4. Split the loop (user-approved mapping).
+  useEffect(() => {
+    if (onStep) onStep(4);
+  }, []);
   const [t, setT] = useState(clLoad);
   useEffect(() => saveTool(CL_KEY, t), [t]);
   const w = t.walk;
@@ -14602,8 +14606,12 @@ function TtChart({ sim, pre }) {
   );
 }
 
-function TimerTrace({ onResult }) {
+function TimerTrace({ onResult, onStep }) {
   const C = useC();
+  // Ribbon: one step for this tool, 5. Prove root cause (user-approved mapping).
+  useEffect(() => {
+    if (onStep) onStep(5);
+  }, []);
   const [t, setT] = useState(ttLoad);
   const [preText, setPreText] = useState(String(t.pre));
   const [sim, setSim] = useState(ttSimFresh);
@@ -14828,6 +14836,7 @@ const TOOLS = {
   },
   "1.3": {
     component: ContactLogic,
+    ribbon: true,
     source: "Contact model and truth table: sources/contact-logic-spec.md (user-provided spec). Rung drawing and walkthrough wording: constructed — training scenario, no source citation.",
   },
   "1.4": {
@@ -14865,6 +14874,7 @@ const TOOLS = {
   },
   "3.3": {
     component: TimerTrace,
+    ribbon: true,
     source: "TON behavior: Rockwell Automation 1756-RM018, Logix 5000 Controllers General Instructions, TON (as given in sources/timer-trace-spec.md, user-provided spec). Simulation clock, chart, and quiz wording: constructed — training scenario, no source citation.",
   },
   "3.4": {

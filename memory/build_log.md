@@ -316,3 +316,10 @@
 - Files and checks: test_11_wire_it_live (15), test_13_contact_logic (25), test_14_34_decks (21), test_21_wire_count (33), test_22_23_24_instrumentation (21), test_31_32_plc (18), test_33_timer_trace (29), test_41_42_43_programming (17), test_51_bench (15), test_cross (20: notes migration, ribbon states and passed-step underline, ribbon at 900 / 1920, focus scrolling in .tool-scroll, drawer Ctrl+B / Esc / 380 px / full width under 900, Markdown export, two-step clear, theme Ctrl+J / persistence / survives Reset), test_render (11: 16 slots x 2 themes x 900 / 1200 / 1400 / 1920, phone 390). shots.mjs takes screenshots.
 - Two full runs back to back: 11 / 11 files, 225 / 225 checks, no console errors.
 - Not rebuilt: test24.mjs (v1, retired earlier).
+
+## 2026-09-25 — Decisions confirmed; ribbon on 1.3 and 3.3
+- User confirmed: 3.3 shows "ACC ≥ PRE" once done; 2.1's constructed parts approved (they carry "constructed": true and the TRAINING CONTENT badge); 1.3's Next state placement kept.
+- Diagnostic ribbon added to 1.3 (one fixed step: 4. Split the loop) and 3.3 (one fixed step: 5. Prove root cause), per the user's mapping; registry flag ribbon: true. 2.1 stays without a ribbon.
+- test_cross now checks the ribbon on 1.3 (step 4) and 3.3 (step 5) and none on 1.1, 1.4, 2.1, 4.1.
+- Full suite: 11 / 11 files, 227 / 227 checks, no console errors. 15 tools render in both themes at 900 / 1200 / 1400 / 1920 and at 390 px; 1.2 stays "Not yet built."
+- File: output/tech-dev-lab.html (596,059 bytes)
