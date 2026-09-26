@@ -7946,6 +7946,300 @@ const TTR = {
   "note": "The simulation clock, chart layout, and transition log are constructed. They draw only the four regions above."
  }
 };
+// Tool 1.2
+// Generated from output/content-library.json. Do not edit by hand.
+const POINT_IO = {
+ "modules": [
+  {
+   "module": "1734-IB4",
+   "family": "POINT I/O",
+   "type": "digital_input",
+   "input_topology": "sinking",
+   "module_marking": "24VDC Sink Input",
+   "channels": [
+    {
+     "channel": 0,
+     "input_terminal": 0,
+     "common_terminal": 4,
+     "supply_terminal": 6
+    },
+    {
+     "channel": 1,
+     "input_terminal": 1,
+     "common_terminal": 5,
+     "supply_terminal": 7
+    },
+    {
+     "channel": 2,
+     "input_terminal": 2,
+     "common_terminal": 4,
+     "supply_terminal": 6
+    },
+    {
+     "channel": 3,
+     "input_terminal": 3,
+     "common_terminal": 5,
+     "supply_terminal": 7
+    }
+   ],
+   "power": {
+    "nominal_voltage": "24 VDC",
+    "on_state_min": "10V DC",
+    "on_state_max": "28.8V DC",
+    "field_positive_terminal": [
+     6,
+     7
+    ],
+    "field_common_terminal": [
+     4,
+     5
+    ]
+   },
+   "source_publication": "Rockwell 1734-IN051",
+   "source_revision": "1734-IN051N-EN-E, August 2025",
+   "source_page": 9,
+   "source_figure": "Figure 5 - Wiring for 1734-IB4, 1734-IB4K – Sinking Input",
+   "source_table": "Table 2 - Module Wiring",
+   "source_spec_page": 12,
+   "source_file": "sources/1734-IN051_-en-e.pdf",
+   "source_marking": "1734-IN051 p.12, Figure 6"
+  },
+  {
+   "module": "1734-IV4",
+   "family": "POINT I/O",
+   "type": "digital_input",
+   "input_topology": "sourcing",
+   "module_marking": "24VDC Source Input",
+   "channels": [
+    {
+     "channel": 0,
+     "input_terminal": 0,
+     "common_terminal": 4,
+     "supply_terminal": 6
+    },
+    {
+     "channel": 1,
+     "input_terminal": 1,
+     "common_terminal": 5,
+     "supply_terminal": 7
+    },
+    {
+     "channel": 2,
+     "input_terminal": 2,
+     "common_terminal": 4,
+     "supply_terminal": 6
+    },
+    {
+     "channel": 3,
+     "input_terminal": 3,
+     "common_terminal": 5,
+     "supply_terminal": 7
+    }
+   ],
+   "power": {
+    "nominal_voltage": "24 VDC",
+    "on_state_min": "10V DC",
+    "on_state_max": "28.8V DC",
+    "field_positive_terminal": [
+     6,
+     7
+    ],
+    "field_common_terminal": [
+     4,
+     5
+    ]
+   },
+   "source_publication": "Rockwell 1734-IN052",
+   "source_revision": "1734-IN052J-EN-E, August 2025",
+   "source_page": 9,
+   "source_figure": "Figure 4 - POINT I/O Source Input Module Wiring – 1734-IV4",
+   "source_table": "Unnumbered terminal table following Figure 4, page 10",
+   "source_spec_page": 13,
+   "source_file": "sources/1734-IN052_-en-e.pdf",
+   "source_marking": "1734-IN052 p.12, Figure 8"
+  }
+ ],
+ "source_conflicts": [
+  {
+   "field": "NC definition",
+   "values": [
+    {
+     "value": "Normally closed",
+     "location": "IN052 p.9, Figure 3 legend"
+    },
+    {
+     "value": "No connection",
+     "location": "IN052 p.9, module-face legend"
+    }
+   ],
+   "resolution": "UNSPECIFIED — DO NOT INFER",
+   "note": "Two legends on the same page disagree. Do not use either value in the rendered tool."
+  }
+ ]
+};
+// Generated from output/content-library.json. Do not edit by hand.
+const SSK = {
+ "source": "Constructed — training scenario, no source citation for leads, sensors, challenges, outcomes, and current paths. Trap: Field Learning Plan.pdf p.10. Teaching point: user-provided spec (2026-09-25).",
+ "teachingPoint": {
+  "text": "PNP output → sinking PLC input. NPN output → sourcing PLC input.",
+  "source": "User-provided spec (2026-09-25)",
+  "constructed": false
+ },
+ "neutral": {
+  "text": "Neither output type is better than the other. The pairing decides whether current flows: the sensor output and the PLC input must be opposite types.",
+  "constructed": true,
+  "source": "Constructed — training scenario, no source citation"
+ },
+ "trap": {
+  "trap": "Misreading sourcing vs sinking",
+  "looksLike": "You wire a sensor to a PLC input card and get no signal. The card is sourcing, the sensor is sinking (or vice versa).",
+  "fix": "Know your card type before you wire. This is one of the most common 24 VDC mistakes.",
+  "source": "Field Learning Plan.pdf p.10",
+  "constructed": false
+ },
+ "leads": {
+  "constructed": true,
+  "source": "Constructed — training scenario, no source citation",
+  "items": [
+   {
+    "id": "pos",
+    "label": "+V",
+    "role": "sensor supply +"
+   },
+   {
+    "id": "out",
+    "label": "OUT",
+    "role": "switched output"
+   },
+   {
+    "id": "neg",
+    "label": "0V",
+    "role": "sensor supply −"
+   }
+  ]
+ },
+ "sensors": {
+  "constructed": true,
+  "source": "Constructed — training scenario, no source citation",
+  "items": [
+   {
+    "id": "pnp",
+    "type": "PNP",
+    "name": "3-wire proximity switch, sensor A",
+    "switchesTo": "+V",
+    "behavior": "Target present: the output switch closes, connecting OUT to +V. Target absent: OUT is open."
+   },
+   {
+    "id": "npn",
+    "type": "NPN",
+    "name": "3-wire proximity switch, sensor B",
+    "switchesTo": "0V",
+    "behavior": "Target present: the output switch closes, connecting OUT to 0V. Target absent: OUT is open."
+   }
+  ]
+ },
+ "challenges": {
+  "constructed": true,
+  "source": "Constructed — training scenario, no source citation",
+  "items": [
+   {
+    "id": "ss-1",
+    "kind": "wire",
+    "title": "1734-IB4 with a PNP sensor",
+    "module": "1734-IB4",
+    "sensor": "pnp",
+    "channel": 2
+   },
+   {
+    "id": "ss-2",
+    "kind": "wire",
+    "title": "1734-IV4 with an NPN sensor",
+    "module": "1734-IV4",
+    "sensor": "npn",
+    "channel": 3
+   },
+   {
+    "id": "ss-3",
+    "kind": "match",
+    "title": "Matching pairs",
+    "modules": [
+     "1734-IB4",
+     "1734-IV4"
+    ],
+    "sensors": [
+     "pnp",
+     "npn"
+    ],
+    "channel": 0
+   }
+  ]
+ },
+ "outcomes": {
+  "constructed": true,
+  "source": "Constructed — training scenario, no source citation",
+  "items": {
+   "sameTerminal": {
+    "title": "Two leads on one terminal.",
+    "text": "Two sensor leads share terminal {t}. Give each lead its own terminal."
+   },
+   "unpowered": {
+    "title": "Sensor not powered.",
+    "text": "+V lands on terminal {pos} ({posRole}) and 0V on terminal {neg} ({negRole}). The sensor takes its power from +24 VDC (V) to DC common (C); without it, the output switch never operates and no channel turns on."
+   },
+   "outNotInput": {
+    "title": "OUT is not on an input.",
+    "text": "OUT lands on terminal {out}, a {outRole} terminal. No input channel is in the path, so no channel can turn on."
+   },
+   "wrongChannel": {
+    "title": "Wrong channel.",
+    "text": "The path completes through terminal {out}, so input {got} turns on. This challenge asks for input {want}."
+   },
+   "tableMismatch": {
+    "title": "Not the terminal the Rockwell table gives.",
+    "text": "The table assigns channel {ch} {what} to terminal {want}; this lead is on terminal {got}. Land it where the table puts it."
+   },
+   "pnpOnSourcing": {
+    "title": "Current path does not complete.",
+    "text": "A PNP output switches OUT to +V, and a sourcing input also feeds current out of its terminal from +24 VDC. Both sides push from +24 VDC; there is no path to DC common, so no current flows and the input stays off."
+   },
+   "npnOnSinking": {
+    "title": "Current path does not complete.",
+    "text": "An NPN output switches OUT to 0V, and a sinking input also needs its current returned to DC common. Both sides lead to DC common; nothing supplies current into the input, so it stays off."
+   },
+   "ok": {
+    "title": "Current path complete."
+   }
+  }
+ },
+ "paths": {
+  "constructed": true,
+  "source": "Constructed — training scenario, no source citation",
+  "items": {
+   "sinking": [
+    "+24 VDC",
+    "V terminal {sup}",
+    "Sensor +V",
+    "PNP output switch (closed)",
+    "OUT",
+    "IN {ch}, terminal {in} (current in)",
+    "Sinking input circuit",
+    "DC common"
+   ],
+   "sourcing": [
+    "+24 VDC",
+    "Sourcing input circuit",
+    "IN {ch}, terminal {in} (current out)",
+    "OUT",
+    "NPN output switch (closed)",
+    "Sensor 0V",
+    "C terminal {com}",
+    "DC common"
+   ],
+   "sensorPower": "Sensor power: +24 VDC → V terminal {sup} → sensor +V → sensor → sensor 0V → C terminal {com} → DC common"
+  }
+ },
+ "terminalSource": "Terminal numbers, channel pairings, module markings, and on-state voltages come from pointIO (Rockwell 1734-IN051 / 1734-IN052), not from this key."
+};
 </script>
 <script type="text/babel">
 /* The COST_CONSEQUENCE object below is tool-authored interface copy.
@@ -14206,6 +14500,737 @@ function WireCount({ onResult }) {
 }
 
 /* --------------------------------------------------------------------------
+   Tool 1.2: Sourcing or Sinking?
+   One renderer, two module definitions. Every terminal number, role, channel
+   pairing, marking, and on-state voltage comes from the module's own POINT_IO
+   object (transcribed from the Rockwell installation instructions); nothing in this code knows which
+   module it is drawing. A module that fails validation stops the tool with
+   the reason instead of falling back to another module or a guess.
+   Sensors, challenges, outcomes, and current-path wording are constructed
+   (SSK). The current path follows the module's input_topology.
+   -------------------------------------------------------------------------- */
+
+const SS_KEY = STORAGE_KEY + ".sourcingSinking";
+const SS_XP_FIRST = 20;
+const SS_XP_RETRY = 8;
+const SS_RADAR = 0.5;
+const SS_TOPOLOGIES = ["sinking", "sourcing"];
+const SS_TYPES = ["PNP", "NPN"];
+// The teaching point: a PNP output needs a sinking input, an NPN output a sourcing input.
+const SS_PAIR = { PNP: "sinking", NPN: "sourcing" };
+const SS_SENSOR = Object.fromEntries(SSK.sensors.items.map(s => [s.id, s]));
+const SS_LEADS = SSK.leads.items;
+const SS_OUT = SSK.outcomes.items;
+const SS_CH = SSK.challenges.items;
+const SS_ROLE_TEXT = { input: "input", supply: "+24 VDC (V)", common: "DC common (C)" };
+
+// Exact lookup only: a missing module is an error, never another module's data.
+function ssModule(id) {
+  return POINT_IO.modules.find(m => m.module === id) || null;
+}
+
+// Terminal list built from this module's JSON: input terminals from its
+// channels, V and C from its power object. A terminal with two roles is kept
+// with both so validation can reject it.
+function ssTerminals(mod) {
+  const map = new Map();
+  const add = (n, role, channel) => {
+    if (!map.has(n)) map.set(n, []);
+    map.get(n).push({ role, channel });
+  };
+  mod.channels.forEach(c => add(c.input_terminal, "input", c.channel));
+  mod.power.field_positive_terminal.forEach(n => add(n, "supply"));
+  mod.power.field_common_terminal.forEach(n => add(n, "common"));
+  return [...map.entries()].sort((a, b) => a[0] - b[0]).map(([n, roles]) => ({ n, role: roles[0].role, channel: roles[0].channel, roles }));
+}
+
+// Renderer rule 10: every channel needs an input terminal, a field-power (V)
+// terminal, and a common (C) terminal that the module's power object lists.
+function ssValidate(mod, id) {
+  if (!mod) return [`No module definition for ${id} in POINT_IO.`];
+  const bad = [];
+  const num = v => Number.isInteger(v);
+  const p = mod.power || {};
+  const pos = p.field_positive_terminal, com = p.field_common_terminal;
+  if (!SS_TOPOLOGIES.includes(mod.input_topology)) bad.push(`input_topology is ${JSON.stringify(mod.input_topology)}.`);
+  if (!Array.isArray(pos) || !pos.length || !pos.every(num)) bad.push(`power.field_positive_terminal is ${JSON.stringify(pos)}.`);
+  if (!Array.isArray(com) || !com.length || !com.every(num)) bad.push(`power.field_common_terminal is ${JSON.stringify(com)}.`);
+  if (!Array.isArray(mod.channels) || !mod.channels.length) bad.push("No channels defined.");
+  else
+    mod.channels.forEach(c => {
+      if (!num(c.input_terminal)) bad.push(`Channel ${c.channel}: input_terminal is ${JSON.stringify(c.input_terminal)}.`);
+      if (!num(c.supply_terminal) || !Array.isArray(pos) || !pos.includes(c.supply_terminal)) bad.push(`Channel ${c.channel}: supply_terminal ${JSON.stringify(c.supply_terminal)} is not a field-power terminal.`);
+      if (!num(c.common_terminal) || !Array.isArray(com) || !com.includes(c.common_terminal)) bad.push(`Channel ${c.channel}: common_terminal ${JSON.stringify(c.common_terminal)} is not a common terminal.`);
+    });
+  if (!bad.length) ssTerminals(mod).forEach(t => t.roles.length > 1 && bad.push(`Terminal ${t.n} has ${t.roles.length} roles.`));
+  return bad;
+}
+
+function ssFill(text, fill) {
+  return text.replace(/\{(\w+)\}/g, (m, k) => (fill && fill[k] !== undefined ? String(fill[k]) : m));
+}
+
+// Where current goes for leads landed on terminals as = { pos, out, neg }.
+// want: the channel the challenge asks for.
+function ssCheck(mod, sensor, want, as) {
+  const terms = Object.fromEntries(ssTerminals(mod).map(t => [t.n, t]));
+  const role = n => (terms[n] ? terms[n].role : null);
+  const { pos, out, neg } = as;
+  const same = pos === out || pos === neg ? pos : out === neg ? out : null;
+  if (same !== null) return { id: "sameTerminal", fill: { t: same } };
+  if (role(pos) !== "supply" || role(neg) !== "common")
+    return { id: "unpowered", at: role(pos) !== "supply" ? "pos" : "neg", fill: { pos, neg, posRole: SS_ROLE_TEXT[role(pos)], negRole: SS_ROLE_TEXT[role(neg)] } };
+  if (role(out) !== "input") return { id: "outNotInput", at: "out", fill: { out, outRole: SS_ROLE_TEXT[role(out)] } };
+  const ch = terms[out].channel;
+  if (SS_PAIR[sensor.type] !== mod.input_topology) return { id: sensor.type === "PNP" ? "pnpOnSourcing" : "npnOnSinking", ch, pairing: true };
+  const row = mod.channels.find(c => c.channel === ch);
+  if (neg !== row.common_terminal) return { id: "tableMismatch", at: "neg", ch, fill: { ch, what: "common", want: row.common_terminal, got: neg } };
+  if (pos !== row.supply_terminal) return { id: "tableMismatch", at: "pos", ch, fill: { ch, what: "supply", want: row.supply_terminal, got: pos } };
+  if (ch !== want) return { id: "wrongChannel", lit: ch, ch, fill: { out, got: ch, want } };
+  return { id: "ok", lit: ch, ch };
+}
+
+// Table landing for a channel: what challenge 3 pre-wires.
+function ssTableLanding(mod, ch) {
+  const row = mod.channels.find(c => c.channel === ch);
+  return { pos: row.supply_terminal, out: row.input_terminal, neg: row.common_terminal };
+}
+
+function ssPath(mod, ch) {
+  const row = mod.channels.find(c => c.channel === ch);
+  const fill = { ch, in: row.input_terminal, com: row.common_terminal, sup: row.supply_terminal };
+  return { steps: SSK.paths.items[mod.input_topology].map(s => ssFill(s, fill)), power: ssFill(SSK.paths.items.sensorPower, fill) };
+}
+
+function ssCite(mod) {
+  return `${mod.source_publication} (${mod.source_revision}) p.${mod.source_page}, ${mod.source_figure}; ${mod.source_table}; marking ${mod.source_marking}; specifications p.${mod.source_spec_page}`;
+}
+
+function ssSession(i) {
+  return { idx: i, type: null, typeMiss: null, topo: null, topoMiss: null, assign: {}, armed: null, pairs: {}, checks: 0, misses: 0, firstMiss: null, result: null, done: false };
+}
+
+function ssLoad() {
+  const t = loadTool(SS_KEY) || {};
+  const s = t.session;
+  const ok = s && SS_CH[s.idx] && s.assign && typeof s.assign === "object" && s.pairs && typeof s.pairs === "object";
+  return {
+    session: ok ? s : ssSession(0),
+    played: Array.isArray(t.played) ? t.played : [],
+    log: Array.isArray(t.log) ? t.log : [],
+  };
+}
+
+function SsHalt({ problems }) {
+  const C = useC();
+  return (
+    <div role="alert" style={{ padding: 14, border: `1px solid ${C.rose}`, borderRadius: 6, background: `${C.rose}10`, color: C.text }}>
+      <p style={{ margin: 0, fontWeight: 700, color: C.rose }}>Module definition failed validation. The tool stops here instead of guessing.</p>
+      <ul style={{ margin: "8px 0 0", paddingLeft: 18, fontFamily: MONO_FONT, fontSize: 12 }}>
+        {problems.map(p => <li key={p}>{p}</li>)}
+      </ul>
+      <p style={{ margin: "8px 0 0", fontSize: 13, color: C.text_mute }}>Check output/content-library.json pointIO against the Rockwell publication.</p>
+    </div>
+  );
+}
+
+// The one module renderer. landed: { terminal: lead label }. lit: the channel
+// whose current path completes. flow: "in" | "out" on the lit input terminal.
+function PioModule({ mod, landed = {}, lit = null, bad = null, armed = false, onTerm, onDropData, label }) {
+  const C = useC();
+  const terms = ssTerminals(mod);
+  const cols = 2;
+  const flowText = mod.input_topology === "sinking" ? "CURRENT IN" : "CURRENT OUT";
+  return (
+    <figure
+      aria-label={label || `${mod.module} module face`}
+      onDragOver={onDropData ? e => e.preventDefault() : undefined}
+      onDrop={
+        onDropData
+          ? e => {
+              e.preventDefault();
+              onDropData(null, e.dataTransfer.getData("text/plain"));
+            }
+          : undefined
+      }
+      style={{ margin: 0, display: "grid", gap: 8, padding: 12, border: `1px solid ${C.border}`, borderRadius: 6, background: C.bg, minWidth: 0 }}
+    >
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "baseline" }}>
+        <span style={{ fontFamily: MONO_FONT, fontSize: 15, fontWeight: 700, color: C.text }}>{mod.module}</span>
+        <span style={{ fontSize: 12, color: C.text_mute }}>{mod.family}</span>
+      </div>
+      <div aria-label={`Module marking: ${mod.module_marking}`} style={{ fontFamily: MONO_FONT, fontSize: 12, color: C.text, padding: "4px 8px", border: `1px solid ${C.border}`, borderRadius: 4, justifySelf: "start" }}>
+        {mod.module_marking}
+      </div>
+      <div role="list" aria-label="Input status indicators" style={{ display: "flex", gap: 6 }}>
+        {mod.channels.map(c => {
+          const on = lit === c.channel;
+          return (
+            <span key={c.channel} role="listitem" aria-label={`Input ${c.channel} ${on ? "on" : "off"}`} style={{ display: "grid", justifyItems: "center", gap: 2 }}>
+              <span aria-hidden="true" style={{ width: 16, height: 12, borderRadius: 2, border: `1px solid ${on ? C.lime : C.border}`, background: on ? C.lime : "transparent" }} />
+              <span style={{ fontFamily: MONO_FONT, fontSize: 10, color: on ? C.lime : C.text_dim }}>{c.channel}</span>
+            </span>
+          );
+        })}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, minmax(0, 116px))`, gap: 4 }}>
+        {terms.map(t => {
+          const name = t.role === "input" ? `IN ${t.channel}` : t.role === "supply" ? "V" : "C";
+          const sub = t.role === "input" ? "input" : t.role === "supply" ? `+${mod.power.nominal_voltage}` : "DC COM";
+          const flow = t.role === "input" && lit === t.channel;
+          const stop = bad === t.n;
+          const color = stop ? C.rose : flow ? C.signal_cyan : t.role === "supply" ? C.amber : t.role === "common" ? C.text_mute : C.signal_cyan;
+          const lead = landed[t.n];
+          return (
+            <button
+              key={t.n}
+              type="button"
+              disabled={!onTerm}
+              onClick={onTerm ? () => onTerm(t.n) : undefined}
+              onDragOver={onDropData ? e => e.preventDefault() : undefined}
+              onDrop={
+                onDropData
+                  ? e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onDropData(t.n, e.dataTransfer.getData("text/plain"));
+                    }
+                  : undefined
+              }
+              aria-label={`Terminal ${t.n}, ${name} ${sub}${lead ? `, ${lead} landed` : ""}${flow ? `, ${flowText.toLowerCase()}` : ""}`}
+              style={{
+                gridRow: Math.floor(t.n / cols) + 1,
+                gridColumn: (t.n % cols) + 1,
+                minHeight: TOUCH_MIN + 12,
+                display: "grid",
+                alignContent: "start",
+                gap: 2,
+                padding: "4px 6px",
+                textAlign: "left",
+                border: `1px solid ${stop || flow ? color : armed && onTerm ? C.signal_cyan : C.border}`,
+                borderRadius: 4,
+                background: stop || flow ? `${color}14` : C.panel,
+                color: C.text,
+                cursor: onTerm ? "pointer" : "default",
+                font: "inherit",
+              }}
+            >
+              <span style={{ display: "flex", justifyContent: "space-between", gap: 4 }}>
+                <span style={{ fontFamily: MONO_FONT, fontSize: 10, color: C.text_dim }}>{t.n}</span>
+                <span style={{ fontFamily: MONO_FONT, fontSize: 12, fontWeight: 700, color }}>{name}</span>
+              </span>
+              <span style={{ fontFamily: MONO_FONT, fontSize: 10, color: C.text_mute }}>{sub}</span>
+              {lead && <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: C.text }}>← {lead}</span>}
+              {flow && <span style={{ fontFamily: MONO_FONT, fontSize: 9, color: C.signal_cyan }}>{flowText}</span>}
+            </button>
+          );
+        })}
+      </div>
+      <figcaption style={{ fontSize: 12, color: C.text_mute, display: "grid", gap: 2 }}>
+        <span>
+          V = +{mod.power.nominal_voltage} (terminals {mod.power.field_positive_terminal.join(", ")}) · C = DC common (terminals {mod.power.field_common_terminal.join(", ")})
+        </span>
+        <span>
+          {mod.input_topology === "sinking" ? "Sinking" : "Sourcing"} input · on-state {mod.power.on_state_min} min, {mod.power.on_state_max} max
+        </span>
+        <Cites cites={[ssCite(mod)]} />
+      </figcaption>
+    </figure>
+  );
+}
+
+function SsSensor({ sensor, showType, assign = {}, armed, onArm, draggable, onDragSensor, disabled }) {
+  const C = useC();
+  return (
+    <div
+      draggable={!!onDragSensor && !disabled}
+      onDragStart={onDragSensor ? e => e.dataTransfer.setData("text/plain", `sensor:${sensor.id}`) : undefined}
+      aria-label={`${sensor.name}${showType ? `, ${sensor.type} output` : ""}`}
+      style={{ display: "grid", gap: 8, padding: 12, border: `1px solid ${C.border}`, borderRadius: 6, background: C.bg, cursor: onDragSensor && !disabled ? "grab" : "default", minWidth: 0 }}
+    >
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "baseline" }}>
+        <span style={{ fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 16, color: C.text }}>{sensor.name}</span>
+        {showType && <Chip color={C.signal_cyan}>{sensor.type}</Chip>}
+      </div>
+      <p style={{ margin: 0, fontSize: 13, color: C.text }}>{sensor.behavior}</p>
+      {onArm && (
+        <div role="group" aria-label="Sensor leads" style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          {SS_LEADS.map(l => {
+            const on = armed === l.id;
+            const at = assign[l.id];
+            return (
+              <button
+                key={l.id}
+                type="button"
+                draggable={!disabled}
+                disabled={disabled}
+                onDragStart={e => e.dataTransfer.setData("text/plain", `lead:${l.id}`)}
+                onClick={() => onArm(on ? null : l.id)}
+                aria-pressed={on}
+                aria-label={`Lead ${l.label}, ${l.role}${at !== undefined && at !== "" ? `, on terminal ${at}` : ", not landed"}`}
+                style={{ minHeight: TOUCH_MIN, minWidth: 64, padding: "0 10px", border: `1px solid ${on ? C.signal_cyan : C.border}`, borderRadius: 4, background: on ? `${C.signal_cyan}18` : C.panel, color: C.text, fontFamily: MONO_FONT, fontSize: 12, cursor: disabled ? "default" : "grab" }}
+              >
+                {l.label}
+                {at !== undefined && at !== "" ? ` → ${at}` : ""}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// A path is drawn only where the outcome establishes it: current flowing
+// (ok, or through another channel) or a sensor/input pairing that cannot flow.
+function ssPathShown(result) {
+  if (!result || !Number.isInteger(result.ch)) return null;
+  if (result.id === "ok" || result.id === "wrongChannel") return "flow";
+  return result.pairing ? "blocked" : null;
+}
+
+function SsPath({ mod, result }) {
+  const C = useC();
+  const reduced = useReducedMotion();
+  const ok = ssPathShown(result) === "flow";
+  const ch = result.ch;
+  if (!ssPathShown(result)) return null;
+  // A blocked pairing has no path to draw: the path template names the switch
+  // type that belongs to this topology, which is not the sensor landed here.
+  if (!ok) return <p aria-label={`Current path, ${mod.module} input ${ch}: none`} style={{ margin: 0, fontFamily: MONO_FONT, fontSize: 11, color: C.rose }}>NO CURRENT: THE PATH DOES NOT COMPLETE</p>;
+  const p = ssPath(mod, ch);
+  const color = ok ? C.signal_cyan : C.rose;
+  return (
+    <div style={{ display: "grid", gap: 6 }}>
+      <ol aria-label={`Current path, ${mod.module} input ${ch}`} style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center", margin: 0, padding: 0, listStyle: "none" }}>
+        {p.steps.map((name, i) => (
+          <li key={i} aria-label={`${name}: ${ok ? "current" : "no current"}`} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            {i > 0 && (
+              <svg width="22" height="10" aria-hidden="true">
+                <line x1="0" y1="5" x2="22" y2="5" stroke={ok ? C.signal_cyan : C.border} strokeWidth="2" strokeDasharray={ok ? "6 10" : "none"} style={{ animation: ok && !reduced ? "flow 0.8s linear infinite" : "none" }} />
+              </svg>
+            )}
+            <span style={{ padding: "5px 8px", border: `1px solid ${ok ? color : C.border}`, borderRadius: 4, background: ok ? `${color}12` : "transparent", fontSize: 12, color: ok ? C.text : C.text_mute, whiteSpace: "nowrap" }}>{name}</span>
+          </li>
+        ))}
+      </ol>
+      {!ok && <p style={{ margin: 0, fontFamily: MONO_FONT, fontSize: 11, color: C.rose }}>NO CURRENT: THE PATH DOES NOT COMPLETE</p>}
+      {ok && <p style={{ margin: 0, fontFamily: MONO_FONT, fontSize: 11, color: C.text_mute }}>{p.power}</p>}
+    </div>
+  );
+}
+
+function SourcingSinking({ onResult, onStep }) {
+  const C = useC();
+  // Ribbon: one step for this tool, 3. Check signal path (user-approved mapping).
+  useEffect(() => {
+    if (onStep) onStep(3);
+  }, []);
+  const [t, setT] = useState(ssLoad);
+  useEffect(() => saveTool(SS_KEY, t), [t]);
+  const s = t.session;
+  const ch = SS_CH[s.idx];
+  const set = patch => setT(x => ({ ...x, session: { ...x.session, ...patch } }));
+
+  // Rule 9 and 10: each module comes from its own object and must validate.
+  const modIds = ch.kind === "wire" ? [ch.module] : ch.modules;
+  const mods = modIds.map(ssModule);
+  const problems = modIds.flatMap((id, i) => ssValidate(mods[i], id));
+  const halted = problems.length > 0;
+
+  const miss = what => ({ misses: s.misses + 1, firstMiss: s.firstMiss || what });
+  const fresh = !t.played.includes(ch.id);
+  const retryXp = fresh ? SS_XP_RETRY : 0;
+
+  const finish = (landing, pairText) => {
+    const clean = s.misses === 0;
+    onResult({
+      xp: fresh ? (clean ? SS_XP_FIRST : SS_XP_RETRY) : 0,
+      firstTry: clean,
+      firstPass: fresh && clean,
+      radar: SS_RADAR,
+      note: { tool: "1.2", tag: null, text: `Sourcing or Sinking?: ${ch.title}: ${pairText}${landing ? `, ${landing}` : ""} — ${SSK.teachingPoint.text}` },
+    });
+    setT(x => ({
+      ...x,
+      played: fresh ? [...x.played, ch.id] : x.played,
+      log: [{ id: ch.title, pair: `${pairText}${landing ? `; ${landing}` : ""}`, attempts: s.misses + 1, first: s.firstMiss || "clean", at: new Date().toISOString() }, ...x.log],
+    }));
+  };
+
+  // Wire challenges.
+  const mod = ch.kind === "wire" && !halted ? mods[0] : null;
+  const sensor = ch.kind === "wire" ? SS_SENSOR[ch.sensor] : null;
+  const typeOk = sensor && s.type === sensor.type;
+  const topoOk = mod && s.topo === mod.input_topology;
+  const allLanded = SS_LEADS.every(l => Number.isInteger(s.assign[l.id]));
+
+  const pickType = v => {
+    if (!sensor || typeOk || s.done) return;
+    if (v === sensor.type) set({ type: v, typeMiss: null });
+    else set({ typeMiss: v, ...miss(`called the sensor ${v}`) });
+  };
+  const pickTopo = v => {
+    if (!mod || !typeOk || topoOk || s.done) return;
+    if (v === mod.input_topology) set({ topo: v, topoMiss: null });
+    else set({ topoMiss: v, ...miss(`called the module ${v}`) });
+  };
+  const land = (lead, n) => {
+    if (s.done) return;
+    const assign = { ...s.assign };
+    // A terminal holds one lead in this drill: landing moves any lead already there.
+    for (const k of Object.keys(assign)) if (assign[k] === n && k !== lead) delete assign[k];
+    if (n === null) delete assign[lead];
+    else assign[lead] = n;
+    set({ assign, armed: null, result: null });
+  };
+  const checkWire = () => {
+    if (halted || !topoOk || !allLanded || s.done) return;
+    const r = ssCheck(mod, sensor, ch.channel, s.assign);
+    if (r.id !== "ok") {
+      set({ result: r, checks: s.checks + 1, ...miss(SS_OUT[r.id].title.replace(/\.$/, "").toLowerCase()) });
+      return;
+    }
+    const landing = SS_LEADS.map(l => `${l.label} → ${s.assign[l.id]}`).join(", ");
+    finish(landing, `${sensor.type} output → ${mod.module} ${mod.input_topology} input, IN ${ch.channel}`);
+    set({ result: r, done: true });
+  };
+
+  // Match challenge: which module each sensor goes to. Each module takes one sensor.
+  const pairFor = sid => s.pairs[sid] || "";
+  const setPair = (sid, mid) => {
+    if (s.done || !mid) return;
+    const other = ch.sensors.find(x => x !== sid);
+    const otherMod = ch.modules.find(x => x !== mid);
+    set({ pairs: { [sid]: mid, [other]: otherMod }, result: null });
+  };
+  const matchResults = ch.kind === "match" && !halted && s.result
+    ? ch.sensors.map(sid => {
+        const m = ssModule(s.pairs[sid]);
+        return { sid, mod: m, r: ssCheck(m, SS_SENSOR[sid], ch.channel, ssTableLanding(m, ch.channel)) };
+      })
+    : null;
+  const checkMatch = () => {
+    if (halted || s.done || !ch.sensors.every(sid => s.pairs[sid])) return;
+    const rs = ch.sensors.map(sid => ssCheck(ssModule(s.pairs[sid]), SS_SENSOR[sid], ch.channel, ssTableLanding(ssModule(s.pairs[sid]), ch.channel)));
+    const ok = rs.every(r => r.id === "ok");
+    if (!ok) {
+      set({ result: { id: "pairing" }, checks: s.checks + 1, ...miss("paired each sensor with the wrong input type") });
+      return;
+    }
+    const pairText = ch.sensors.map(sid => `${SS_SENSOR[sid].type} → ${s.pairs[sid]} ${ssModule(s.pairs[sid]).input_topology}`).join("; ");
+    finish("", pairText);
+    set({ result: { id: "ok" }, done: true });
+  };
+
+  const next = () => setT(x => ({ ...x, session: ssSession((x.session.idx + 1) % SS_CH.length) }));
+
+  useEffect(() => {
+    const onKey = e => {
+      const tag = l4KeyTarget(e);
+      if (tag === null) return;
+      if (ch.kind === "wire" && /^[1-2]$/.test(e.key) && !s.done) {
+        const i = Number(e.key) - 1;
+        if (!typeOk) {
+          e.preventDefault();
+          pickType(SS_TYPES[i]);
+        } else if (!topoOk) {
+          e.preventDefault();
+          pickTopo(SS_TOPOLOGIES[i]);
+        }
+      } else if (e.key === "Escape" && s.armed) {
+        set({ armed: null });
+      } else if (e.key === "Enter" && tag !== "BUTTON") {
+        if (s.done) {
+          e.preventDefault();
+          next();
+        } else if (ch.kind === "wire" && topoOk && allLanded) {
+          e.preventDefault();
+          checkWire();
+        } else if (ch.kind === "match" && ch.sensors.every(sid => s.pairs[sid])) {
+          e.preventDefault();
+          checkMatch();
+        }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  if (halted) {
+    return (
+      <div style={{ display: "grid", gap: 12 }}>
+        <div><TrainingBadge /></div>
+        <SsHalt problems={problems} />
+      </div>
+    );
+  }
+
+  const onDropData = (n, data) => {
+    if (s.done) return;
+    if (ch.kind === "wire" && n !== null && data.startsWith("lead:")) land(data.slice(5), n);
+  };
+  const landed = mod ? Object.fromEntries(SS_LEADS.filter(l => Number.isInteger(s.assign[l.id])).map(l => [s.assign[l.id], l.label])) : {};
+  const out = s.result && SS_OUT[s.result.id];
+  const selStyle = { minHeight: TOUCH_MIN, padding: "0 8px", background: C.bg, color: C.text, border: `1px solid ${C.border}`, borderRadius: 4, fontFamily: MONO_FONT, fontSize: 13 };
+  const tpCite = (
+    <>
+      <p style={{ margin: "8px 0 0", fontWeight: 600 }}>{SSK.teachingPoint.text}</p>
+      <Cites cites={[SSK.teachingPoint.source]} />
+      <p style={{ margin: "6px 0 0", color: C.text_mute }}>{SSK.neutral.text}</p>
+    </>
+  );
+  const trapBlock = (
+    <>
+      <p style={{ margin: "6px 0 0", color: C.text_mute }}>
+        Trap 6, "{SSK.trap.trap}": "{SSK.trap.looksLike}" Fix: "{SSK.trap.fix}"
+      </p>
+      <Cites cites={[SSK.trap.source]} />
+    </>
+  );
+
+  return (
+    <div style={{ display: "grid", gap: 20 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+        <TrainingBadge />
+        <Chip color={C.signal_cyan}>CHALLENGE {s.idx + 1} / {SS_CH.length}</Chip>
+        <Chip color={C.lime}>CLEARED {t.played.length} / {SS_CH.length}</Chip>
+        <span style={{ fontSize: 12, color: C.text_dim }}>
+          {ch.kind === "wire" ? "Keys: 1-2 answer, Enter checks the wiring" : "Drag a sensor onto a module, or use the selects; Enter checks"}
+        </span>
+      </div>
+      <p style={{ margin: 0, fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 20, color: C.text }}>{ch.title}</p>
+
+      {ch.kind === "wire" && (
+        <>
+          <section aria-labelledby="ss-type-h" style={{ display: "grid", gap: 8 }}>
+            <H as="h3"><span id="ss-type-h">1. What output does this sensor have?</span></H>
+            <SsSensor sensor={sensor} showType={typeOk} />
+            <div role="group" aria-labelledby="ss-type-h" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {SS_TYPES.map((v, i) => (
+                <Btn key={v} variant={s.type === v ? "primary" : "ghost"} color={s.typeMiss === v ? C.rose : undefined} pressed={s.type === v} disabled={typeOk} onClick={() => pickType(v)} ariaLabel={`${i + 1}: ${v}`}>
+                  {i + 1}: {v}
+                </Btn>
+              ))}
+            </div>
+            <div aria-live="polite">
+              {s.typeMiss && !typeOk && (
+                <Verdict key={`t${s.misses}`} ok={false} title={`Not ${s.typeMiss}.`}>
+                  <p style={{ margin: 0 }}>Read which side of the supply the output switch connects OUT to when the target is present, then pick again. Finishing now is worth {retryXp} XP.</p>
+                </Verdict>
+              )}
+            </div>
+          </section>
+
+          {typeOk && (
+            <section aria-labelledby="ss-topo-h" style={{ display: "grid", gap: 8 }}>
+              <H as="h3"><span id="ss-topo-h">2. What kind of input is this module?</span></H>
+              {topoOk ? (
+                <p style={{ margin: 0, fontSize: 13, color: C.text }}>
+                  {mod.module}: "{mod.module_marking}", a {mod.input_topology} input.
+                </p>
+              ) : (
+                <div className="tool-scroll">
+                  <PioModule mod={mod} />
+                </div>
+              )}
+              <div role="group" aria-labelledby="ss-topo-h" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {SS_TOPOLOGIES.map((v, i) => (
+                  <Btn key={v} variant={s.topo === v ? "primary" : "ghost"} color={s.topoMiss === v ? C.rose : undefined} pressed={s.topo === v} disabled={topoOk} onClick={() => pickTopo(v)} ariaLabel={`${i + 1}: ${v}`}>
+                    {i + 1}: {v === "sinking" ? "Sinking" : "Sourcing"}
+                  </Btn>
+                ))}
+              </div>
+              <div aria-live="polite">
+                {s.topoMiss && !topoOk && (
+                  <Verdict key={`p${s.misses}`} ok={false} title={`Not ${s.topoMiss}.`}>
+                    <p style={{ margin: 0 }}>The module face reads "{mod.module_marking}". Pick again. Finishing now is worth {retryXp} XP.</p>
+                    <Cites cites={[`${mod.source_publication} ${mod.source_marking}`]} />
+                  </Verdict>
+                )}
+              </div>
+            </section>
+          )}
+
+          {topoOk && (
+            <section aria-labelledby="ss-wire-h" style={{ display: "grid", gap: 10 }}>
+              <H as="h3"><span id="ss-wire-h">3. Land the sensor on input {ch.channel}</span></H>
+              <p style={{ margin: 0, fontSize: 13, color: C.text_mute }}>
+                Drag a lead onto a terminal, or pick a lead and then a terminal. Each lead also has a select below.
+              </p>
+              <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", alignItems: "start" }}>
+                <SsSensor sensor={sensor} showType assign={s.assign} armed={s.armed} onArm={id => set({ armed: id })} disabled={s.done} />
+                <div className="tool-scroll">
+                  <PioModule
+                    mod={mod}
+                    landed={landed}
+                    lit={s.result ? s.result.lit ?? null : null}
+                    bad={s.result && s.result.at ? s.assign[s.result.at] : null}
+                    armed={!!s.armed}
+                    onTerm={s.done ? undefined : n => (s.armed ? land(s.armed, n) : null)}
+                    onDropData={s.done ? undefined : onDropData}
+                  />
+                </div>
+              </div>
+              <div style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
+                {SS_LEADS.map(l => (
+                  <label key={l.id} style={{ display: "grid", gap: 4, fontSize: 13, color: C.text }}>
+                    <span>Lead <span style={{ fontFamily: MONO_FONT, color: C.signal_cyan }}>{l.label}</span> ({l.role})</span>
+                    <select
+                      value={Number.isInteger(s.assign[l.id]) ? String(s.assign[l.id]) : ""}
+                      disabled={s.done}
+                      onChange={e => land(l.id, e.target.value === "" ? null : Number(e.target.value))}
+                      aria-label={`Lead ${l.label}: terminal`}
+                      style={selStyle}
+                    >
+                      <option value="">Not landed</option>
+                      {ssTerminals(mod).map(tm => (
+                        <option key={tm.n} value={String(tm.n)}>
+                          {tm.n} ({tm.role === "input" ? `IN ${tm.channel}` : tm.role === "supply" ? "V" : "C"})
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+              </div>
+              {!s.done && (
+                <div>
+                  <Btn onClick={checkWire} disabled={!allLanded} ariaLabel="Check the wiring">Check wiring</Btn>
+                </div>
+              )}
+              <ConstructedNote source={`${SSK.leads.source}: sensor and lead labels. Terminals: ${ssCite(mod)}.`} />
+            </section>
+          )}
+
+          <div aria-live="polite" style={{ display: "grid", gap: 12 }}>
+            {ssPathShown(s.result) && (
+              <>
+                <H as="h3">Where the current goes</H>
+                <SsPath mod={mod} result={s.result} />
+              </>
+            )}
+            {s.result && !s.done && out && (
+              <Verdict key={s.checks} ok={false} title={out.title}>
+                <p style={{ margin: 0 }}>{ssFill(out.text, s.result.fill)}</p>
+                {s.result.id === "tableMismatch" && <Cites cites={[`${mod.source_publication} p.${mod.source_page}, ${mod.source_table}`]} />}
+                {s.result.pairing && trapBlock}
+                <ConstructedNote source={SSK.outcomes.source} />
+                <p style={{ margin: "6px 0 0", fontWeight: 600 }}>Move a lead and check again. Finishing now is worth {retryXp} XP.</p>
+              </Verdict>
+            )}
+            {s.done && (
+              <Verdict ok title={s.misses === 0 ? "Current path complete, first try." : `Current path complete after ${s.misses} miss${s.misses === 1 ? "" : "es"}.`}>
+                <p style={{ margin: 0 }}>
+                  {sensor.type} output on the {mod.input_topology} {mod.module}: input {ch.channel} turns on. The Rockwell table pairs input {ch.channel} (terminal {ssTableLanding(mod, ch.channel).out}) with C terminal {ssTableLanding(mod, ch.channel).neg} and V terminal {ssTableLanding(mod, ch.channel).pos}.
+                </p>
+                <Cites cites={[ssCite(mod)]} />
+                {tpCite}
+                <ConstructedNote source={`${SSK.paths.source}: current-path wording.`} />
+                <div style={{ marginTop: 10 }}>
+                  <Btn onClick={next} ariaLabel="Next challenge">Next challenge</Btn>
+                </div>
+              </Verdict>
+            )}
+          </div>
+        </>
+      )}
+
+      {ch.kind === "match" && (
+        <>
+          <section aria-labelledby="ss-match-h" style={{ display: "grid", gap: 10 }}>
+            <H as="h3"><span id="ss-match-h">Pair each sensor with the input it can drive</span></H>
+            <p style={{ margin: 0, fontSize: 13, color: C.text_mute }}>
+              Both sensors are pre-wired to input {ch.channel} per each module's Rockwell table. Only the pairing is yours.
+            </p>
+            <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", alignItems: "start" }}>
+              {ch.sensors.map(sid => (
+                <div key={sid} style={{ display: "grid", gap: 6 }}>
+                  <SsSensor sensor={SS_SENSOR[sid]} showType={false} onDragSensor disabled={s.done} />
+                  <label style={{ display: "grid", gap: 4, fontSize: 13, color: C.text }}>
+                    <span>{SS_SENSOR[sid].name} goes to</span>
+                    <select value={pairFor(sid)} disabled={s.done} onChange={e => setPair(sid, e.target.value)} aria-label={`${SS_SENSOR[sid].name}: module`} style={selStyle}>
+                      <option value="" disabled>Choose a module</option>
+                      {ch.modules.map(mid => <option key={mid} value={mid}>{mid}</option>)}
+                    </select>
+                  </label>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", alignItems: "start" }}>
+              {mods.map(m => {
+                const sid = ch.sensors.find(x => s.pairs[x] === m.module);
+                const mr = matchResults && matchResults.find(x => x.mod.module === m.module);
+                const land0 = ssTableLanding(m, ch.channel);
+                const tagA = sid === ch.sensors[0] ? "A" : "B";
+                const landedM = sid ? { [land0.pos]: `${tagA} +V`, [land0.out]: `${tagA} OUT`, [land0.neg]: `${tagA} 0V` } : {};
+                return (
+                  <div key={m.module} className="tool-scroll" style={{ display: "grid", gap: 6 }}>
+                    <PioModule
+                      mod={m}
+                      label={`${m.module} module face${sid ? `, ${SS_SENSOR[sid].name} landed` : ""}`}
+                      landed={landedM}
+                      lit={mr && mr.r.id === "ok" ? mr.r.lit : null}
+                      onDropData={s.done ? undefined : (n, data) => data.startsWith("sensor:") && setPair(data.slice(7), m.module)}
+                    />
+                    {mr && <SsPath mod={m} result={mr.r} />}
+                  </div>
+                );
+              })}
+            </div>
+            {!s.done && (
+              <div>
+                <Btn onClick={checkMatch} disabled={!ch.sensors.every(sid => s.pairs[sid])} ariaLabel="Check the pairing">Check pairing</Btn>
+              </div>
+            )}
+            <ConstructedNote source={`${SSK.challenges.source}: sensors and pre-wiring choice. Terminals: ${mods.map(ssCite).join(" / ")}.`} />
+          </section>
+          <div aria-live="polite" style={{ display: "grid", gap: 12 }}>
+            {s.result && !s.done && (
+              <Verdict key={s.checks} ok={false} title={SS_OUT.pnpOnSourcing.title}>
+                {matchResults.map(x => (
+                  <p key={x.sid} style={{ margin: "0 0 4px" }}>
+                    {SS_SENSOR[x.sid].name} on {x.mod.module}: {SS_OUT[x.r.id] && x.r.id !== "ok" ? SS_OUT[x.r.id].text : "path complete."}
+                  </p>
+                ))}
+                {trapBlock}
+                <ConstructedNote source={SSK.outcomes.source} />
+                <p style={{ margin: "6px 0 0", fontWeight: 600 }}>Swap the pairing and check again. Finishing now is worth {retryXp} XP.</p>
+              </Verdict>
+            )}
+            {s.done && (
+              <Verdict ok title={s.misses === 0 ? "Both paths complete, first try." : `Both paths complete after ${s.misses} miss${s.misses === 1 ? "" : "es"}.`}>
+                {ch.sensors.map(sid => {
+                  const m = ssModule(s.pairs[sid]);
+                  return (
+                    <p key={sid} style={{ margin: "0 0 4px" }}>
+                      {SS_SENSOR[sid].name}: {SS_SENSOR[sid].type} output → {m.module}, {m.input_topology} input ("{m.module_marking}").
+                    </p>
+                  );
+                })}
+                <Cites cites={mods.map(ssCite)} />
+                {tpCite}
+                <ConstructedNote source={`${SSK.paths.source}: current-path wording.`} />
+                <div style={{ marginTop: 10 }}>
+                  <Btn onClick={next} ariaLabel="Next challenge">Next challenge</Btn>
+                </div>
+              </Verdict>
+            )}
+          </div>
+        </>
+      )}
+
+      <DecisionLog
+        title="Wiring log"
+        headers={["Challenge", "Pairing and landing"]}
+        log={t.log}
+        cells={r => [r.id, r.pair]}
+        empty="Each path you complete is logged here and in Field Notes."
+      />
+    </div>
+  );
+}
+
+/* --------------------------------------------------------------------------
    Tool 1.3: Contact Logic Puzzle
    The user's locked contact model (sources/contact-logic-spec.md):
    M1_COIL = STOP AND (START OR M1_AUX_PREV), M1_AUX_NEXT = M1_COIL.
@@ -14833,6 +15858,11 @@ const TOOLS = {
   "1.1": {
     component: WireItLive,
     source: "Circuit: sources/wire-it-live-circuit.png.svg and sources/wire-it-live-spec.md (user-provided spec).",
+  },
+  "1.2": {
+    component: SourcingSinking,
+    ribbon: true,
+    source: "Terminal numbers, channel pairings, module markings, and on-state voltages: Rockwell 1734-IN051 (1734-IN051N-EN-E), 1734-IB4: p.9 Figure 5 and Table 2, p.12 Figure 6 and specifications; Rockwell 1734-IN052 (1734-IN052J-EN-E), 1734-IV4: p.9 Figure 4, p.10 terminal table after Figure 4, p.12 Figure 8, p.13 specifications. Trap: Field Learning Plan.pdf p.10. Teaching point: user-provided spec. Sensors, challenges, outcomes, and current-path wording: constructed — training scenario, no source citation.",
   },
   "1.3": {
     component: ContactLogic,

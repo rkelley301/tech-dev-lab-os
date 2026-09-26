@@ -19,6 +19,8 @@ field content. Do not invent values, hazards, or procedures.
 | wire-it-live-spec.md                       | Tool 1.1 circuit spec, as provided by the user |
 | contact-logic-spec.md                      | Tool 1.3 contact model and truth table, as provided by the user |
 | timer-trace-spec.md                        | Tool 3.3 TON model (Rockwell 1756-RM018), as provided by the user |
+| 1734-IN051_-en-e.pdf                       | Tool 1.2: Rockwell 1734-IN051N-EN-E (Aug 2025), 1734-IB4 sinking input: Fig 5 + Table 2 p.9, specs p.12-13 |
+| 1734-IN052_-en-e.pdf                       | Tool 1.2: Rockwell 1734-IN052J-EN-E (Aug 2025), 1734-IV4 sourcing input: Fig 4 p.9, terminal table p.10, specs p.13 |
 
 ## Where to find specific things
 - Field symptoms: IC_Fundamentals_Drill_Input_Library.pdf p.13–15
@@ -35,3 +37,4 @@ field content. Do not invent values, hazards, or procedures.
 - Seven filmed faults + PIC-510 capstone: course-design.pdf p.2
 - 30-second diagnostic sequence: Field Learning Plan.pdf p.13–14
 - Loop wiring drill (devices, [loop] topologies, Tier 5 faults, one-variable progression): IC_Fundamentals_Drill_Input_Library.pdf p.18–22
+- POINT I/O terminal maps (1734-IB4 / 1734-IV4): 1734-IN051 p.9 Table 2; 1734-IN052 p.10 (table after Figure 4)

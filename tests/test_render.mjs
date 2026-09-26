@@ -1,6 +1,6 @@
 // Every tool slot, both themes, four widths: renders, stays inside the main
 // column, no page-level horizontal scroll, no colors from the other palette,
-// no console errors. 1.2 must stay "Not yet built."
+// no console errors. All 16 slots are built.
 import { run, sleep } from "./lib.mjs";
 
 const WIDTHS = [900, 1200, 1400, 1920];
@@ -9,7 +9,7 @@ const THEMES = ["dark", "light"];
 await run("render sweep", async (p, check) => {
   await p.fresh("dark");
   const slots = await p.ev("LAYERS.flatMap(l => l.tools.map(t => ({ layer: l.num, id: t.id, name: t.name, built: !!TOOLS[t.id] })))");
-  check("16 tool slots, 15 built, 1.2 not built", slots.length === 16 && slots.filter(s => s.built).length === 15 && !slots.find(s => s.id === "1.2").built, slots.filter(s => !s.built).map(s => s.id));
+  check("16 tool slots, all built", slots.length === 16 && slots.every(s => s.built), slots.filter(s => !s.built).map(s => s.id));
 
   for (const theme of THEMES) {
     await p.fresh(theme);

@@ -42,6 +42,10 @@ await run("cross-cutting", async (p, check) => {
   await p.tool(1, "1.3");
   r = await ribbon();
   check("ribbon on 1.3 lights step 4", r && r.active === "4" && r.h === 32, r);
+  // 1.2 -> 3. Check signal path (user-approved).
+  await p.tool(1, "1.2");
+  r = await ribbon();
+  check("ribbon on 1.2 lights step 3", r && r.active === "3" && r.h === 32, r);
   await p.tool(3, "3.3");
   r = await ribbon();
   check("ribbon on 3.3 lights step 5", r && r.active === "5" && r.h === 32, r);

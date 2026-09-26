@@ -10073,5 +10073,296 @@
       "chart": true,
       "note": "The simulation clock, chart layout, and transition log are constructed. They draw only the four regions above."
     }
+  },
+  "pointIO": {
+    "modules": [
+      {
+        "module": "1734-IB4",
+        "family": "POINT I/O",
+        "type": "digital_input",
+        "input_topology": "sinking",
+        "module_marking": "24VDC Sink Input",
+        "channels": [
+          {
+            "channel": 0,
+            "input_terminal": 0,
+            "common_terminal": 4,
+            "supply_terminal": 6
+          },
+          {
+            "channel": 1,
+            "input_terminal": 1,
+            "common_terminal": 5,
+            "supply_terminal": 7
+          },
+          {
+            "channel": 2,
+            "input_terminal": 2,
+            "common_terminal": 4,
+            "supply_terminal": 6
+          },
+          {
+            "channel": 3,
+            "input_terminal": 3,
+            "common_terminal": 5,
+            "supply_terminal": 7
+          }
+        ],
+        "power": {
+          "nominal_voltage": "24 VDC",
+          "on_state_min": "10V DC",
+          "on_state_max": "28.8V DC",
+          "field_positive_terminal": [
+            6,
+            7
+          ],
+          "field_common_terminal": [
+            4,
+            5
+          ]
+        },
+        "source_publication": "Rockwell 1734-IN051",
+        "source_revision": "1734-IN051N-EN-E, August 2025",
+        "source_page": 9,
+        "source_figure": "Figure 5 - Wiring for 1734-IB4, 1734-IB4K – Sinking Input",
+        "source_table": "Table 2 - Module Wiring",
+        "source_spec_page": 12,
+        "source_file": "sources/1734-IN051_-en-e.pdf",
+        "source_marking": "1734-IN051 p.12, Figure 6"
+      },
+      {
+        "module": "1734-IV4",
+        "family": "POINT I/O",
+        "type": "digital_input",
+        "input_topology": "sourcing",
+        "module_marking": "24VDC Source Input",
+        "channels": [
+          {
+            "channel": 0,
+            "input_terminal": 0,
+            "common_terminal": 4,
+            "supply_terminal": 6
+          },
+          {
+            "channel": 1,
+            "input_terminal": 1,
+            "common_terminal": 5,
+            "supply_terminal": 7
+          },
+          {
+            "channel": 2,
+            "input_terminal": 2,
+            "common_terminal": 4,
+            "supply_terminal": 6
+          },
+          {
+            "channel": 3,
+            "input_terminal": 3,
+            "common_terminal": 5,
+            "supply_terminal": 7
+          }
+        ],
+        "power": {
+          "nominal_voltage": "24 VDC",
+          "on_state_min": "10V DC",
+          "on_state_max": "28.8V DC",
+          "field_positive_terminal": [
+            6,
+            7
+          ],
+          "field_common_terminal": [
+            4,
+            5
+          ]
+        },
+        "source_publication": "Rockwell 1734-IN052",
+        "source_revision": "1734-IN052J-EN-E, August 2025",
+        "source_page": 9,
+        "source_figure": "Figure 4 - POINT I/O Source Input Module Wiring – 1734-IV4",
+        "source_table": "Unnumbered terminal table following Figure 4, page 10",
+        "source_spec_page": 13,
+        "source_file": "sources/1734-IN052_-en-e.pdf",
+        "source_marking": "1734-IN052 p.12, Figure 8"
+      }
+    ],
+    "source_conflicts": [
+      {
+        "field": "NC definition",
+        "values": [
+          {
+            "value": "Normally closed",
+            "location": "IN052 p.9, Figure 3 legend"
+          },
+          {
+            "value": "No connection",
+            "location": "IN052 p.9, module-face legend"
+          }
+        ],
+        "resolution": "UNSPECIFIED — DO NOT INFER",
+        "note": "Two legends on the same page disagree. Do not use either value in the rendered tool."
+      }
+    ]
+  },
+  "sourcingSinking": {
+    "source": "Constructed — training scenario, no source citation for leads, sensors, challenges, outcomes, and current paths. Trap: Field Learning Plan.pdf p.10. Teaching point: user-provided spec (2026-09-25).",
+    "teachingPoint": {
+      "text": "PNP output → sinking PLC input. NPN output → sourcing PLC input.",
+      "source": "User-provided spec (2026-09-25)",
+      "constructed": false
+    },
+    "neutral": {
+      "text": "Neither output type is better than the other. The pairing decides whether current flows: the sensor output and the PLC input must be opposite types.",
+      "constructed": true,
+      "source": "Constructed — training scenario, no source citation"
+    },
+    "trap": {
+      "trap": "Misreading sourcing vs sinking",
+      "looksLike": "You wire a sensor to a PLC input card and get no signal. The card is sourcing, the sensor is sinking (or vice versa).",
+      "fix": "Know your card type before you wire. This is one of the most common 24 VDC mistakes.",
+      "source": "Field Learning Plan.pdf p.10",
+      "constructed": false
+    },
+    "leads": {
+      "constructed": true,
+      "source": "Constructed — training scenario, no source citation",
+      "items": [
+        {
+          "id": "pos",
+          "label": "+V",
+          "role": "sensor supply +"
+        },
+        {
+          "id": "out",
+          "label": "OUT",
+          "role": "switched output"
+        },
+        {
+          "id": "neg",
+          "label": "0V",
+          "role": "sensor supply −"
+        }
+      ]
+    },
+    "sensors": {
+      "constructed": true,
+      "source": "Constructed — training scenario, no source citation",
+      "items": [
+        {
+          "id": "pnp",
+          "type": "PNP",
+          "name": "3-wire proximity switch, sensor A",
+          "switchesTo": "+V",
+          "behavior": "Target present: the output switch closes, connecting OUT to +V. Target absent: OUT is open."
+        },
+        {
+          "id": "npn",
+          "type": "NPN",
+          "name": "3-wire proximity switch, sensor B",
+          "switchesTo": "0V",
+          "behavior": "Target present: the output switch closes, connecting OUT to 0V. Target absent: OUT is open."
+        }
+      ]
+    },
+    "challenges": {
+      "constructed": true,
+      "source": "Constructed — training scenario, no source citation",
+      "items": [
+        {
+          "id": "ss-1",
+          "kind": "wire",
+          "title": "1734-IB4 with a PNP sensor",
+          "module": "1734-IB4",
+          "sensor": "pnp",
+          "channel": 2
+        },
+        {
+          "id": "ss-2",
+          "kind": "wire",
+          "title": "1734-IV4 with an NPN sensor",
+          "module": "1734-IV4",
+          "sensor": "npn",
+          "channel": 3
+        },
+        {
+          "id": "ss-3",
+          "kind": "match",
+          "title": "Matching pairs",
+          "modules": [
+            "1734-IB4",
+            "1734-IV4"
+          ],
+          "sensors": [
+            "pnp",
+            "npn"
+          ],
+          "channel": 0
+        }
+      ]
+    },
+    "outcomes": {
+      "constructed": true,
+      "source": "Constructed — training scenario, no source citation",
+      "items": {
+        "sameTerminal": {
+          "title": "Two leads on one terminal.",
+          "text": "Two sensor leads share terminal {t}. Give each lead its own terminal."
+        },
+        "unpowered": {
+          "title": "Sensor not powered.",
+          "text": "+V lands on terminal {pos} ({posRole}) and 0V on terminal {neg} ({negRole}). The sensor takes its power from +24 VDC (V) to DC common (C); without it, the output switch never operates and no channel turns on."
+        },
+        "outNotInput": {
+          "title": "OUT is not on an input.",
+          "text": "OUT lands on terminal {out}, a {outRole} terminal. No input channel is in the path, so no channel can turn on."
+        },
+        "wrongChannel": {
+          "title": "Wrong channel.",
+          "text": "The path completes through terminal {out}, so input {got} turns on. This challenge asks for input {want}."
+        },
+        "tableMismatch": {
+          "title": "Not the terminal the Rockwell table gives.",
+          "text": "The table assigns channel {ch} {what} to terminal {want}; this lead is on terminal {got}. Land it where the table puts it."
+        },
+        "pnpOnSourcing": {
+          "title": "Current path does not complete.",
+          "text": "A PNP output switches OUT to +V, and a sourcing input also feeds current out of its terminal from +24 VDC. Both sides push from +24 VDC; there is no path to DC common, so no current flows and the input stays off."
+        },
+        "npnOnSinking": {
+          "title": "Current path does not complete.",
+          "text": "An NPN output switches OUT to 0V, and a sinking input also needs its current returned to DC common. Both sides lead to DC common; nothing supplies current into the input, so it stays off."
+        },
+        "ok": {
+          "title": "Current path complete."
+        }
+      }
+    },
+    "paths": {
+      "constructed": true,
+      "source": "Constructed — training scenario, no source citation",
+      "items": {
+        "sinking": [
+          "+24 VDC",
+          "V terminal {sup}",
+          "Sensor +V",
+          "PNP output switch (closed)",
+          "OUT",
+          "IN {ch}, terminal {in} (current in)",
+          "Sinking input circuit",
+          "DC common"
+        ],
+        "sourcing": [
+          "+24 VDC",
+          "Sourcing input circuit",
+          "IN {ch}, terminal {in} (current out)",
+          "OUT",
+          "NPN output switch (closed)",
+          "Sensor 0V",
+          "C terminal {com}",
+          "DC common"
+        ],
+        "sensorPower": "Sensor power: +24 VDC → V terminal {sup} → sensor +V → sensor → sensor 0V → C terminal {com} → DC common"
+      }
+    },
+    "terminalSource": "Terminal numbers, channel pairings, module markings, and on-state voltages come from pointIO (Rockwell 1734-IN051 / 1734-IN052), not from this key."
   }
 }
