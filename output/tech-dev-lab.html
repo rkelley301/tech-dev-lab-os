@@ -2834,679 +2834,11 @@ const BENCH = {
  "ribbonNote": "Ribbon step per drill: constructed mapping (user-approved 2026-09-25)."
 };
 </script>
-<script type="text/babel">
-/* The COST_CONSEQUENCE object below is tool-authored interface copy.
-   It names the tool's own category for each wrong-move type so the
-   user sees what class of mistake they just made. It is NOT extracted
-   from any source and must not be cited as field content. The actual
-   reason each wrong move is wrong comes from the "reason" and
-   "derivedFrom" fields on each option. */
-
-/* ==========================================================================
-   TECH DEV LAB
-   Single-file build. React 18 UMD + Babel Standalone. No server required.
-
-   Storage: app state lives in localStorage under "techDevLab.v3", tool
-   state under "techDevLab.v3.<tool>". One exception, set by request:
-   Trap Spotter uses "techDevLab.v2.trapSpotter" (see EXTRA_TOOL_KEYS;
-   Reset clears it too). The reference build in sources/tech-dev-lab.html
-   uses "techDevLab.v1". Browsers often share localStorage across files
-   opened from disk, so these keys stay clear of it and the two builds
-   can't overwrite each other's progress.
-   ========================================================================== */
-
-const { useState, useEffect, useRef, createContext, useContext } = React;
-
-/* ==========================================================================
-   1. CONSTANTS & DATA
-   ========================================================================== */
-
-// Design tokens: context/design_system.md
-// Two palettes, same shape. Components read the active one with useC().
-// Light-mode signal colors are darker so they still read as accents on white.
-const C_DARK = {
-  bg: "#0a0e14",
-  panel: "#121821",
-  border: "#1e2836",
-  signal_cyan: "#22d3ee",
-  amber: "#f5a524",
-  lime: "#84cc16",
-  rose: "#f43f5e",
-  violet: "#a78bfa",
-  text: "#e5e9f0",
-  text_mute: "#7a8699",
-  text_dim: "#7a8699",
-};
-
-const C_LIGHT = {
-  bg: "#f7f8fa",
-  panel: "#ffffff",
-  border: "#e2e5ea",
-  signal_cyan: "#0e7490",
-  amber: "#b45309",
-  lime: "#4d7c0f",
-  rose: "#be123c",
-  violet: "#6d28d9",
-  text: "#111827",
-  text_mute: "#4b5563",
-  text_dim: "#6b7280",
-};
-
-const THEMES = { dark: C_DARK, light: C_LIGHT };
-// UI preference, not progress: Reset leaves it alone.
-const THEME_KEY = "techDevLab.v3.theme";
-const THEME_FADE_MS = 200;
-const ThemeCtx = React.createContext(C_DARK);
-function useC() {
-  return React.useContext(ThemeCtx);
-}
-
-function loadTheme() {
-  try {
-    return localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark";
-  } catch (e) {
-    return "dark";
-  }
-}
-
-function saveTheme(theme) {
-  try {
-    localStorage.setItem(THEME_KEY, theme);
-  } catch (e) {
-    // Storage blocked: the theme still applies for this session.
-  }
-}
-
-const HEAD_FONT = "'Space Grotesk', sans-serif";
-const MONO_FONT = "'JetBrains Mono', monospace";
-const UI_FONT = "'Inter', system-ui, sans-serif";
-
-const MOBILE_BREAKPOINT = 900;
-const DUR_FAST = 120;
-const DUR_SLOW = 280;
-const TOUCH_MIN = 44;
-
-// Layers and tool slots: skills/orchestrator-build-lab/SKILL.md, Step 2
-const LAYERS = [
-  {
-    id: "electrical", num: 1, name: "Electrical", accent: "signal_cyan",
-    tools: [
-      { id: "1.1", name: "Wire It Live", sub: "24 VDC Start/Stop" },
-      { id: "1.2", name: "Sourcing or Sinking?" },
-      { id: "1.3", name: "Contact Logic Puzzle" },
-      { id: "1.4", name: "Trap Spotter" },
-    ],
-  },
-  {
-    id: "instrumentation", num: 2, name: "Instrumentation", accent: "signal_cyan",
-    tools: [
-      { id: "2.1", name: "Wire Count Detective" },
-      { id: "2.2", name: "Scaling Bench" },
-      { id: "2.3", name: "Calibration Record Builder" },
-      { id: "2.4", name: "Split-Half Isolator" },
-    ],
-  },
-  {
-    id: "plc", num: 3, name: "PLC", accent: "signal_cyan",
-    tools: [
-      { id: "3.1", name: "I/O Map Inspector" },
-      { id: "3.2", name: "Permissive Detective" },
-      { id: "3.3", name: "Timer Trace" },
-      { id: "3.4", name: "Symptom → First Move" },
-    ],
-  },
-  {
-    id: "programming", num: 4, name: "Programming", accent: "violet",
-    tools: [
-      { id: "4.1", name: "Rung Editor" },
-      { id: "4.2", name: "HMI Tag Bind" },
-      { id: "4.3", name: "Change Control Gate" },
-    ],
-  },
-  {
-    id: "drill", num: 5, name: "Drill", accent: "lime",
-    tools: [
-      { id: "5.1", name: "The Bench" },
-    ],
-  },
-];
-
-// Socratic prompts only. No field values here; those come from sources/.
-const HELPER_PROMPTS = {
-  electrical: [
-    "Before you measure, say what you expect to read and where.",
-    "Which single reading would eliminate half of what is left?",
-    "A reading that eliminates nothing was the wrong reading.",
-  ],
-  instrumentation: [
-    "Field device, wiring, power, or controller: which reading separates them?",
-    "What would this loop look like if every part of it were healthy?",
-    "Measure in the middle of what is left.",
-  ],
-  plc: [
-    "What does the controller believe right now? What does the field say?",
-    "Where do those two stories first disagree?",
-    "Measure in the middle of what is left.",
-  ],
-  programming: [
-    "What else reads or writes this tag before you change it?",
-    "How will you prove the change did only what you intended?",
-    "Who needs to know before this goes live?",
-  ],
-  // Built from IC_Fundamentals_Drill_Input_Library.pdf p.1: retrieve cold, apply, correct, revisit.
-  drill: [
-    "Can you answer it cold, before you look anything up?",
-    "Where would this show up on a real loop or symptom?",
-    "What did you miss, and when will you come back to it?",
-  ],
-};
-
-/* --------------------------------------------------------------------------
-   Persistence layer
-   -------------------------------------------------------------------------- */
-
-const STORAGE_KEY = "techDevLab.v3"; // v3, not v2: see header comment
-
-const DEFAULT_STATE = {
-  xp: 0, level: 1, streak: 0, bestStreak: 0,
-  muted: true, activeLayer: "electrical", fieldNotes: [],
-  skillRadar: { electrical: 0, instrumentation: 0, plc: 0, programming: 0 },
-};
-
-function num(v, fallback) {
-  return typeof v === "number" && Number.isFinite(v) ? v : fallback;
-}
-
-function load() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_STATE;
-    const p = JSON.parse(raw) || {};
-    const xp = Math.max(0, num(p.xp, 0));
-    const radar = p.skillRadar || {};
-    return {
-      ...DEFAULT_STATE,
-      xp,
-      level: levelOf(xp),
-      streak: num(p.streak, 0),
-      bestStreak: num(p.bestStreak, 0),
-      muted: typeof p.muted === "boolean" ? p.muted : true,
-      activeLayer: LAYERS.some(l => l.id === p.activeLayer) ? p.activeLayer : "electrical",
-      fieldNotes: Array.isArray(p.fieldNotes) ? p.fieldNotes : [],
-      skillRadar: {
-        electrical: num(radar.electrical, 0),
-        instrumentation: num(radar.instrumentation, 0),
-        plc: num(radar.plc, 0),
-        programming: num(radar.programming, 0),
-      },
-    };
-  } catch (e) {
-    return DEFAULT_STATE;
-  }
-}
-
-function save(state) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch (e) {
-    // Storage full or blocked: the session keeps working in memory.
-  }
-}
-
-// Per-tool state lives under dotted sub-keys of STORAGE_KEY (techDevLab.v3.<tool>).
-// Tool keys outside that prefix are listed here so Reset clears them too.
-const EXTRA_TOOL_KEYS = ["techDevLab.v2.trapSpotter"];
-
-function loadTool(key) {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : null;
-  } catch (e) {
-    return null;
-  }
-}
-
-function saveTool(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (e) {
-    // Same as save(): keep working in memory.
-  }
-}
-
-function clearToolStorage() {
-  try {
-    Object.keys(localStorage)
-      .filter(k => k !== THEME_KEY && (k.startsWith(STORAGE_KEY + ".") || EXTRA_TOOL_KEYS.includes(k)))
-      .forEach(k => localStorage.removeItem(k));
-  } catch (e) {
-    // Nothing stored, or storage blocked.
-  }
-}
-
-/* --------------------------------------------------------------------------
-   Game math
-   -------------------------------------------------------------------------- */
-
-// Minimum XP for levels 1-6.
-const LEVEL_XP = [0, 150, 400, 800, 1300, 1900];
-const TITLES = ["Helper", "Apprentice", "Technician", "Senior Tech", "Lead Tech", "Controls Engineer"];
-
-function levelOf(xp) {
-  let level = 1;
-  for (let i = 0; i < LEVEL_XP.length; i++) {
-    if (xp >= LEVEL_XP[i]) level = i + 1;
-  }
-  return level;
-}
-
-function titleOf(level) {
-  const i = Math.min(Math.max(level, 1), TITLES.length) - 1;
-  return TITLES[i];
-}
-
-// Skill radar gain per first-pass correct answer (radar axes run 0-100).
-const RADAR_STEP = 0.4;
-
-function awardXP(state, n) {
-  const xp = Math.max(0, state.xp + n);
-  return { ...state, xp, level: levelOf(xp) };
-}
-
-function addFieldNote(state, entry) {
-  const note = { ...entry, at: new Date().toISOString() };
-  return { ...state, fieldNotes: [note, ...state.fieldNotes] };
-}
-
-/* ==========================================================================
-   2. SHARED UI COMPONENTS
-   ========================================================================== */
-
-const MotionCtx = createContext(false); // true = prefers-reduced-motion
-
-function useReducedMotion() {
-  return useContext(MotionCtx);
-}
-
-function useMediaQuery(query) {
-  const get = () => (window.matchMedia ? window.matchMedia(query).matches : false);
-  const [matches, setMatches] = useState(get);
-  useEffect(() => {
-    if (!window.matchMedia) return;
-    const mql = window.matchMedia(query);
-    const onChange = () => setMatches(mql.matches);
-    onChange();
-    if (mql.addEventListener) mql.addEventListener("change", onChange);
-    else mql.addListener(onChange);
-    return () => {
-      if (mql.removeEventListener) mql.removeEventListener("change", onChange);
-      else mql.removeListener(onChange);
-    };
-  }, [query]);
-  return matches;
-}
-
-function transition(reduced, props) {
-  if (reduced) return "none";
-  return props.map(p => `${p} ${DUR_SLOW - 80}ms ease-out`).join(", ");
-}
-
-function glow(color) {
-  return `0 0 0 1px ${color}, 0 0 14px ${color}40`;
-}
-
-function Panel({ children, source, style, ...rest }) {
-  const C = useC();
-  return (
-    <section
-      {...rest}
-      style={{
-        background: C.panel,
-        border: `1px solid ${C.border}`,
-        borderRadius: 6,
-        padding: 20,
-        ...style,
-      }}
-    >
-      {children}
-      {source !== undefined && (
-        <footer
-          style={{
-            marginTop: 20,
-            paddingTop: 10,
-            borderTop: `1px solid ${C.border}`,
-            fontFamily: MONO_FONT,
-            fontSize: 11,
-            color: C.text_dim,
-          }}
-        >
-          SOURCE: {source}
-        </footer>
-      )}
-    </section>
-  );
-}
-
-// Engraved label plate: uppercase, letter-spacing 2px.
-function H({ children, as: Tag = "h2", color: colorProp, style }) {
-  const C = useC();
-  const color = colorProp ?? C.text_mute;
-  return (
-    <Tag
-      style={{
-        margin: 0,
-        fontFamily: HEAD_FONT,
-        fontWeight: 700,
-        fontSize: 11,
-        letterSpacing: "2px",
-        textTransform: "uppercase",
-        color,
-        ...style,
-      }}
-    >
-      {children}
-    </Tag>
-  );
-}
-
-function Btn({ children, onClick, variant = "primary", color: colorProp, ariaLabel, pressed, style, ...rest }) {
-  const C = useC();
-  const color = colorProp ?? C.signal_cyan;
-  const reduced = useReducedMotion();
-  const [hover, setHover] = useState(false);
-  const primary = variant === "primary";
-  const active = pressed === true;
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={ariaLabel}
-      aria-pressed={pressed}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        minHeight: TOUCH_MIN,
-        minWidth: TOUCH_MIN,
-        padding: "0 16px",
-        borderRadius: 4,
-        border: `1px solid ${primary || active ? color : C.border}`,
-        background: primary ? `${color}1a` : active ? `${color}14` : "transparent",
-        color: primary || active ? color : C.text_mute,
-        fontFamily: UI_FONT,
-        fontWeight: 600,
-        fontSize: 13,
-        cursor: rest.disabled ? "default" : "pointer",
-        opacity: rest.disabled ? 0.5 : 1,
-        boxShadow: active || (hover && primary && !rest.disabled) ? glow(color) : "none",
-        transition: transition(reduced, ["box-shadow", "background", "border-color", "color"]),
-        ...style,
-      }}
-      {...rest}
-    >
-      {children}
-    </button>
-  );
-}
-
-function Chip({ children, color: colorProp, style }) {
-  const C = useC();
-  const color = colorProp ?? C.text_mute;
-  return (
-    <span
-      style={{
-        display: "inline-block",
-        padding: "2px 8px",
-        border: `1px solid ${color}55`,
-        borderRadius: 3,
-        fontFamily: MONO_FONT,
-        fontSize: 11,
-        color,
-        whiteSpace: "nowrap",
-        ...style,
-      }}
-    >
-      {children}
-    </span>
-  );
-}
-
-function Verdict({ ok, title, children }) {
-  const C = useC();
-  const reduced = useReducedMotion();
-  const color = ok ? C.lime : C.rose;
-  return (
-    <div
-      role="status"
-      style={{
-        borderLeft: `3px solid ${color}`,
-        background: `${color}12`,
-        padding: "12px 16px",
-        borderRadius: 4,
-        animation: reduced ? "none" : `${ok ? "shieldPop" : "shake"} ${DUR_SLOW}ms ease-out`,
-      }}
-    >
-      <div style={{ fontFamily: HEAD_FONT, fontWeight: 700, color, letterSpacing: "-0.01em" }}>{title}</div>
-      {children && <div style={{ marginTop: 6, color: C.text, fontSize: 14 }}>{children}</div>}
-    </div>
-  );
-}
-
-function Scanline() {
-  const C = useC();
-  const reduced = useReducedMotion();
-  if (reduced) return null;
-  return (
-    <div
-      aria-hidden="true"
-      style={{
-        position: "absolute",
-        left: 0,
-        right: 0,
-        height: 1,
-        background: C.signal_cyan,
-        opacity: 0.4,
-        animation: "scanline 4s linear infinite",
-        pointerEvents: "none",
-      }}
-    />
-  );
-}
-
-function Helper({ layer, tool }) {
-  const C = useC();
-  const prompts = HELPER_PROMPTS[layer.id] || [];
-  return (
-    <aside aria-label="Helper" aria-live="polite">
-      <Panel>
-        <H as="h2">Helper</H>
-        <p style={{ margin: "12px 0 16px", fontSize: 13, color: C.text_mute }}>
-          <span style={{ fontFamily: MONO_FONT, color: C[layer.accent] }}>{tool.id}</span> {tool.name}
-          {TOOLS[tool.id] ? "." : " is not built yet."}
-          Questions to carry into this layer:
-        </p>
-        <ul style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 10 }}>
-          {prompts.map(p => (
-            <li key={p} style={{ fontSize: 14, lineHeight: 1.45, color: C.text }}>{p}</li>
-          ))}
-        </ul>
-      </Panel>
-    </aside>
-  );
-}
-
-function Radar({ values, size = 56 }) {
-  const C = useC();
-  const axes = ["electrical", "instrumentation", "plc", "programming"];
-  const labels = { electrical: "Electrical", instrumentation: "Instrumentation", plc: "PLC", programming: "Programming" };
-  const c = size / 2;
-  const r = c - 4;
-  // Axis order: up, right, down, left.
-  const dirs = [[0, -1], [1, 0], [0, 1], [-1, 0]];
-  const pt = (i, frac) => `${c + dirs[i][0] * r * frac},${c + dirs[i][1] * r * frac}`;
-  const ring = frac => axes.map((_, i) => pt(i, frac)).join(" ");
-  const shape = axes.map((a, i) => pt(i, Math.min(Math.max(values[a] || 0, 0), 100) / 100)).join(" ");
-  const summary = axes.map(a => `${labels[a]} ${values[a] || 0}`).join(", ");
-  return (
-    <svg width={size} height={size} role="img" aria-label={`Skill radar: ${summary}`}>
-      <title>{`Skill radar: ${summary}`}</title>
-      {[1 / 3, 2 / 3, 1].map(f => (
-        <polygon key={f} points={ring(f)} fill="none" stroke={C.border} strokeWidth="1" />
-      ))}
-      {axes.map((_, i) => (
-        <line key={i} x1={c} y1={c} x2={c + dirs[i][0] * r} y2={c + dirs[i][1] * r} stroke={C.border} strokeWidth="1" />
-      ))}
-      <polygon points={shape} fill={`${C.signal_cyan}40`} stroke={C.signal_cyan} strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-/* --------------------------------------------------------------------------
-   Layer navigation
-   -------------------------------------------------------------------------- */
-
-function LayerNav({ active, onSelect, mobile }) {
-  const C = useC();
-  const reduced = useReducedMotion();
-
-  if (mobile) {
-    return (
-      <nav
-        aria-label="Layers"
-        style={{
-          position: "fixed",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 10,
-          display: "grid",
-          gridTemplateColumns: `repeat(${LAYERS.length}, 1fr)`,
-          background: C.panel,
-          borderTop: `1px solid ${C.border}`,
-          paddingBottom: "env(safe-area-inset-bottom, 0px)",
-        }}
-      >
-        {LAYERS.map(l => {
-          const on = l.id === active;
-          return (
-            <button
-              key={l.id}
-              type="button"
-              onClick={() => onSelect(l.id)}
-              aria-label={`Layer ${l.num}: ${l.name}`}
-              aria-current={on ? "page" : undefined}
-              style={{
-                minHeight: 56,
-                border: "none",
-                borderTop: `2px solid ${on ? C[l.accent] : "transparent"}`,
-                background: on ? `${C[l.accent]}12` : "transparent",
-                color: on ? C[l.accent] : C.text_mute,
-                fontFamily: UI_FONT,
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: "pointer",
-                transition: transition(reduced, ["background", "color", "border-color"]),
-              }}
-            >
-              <div style={{ fontFamily: MONO_FONT, fontSize: 10, color: on ? C[l.accent] : C.text_dim }}>L{l.num}</div>
-              {l.name}
-            </button>
-          );
-        })}
-      </nav>
-    );
-  }
-
-  return (
-    <nav aria-label="Layers" style={{ padding: "20px 12px", borderRight: `1px solid ${C.border}` }}>
-      <H as="h2" style={{ padding: "0 8px 12px" }}>Layers</H>
-      <div style={{ display: "grid", gap: 6 }}>
-        {LAYERS.map(l => {
-          const on = l.id === active;
-          return (
-            <button
-              key={l.id}
-              type="button"
-              onClick={() => onSelect(l.id)}
-              aria-label={`Layer ${l.num}: ${l.name}, ${l.tools.length} tools`}
-              aria-current={on ? "page" : undefined}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                minHeight: TOUCH_MIN,
-                padding: "8px 10px",
-                textAlign: "left",
-                border: `1px solid ${on ? C[l.accent] : "transparent"}`,
-                borderRadius: 4,
-                background: on ? `${C[l.accent]}12` : "transparent",
-                boxShadow: on ? glow(C[l.accent]) : "none",
-                color: on ? C.text : C.text_mute,
-                fontFamily: UI_FONT,
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: "pointer",
-                transition: transition(reduced, ["background", "color", "border-color", "box-shadow"]),
-              }}
-            >
-              <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: on ? C[l.accent] : C.text_dim }}>L{l.num}</span>
-              <span style={{ flex: 1 }}>{l.name}</span>
-              <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: C.text_dim }}>{l.tools.length}</span>
-            </button>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
-
-/* ==========================================================================
-   3. TOOL COMPONENTS
-   ========================================================================== */
-
-function ToolTabs({ layer, activeId, onSelect }) {
-  const C = useC();
-  return (
-    <div role="group" aria-label={`${layer.name} tools`} style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-      {layer.tools.map(t => (
-        <Btn
-          key={t.id}
-          variant="ghost"
-          color={C[layer.accent]}
-          pressed={t.id === activeId}
-          ariaLabel={`Tool ${t.id}: ${t.name}`}
-          onClick={() => onSelect(t.id)}
-        >
-          <span style={{ fontFamily: MONO_FONT, marginRight: 8 }}>{t.id}</span>
-          {t.name}
-        </Btn>
-      ))}
-    </div>
-  );
-}
-
-/* --------------------------------------------------------------------------
-   Tool 3.4: Symptom -> First Move
-   One operator report, four first moves. Pick, see the consequence, retry.
-   Content: output/content-library.json (symptoms with sourced options).
-   Tags and services are constructed for training (tagDerived); everything
-   else is quoted from the cited source.
-   -------------------------------------------------------------------------- */
-
-const CHAIN = ["Process", "Sensor", "Transmitter", "Wiring", "Card", "Controller", "Display"];
-const SFM_KEY = STORAGE_KEY + ".symptomFirstMove";
-const SFM_XP_BY_ATTEMPT = [15, 5, 0, 0]; // first time a card is played only; replays award 0
-const SFM_RECALL_GAP = 3; // cards until a missed pattern comes back
-
-// What each wrong-move type costs you. These are the tool's own words for the
-// content library's cost tags, not field facts.
-const COST_CONSEQUENCE = {
-  part: { title: "Part swapped. Fault still there.", text: "Hardware changed before the chain showed where the fault was." },
-  endnode: { title: "Far end checked first.", text: "Everything between this point and the fault is still unproven." },
-  premature: { title: "Right check, wrong time.", text: "Earlier checks would have cut the chain first." },
-  mask: { title: "Symptom hidden. Fault kept.", text: "The reading looks better and the fault is still in the loop." },
-};
-const COST_FALLBACK = { title: "Not the first move.", text: "Something else comes first." };
-
+<script>
+/* Tool data for 2.2, 2.3, 2.4, 3.1, 3.2, 3.4, 4.1, 4.2, 4.3: plain object
+   literals moved out of the Babel block for the same reason as The Bench data
+   above. Values unchanged. */
+// Tool 3.4
 // Generated from output/content-library.json. Do not edit by hand.
 const SFM_SYMPTOMS = [
  {
@@ -6103,6 +5435,2637 @@ const SFM_SYMPTOMS = [
   ]
  }
 ];
+
+// Tool 2.4
+// Generated from output/content-library.json (splitHalf). Do not edit by hand.
+const SH = {
+ "chain": [
+  "Process",
+  "Sensor",
+  "Transmitter",
+  "Wiring",
+  "Card",
+  "Controller",
+  "Display"
+ ],
+ "chainSource": "Field Troubleshooting Calculators.xlsx Split-Half Log (E6: \"Process, sensor, transmitter, wiring, card, controller, display = 7\")",
+ "heading": "The loop is a chain. Cut it in the middle, not at the ends.",
+ "rule": "Rule: after each measurement, you should be able to eliminate at least half the remaining chain. If a measurement eliminates nothing, it was the wrong measurement.",
+ "logRule": "Measure in the middle of what is left. Each step should cut the suspect chain roughly in half.",
+ "measurementPoints": [
+  {
+   "step": 1,
+   "text": "Controller input (raw counts)"
+  },
+  {
+   "step": 2,
+   "text": "Field terminal / marshalling"
+  },
+  {
+   "step": 3,
+   "text": "Junction box"
+  },
+  {
+   "step": 4,
+   "text": "Transmitter terminals"
+  },
+  {
+   "step": 5,
+   "text": "Sensor / process connection"
+  }
+ ],
+ "worksheetColumns": [
+  "Step",
+  "Measure at",
+  "Expected",
+  "Actual",
+  "Good / Bad",
+  "Halves remaining"
+ ],
+ "worksheetFooter": [
+  "Fault isolated to:",
+  "Evidence (the two readings that bracket it):",
+  "Verification after repair:"
+ ],
+ "flags": [
+  {
+   "label": "Isolated",
+   "when": "links after <= 1"
+  },
+  {
+   "label": "Eliminated nothing: wrong measurement",
+   "when": "links after >= links before"
+  },
+  {
+   "label": "Weak cut: measure closer to middle",
+   "when": "links after > links before * 0.75"
+  },
+  {
+   "label": "Good cut",
+   "when": "otherwise"
+  }
+ ],
+ "example": {
+  "tag": "LT-301",
+  "steps": [
+   {
+    "step": 1,
+    "measureAt": "Field terminals / marshalling",
+    "expected": "12.0 mA",
+    "actual": "12.0 mA",
+    "result": "Good",
+    "linksBefore": 7,
+    "linksAfter": 4,
+    "flag": "Good cut"
+   },
+   {
+    "step": 2,
+    "measureAt": "Transmitter terminals",
+    "expected": "12.0 mA",
+    "actual": "12.0 mA",
+    "result": "Good",
+    "linksBefore": 4,
+    "linksAfter": 2,
+    "flag": "Good cut"
+   },
+   {
+    "step": 3,
+    "measureAt": "Transmitter local display vs process",
+    "expected": "40%",
+    "actual": "95%",
+    "result": "Bad",
+    "linksBefore": 2,
+    "linksAfter": 1,
+    "flag": "Isolated"
+   }
+  ],
+  "faultIsolatedTo": "Process connection / wet leg (upstream of transmitter)",
+  "source": "Field Troubleshooting Calculators.xlsx Split-Half Log"
+ },
+ "sources": [
+  "Field Troubleshooting Template Pack.pdf p.3",
+  "Field Troubleshooting Calculators.xlsx Split-Half Log"
+ ]
+};
+// Generated from output/split-half-scenarios.json. Do not edit by hand.
+const SPH_SCENARIOS = [
+ {
+  "id": "SH-01",
+  "tag": "FT-101",
+  "service": "Boiler Feedwater Flow",
+  "tagDerived": true,
+  "range": "0-500 GPM",
+  "lrv": 0,
+  "urv": 500,
+  "units": "GPM",
+  "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Flow 0 GPM 500 GPM)",
+  "faultLink": 3,
+  "faultLinkName": "Wiring",
+  "faultCategory": "Reading pegged low (at or below 4 mA)",
+  "faultDescription": "Confirm polarity and that no wire is lifted or backed out.",
+  "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading pegged low (at or below 4 mA)\", step 3",
+  "readings": {
+   "proc": {
+    "good": "300 GPM",
+    "bad": null,
+    "statusGood": true
+   },
+   "sens": {
+    "good": "300 GPM",
+    "bad": null,
+    "statusGood": true
+   },
+   "xmtr": {
+    "good": "13.6 mA",
+    "bad": null,
+    "statusGood": true
+   },
+   "jb": {
+    "good": "13.6 mA",
+    "bad": "0.0 mA",
+    "statusGood": false
+   },
+   "card": {
+    "good": "13.6 mA",
+    "bad": "0.0 mA",
+    "statusGood": false
+   },
+   "ctrl": {
+    "good": "300 GPM",
+    "bad": "-125 GPM",
+    "statusGood": false
+   },
+   "hmi": {
+    "good": "300 GPM",
+    "bad": "-125 GPM",
+    "statusGood": false
+   }
+  },
+  "isProcessFault": false,
+  "numbers": "Healthy signal 60% = 13.6 mA (p.4 table). Past the fault: 0.0 mA (p.4: open circuit, lifted wire). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
+  "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
+ },
+ {
+  "id": "SH-02",
+  "tag": "TT-205",
+  "service": "Reactor Outlet Temperature",
+  "tagDerived": true,
+  "range": "0-200 °C",
+  "lrv": 0,
+  "urv": 200,
+  "units": "°C",
+  "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Temperature 0 °C 200 °C)",
+  "faultLink": 1,
+  "faultLinkName": "Sensor",
+  "faultCategory": "Reading pegged high (at or above 20 mA)",
+  "faultDescription": "For temperature, check for an open thermocouple or RTD lead.",
+  "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading pegged high (at or above 20 mA)\", step 6",
+  "readings": {
+   "proc": {
+    "good": "100 °C",
+    "bad": null,
+    "statusGood": true
+   },
+   "sens": {
+    "good": "100 °C",
+    "bad": "Open circuit",
+    "statusGood": false
+   },
+   "xmtr": {
+    "good": "12.0 mA",
+    "bad": "21.0 mA",
+    "statusGood": false
+   },
+   "jb": {
+    "good": "12.0 mA",
+    "bad": "21.0 mA",
+    "statusGood": false
+   },
+   "card": {
+    "good": "12.0 mA",
+    "bad": "21.0 mA",
+    "statusGood": false
+   },
+   "ctrl": {
+    "good": "100 °C",
+    "bad": "212.5 °C",
+    "statusGood": false
+   },
+   "hmi": {
+    "good": "100 °C",
+    "bad": "212.5 °C",
+    "statusGood": false
+   }
+  },
+  "isProcessFault": false,
+  "numbers": "Healthy signal 50% = 12.0 mA (p.4 table). Past the fault: 21.0 mA (p.4: device failure alarm, NAMUR NE43 high; Form 7: upscale burnout). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
+  "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
+ },
+ {
+  "id": "SH-03",
+  "tag": "PDT-401",
+  "service": "Filter Differential Pressure",
+  "tagDerived": true,
+  "range": "0-100 inH2O",
+  "lrv": 0,
+  "urv": 100,
+  "units": "inH2O",
+  "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Differential pressure 0 inH₂O 100 inH₂O)",
+  "faultLink": 2,
+  "faultLinkName": "Transmitter",
+  "faultCategory": "Reading is wrong but stable",
+  "faultDescription": "Check for zero shift: has the device been overpressured, or the mounting changed?",
+  "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading is wrong but stable\", step 3",
+  "readings": {
+   "proc": {
+    "good": "50 inH2O",
+    "bad": null,
+    "statusGood": true
+   },
+   "sens": {
+    "good": "50 inH2O",
+    "bad": null,
+    "statusGood": true
+   },
+   "xmtr": {
+    "good": "12.0 mA",
+    "bad": "13.6 mA",
+    "statusGood": false
+   },
+   "jb": {
+    "good": "12.0 mA",
+    "bad": "13.6 mA",
+    "statusGood": false
+   },
+   "card": {
+    "good": "12.0 mA",
+    "bad": "13.6 mA",
+    "statusGood": false
+   },
+   "ctrl": {
+    "good": "50 inH2O",
+    "bad": "60 inH2O",
+    "statusGood": false
+   },
+   "hmi": {
+    "good": "50 inH2O",
+    "bad": "60 inH2O",
+    "statusGood": false
+   }
+  },
+  "isProcessFault": false,
+  "numbers": "Healthy signal 50% = 12.0 mA (p.4 table). Past the fault: zero-shifted to 60% = 13.6 mA (p.4 table). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
+  "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
+ },
+ {
+  "id": "SH-04",
+  "tag": "LT-310",
+  "service": "Surge Drum Level",
+  "tagDerived": true,
+  "range": "2-18 ft",
+  "lrv": 2,
+  "urv": 18,
+  "units": "ft",
+  "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Level 2 ft 18 ft)",
+  "faultLink": 4,
+  "faultLinkName": "Card",
+  "faultCategory": "Reading is wrong but stable",
+  "faultDescription": "Check controller scaling and raw counts before touching the field device.",
+  "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading is wrong but stable\", step 2",
+  "readings": {
+   "proc": {
+    "good": "14 ft",
+    "bad": null,
+    "statusGood": true
+   },
+   "sens": {
+    "good": "14 ft",
+    "bad": null,
+    "statusGood": true
+   },
+   "xmtr": {
+    "good": "16.0 mA",
+    "bad": null,
+    "statusGood": true
+   },
+   "jb": {
+    "good": "16.0 mA",
+    "bad": null,
+    "statusGood": true
+   },
+   "card": {
+    "good": "16.0 mA",
+    "bad": "12.0 mA",
+    "statusGood": false
+   },
+   "ctrl": {
+    "good": "14 ft",
+    "bad": "10 ft",
+    "statusGood": false
+   },
+   "hmi": {
+    "good": "14 ft",
+    "bad": "10 ft",
+    "statusGood": false
+   }
+  },
+  "isProcessFault": false,
+  "numbers": "Healthy signal 75% = 16.0 mA (p.4 table). Past the fault: the card reads 12.0 mA (50%, p.4 table). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
+  "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
+ },
+ {
+  "id": "SH-05",
+  "tag": "FT-712",
+  "service": "Cooling Water Supply Flow",
+  "tagDerived": true,
+  "range": "0-1,200 GPM",
+  "lrv": 0,
+  "urv": 1200,
+  "units": "GPM",
+  "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Flow 0 GPM 1,200 GPM)",
+  "faultLink": 0,
+  "faultLinkName": "Process",
+  "faultCategory": "Reading pegged low (at or below 4 mA)",
+  "faultDescription": "Compare to the actual process with an independent indication.",
+  "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading pegged low (at or below 4 mA)\", step 5",
+  "readings": {
+   "proc": {
+    "good": "600 GPM",
+    "bad": "0 GPM",
+    "statusGood": false
+   },
+   "sens": {
+    "good": "600 GPM",
+    "bad": "0 GPM",
+    "statusGood": false
+   },
+   "xmtr": {
+    "good": "12.0 mA",
+    "bad": "4.0 mA",
+    "statusGood": false
+   },
+   "jb": {
+    "good": "12.0 mA",
+    "bad": "4.0 mA",
+    "statusGood": false
+   },
+   "card": {
+    "good": "12.0 mA",
+    "bad": "4.0 mA",
+    "statusGood": false
+   },
+   "ctrl": {
+    "good": "600 GPM",
+    "bad": "0 GPM",
+    "statusGood": false
+   },
+   "hmi": {
+    "good": "600 GPM",
+    "bad": "0 GPM",
+    "statusGood": false
+   }
+  },
+  "isProcessFault": true,
+  "numbers": "Normal (what operations expect) 50% = 12.0 mA (p.4 table). Actual: the process really is at LRV, 4.0 mA (p.4: process truly at LRV). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
+  "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
+ }
+];
+
+// Tool 2.2 / 2.3
+const CALC = {
+ "source": "Field Troubleshooting Calculators.xlsx",
+ "mAConverter": {
+  "formulas": [
+   "% span = (I - 4) / 16 x 100.",
+   "EU = LRV + ((I - 4) / 16) x (URV - LRV).",
+   "I = 4 + 16 x (EU - LRV) / (URV - LRV).",
+   "Error (% span) = (Measured mA - Ideal mA) / 16 x 100."
+  ],
+  "formulasSource": "Field Troubleshooting Calculators.xlsx Start Here C10",
+  "alarmNote": "NAMUR NE43: valid signal 3.8-20.5 mA; failure at or below 3.6 mA or at or above 21.0 mA. Vendor defaults vary (some 3.75 / 21.75 mA). Check the device's configured alarm levels.",
+  "alarmNoteSource": "Field Troubleshooting Calculators.xlsx Start Here C11",
+  "alarmBands": [
+   {
+    "test": "<= 0.05",
+    "upTo": 0.05,
+    "inclusive": true,
+    "label": "Open circuit / no supply"
+   },
+   {
+    "test": "<= 3.6",
+    "upTo": 3.6,
+    "inclusive": true,
+    "label": "Low failure alarm (NE43) or supply/leakage problem"
+   },
+   {
+    "test": "< 3.8",
+    "upTo": 3.8,
+    "inclusive": false,
+    "label": "Ambiguous zone: check HART status"
+   },
+   {
+    "test": "< 4",
+    "upTo": 4.0,
+    "inclusive": false,
+    "label": "Under-range saturation: process below LRV or range wrong"
+   },
+   {
+    "test": "<= 20",
+    "upTo": 20.0,
+    "inclusive": true,
+    "label": "Valid measurement"
+   },
+   {
+    "test": "<= 20.5",
+    "upTo": 20.5,
+    "inclusive": true,
+    "label": "Over-range saturation: process above URV or range wrong"
+   },
+   {
+    "test": "< 21",
+    "upTo": 21.0,
+    "inclusive": false,
+    "label": "Ambiguous zone: check HART status"
+   },
+   {
+    "test": "<= 23",
+    "upTo": 23.0,
+    "inclusive": true,
+    "label": "High failure alarm (NE43)"
+   },
+   {
+    "test": "otherwise",
+    "upTo": null,
+    "inclusive": null,
+    "label": "Beyond normal output: suspect short or foreign source"
+   }
+  ],
+  "alarmBandsSource": "Field Troubleshooting Calculators.xlsx mA Converter C12 (formula)",
+  "outOfRangeNote": "Readings outside 4-20 mA give % below 0 or above 100 on purpose; the meaning column is the useful part.",
+  "referenceTable": [
+   {
+    "pct": 0,
+    "mA": 4,
+    "eu": 0
+   },
+   {
+    "pct": 5,
+    "mA": 4.8,
+    "eu": 7.5
+   },
+   {
+    "pct": 10,
+    "mA": 5.6,
+    "eu": 15
+   },
+   {
+    "pct": 15,
+    "mA": 6.4,
+    "eu": 22.5
+   },
+   {
+    "pct": 20,
+    "mA": 7.2,
+    "eu": 30
+   },
+   {
+    "pct": 25,
+    "mA": 8,
+    "eu": 37.5
+   },
+   {
+    "pct": 30,
+    "mA": 8.8,
+    "eu": 45
+   },
+   {
+    "pct": 35,
+    "mA": 9.6,
+    "eu": 52.5
+   },
+   {
+    "pct": 40,
+    "mA": 10.4,
+    "eu": 60
+   },
+   {
+    "pct": 45,
+    "mA": 11.2,
+    "eu": 67.5
+   },
+   {
+    "pct": 50,
+    "mA": 12,
+    "eu": 75
+   },
+   {
+    "pct": 55,
+    "mA": 12.8,
+    "eu": 82.5
+   },
+   {
+    "pct": 60,
+    "mA": 13.6,
+    "eu": 90
+   },
+   {
+    "pct": 65,
+    "mA": 14.4,
+    "eu": 97.5
+   },
+   {
+    "pct": 70,
+    "mA": 15.2,
+    "eu": 105
+   },
+   {
+    "pct": 75,
+    "mA": 16,
+    "eu": 112.5
+   },
+   {
+    "pct": 80,
+    "mA": 16.8,
+    "eu": 120
+   },
+   {
+    "pct": 85,
+    "mA": 17.6,
+    "eu": 127.5
+   },
+   {
+    "pct": 90,
+    "mA": 18.4,
+    "eu": 135
+   },
+   {
+    "pct": 95,
+    "mA": 19.2,
+    "eu": 142.5
+   },
+   {
+    "pct": 100,
+    "mA": 20,
+    "eu": 150
+   }
+  ],
+  "referenceRange": {
+   "lrv": 0,
+   "urv": 150,
+   "units": "in H2O"
+  },
+  "referenceSource": "Field Troubleshooting Calculators.xlsx mA Converter I5:K26"
+ },
+ "calRecord": {
+  "pointDefinitions": [
+   0,
+   25,
+   50,
+   75,
+   100,
+   "50 (down)",
+   "0 (down)"
+  ],
+  "toleranceDefaultPct": 0.5,
+  "errorFormula": "IF(E14=\"\",\"\",(E14-D14)/16*100)",
+  "passRule": "IF(E14=\"\",\"\",IF(ABS(F14)<=$C$10,\"PASS\",\"FAIL\"))",
+  "hysteresisFormula": {
+   "at50": "IF(OR(E16=\"\",E19=\"\"),\"\",ABS(E19-E16)/16*100)",
+   "at0": "IF(OR(E14=\"\",E20=\"\"),\"\",ABS(E20-E14)/16*100)"
+  },
+  "actionList": [
+   "No adjustment",
+   "Zero trim",
+   "Span trim",
+   "Zero and span trim",
+   "Sensor trim",
+   "Re-range only",
+   "Repaired",
+   "Replaced"
+  ],
+  "actionNote": "Pick from list. Re-ranging is not calibration.",
+  "failureMode": "Failure mode: adjusting before recording as-found destroys the evidence. Record first, then trim.",
+  "exampleValues": {
+   "tag": "PT-101",
+   "device": "Example DP/P xmtr",
+   "lrv": 0,
+   "urv": 100,
+   "units": "psi",
+   "tolerancePct": 0.5,
+   "asFoundMA": [
+    4.02,
+    8.05,
+    12.11,
+    16.14,
+    20.18,
+    12.15,
+    4.05
+   ],
+   "asFoundErrorPct": [
+    0.125,
+    0.3125,
+    0.6875,
+    0.875,
+    1.125,
+    0.9375,
+    0.3125
+   ],
+   "asFoundInTol": [
+    "PASS",
+    "PASS",
+    "FAIL",
+    "FAIL",
+    "FAIL",
+    "FAIL",
+    "PASS"
+   ],
+   "maxAsFoundErrorPct": 1.125,
+   "hysteresis50Pct": 0.25,
+   "hysteresis0Pct": 0.1875,
+   "asFoundResult": "FAIL",
+   "actionTaken": "Span trim",
+   "asLeftMA": [
+    4,
+    8.01,
+    12,
+    16.02,
+    20.01
+   ],
+   "maxAsLeftErrorPct": 0.125,
+   "asLeftResult": "PASS"
+  },
+  "source": "Field Troubleshooting Calculators.xlsx Cal Record"
+ },
+ "loopCheck": {
+  "readingTheResult": [
+   "1. mA dev bad, HMI dev matches it: problem is upstream of the card (injection, wiring, card input).",
+   "2. mA dev good, HMI dev bad: signal arrives correctly; suspect scaling (LRV/URV/units) in the controller.",
+   "3. Error same size at every point: zero/offset error. Error grows with signal: span error.",
+   "4. Failure mode: passing a loop check with damping hiding a slow card response. Let each point settle."
+  ],
+  "exampleLoop": {
+   "tag": "TT-205",
+   "lrv": 0,
+   "urv": 200,
+   "units": "°C"
+  },
+  "source": "Field Troubleshooting Calculators.xlsx Loop Check"
+ }
+};
+const LRV_URV = {
+ "items": [
+  {
+   "measurement": "Pressure",
+   "lrv": 0.0,
+   "urv": 100.0,
+   "units": "psi",
+   "row": "Pressure 0 psi 100 psi"
+  },
+  {
+   "measurement": "Pressure",
+   "lrv": 0.0,
+   "urv": 250.0,
+   "units": "psi",
+   "row": "Pressure 0 psi 250 psi"
+  },
+  {
+   "measurement": "Pressure",
+   "lrv": -10.0,
+   "urv": 50.0,
+   "units": "psi",
+   "row": "Pressure -10 psi 50 psi"
+  },
+  {
+   "measurement": "Pressure",
+   "lrv": 20.0,
+   "urv": 120.0,
+   "units": "psi",
+   "row": "Pressure 20 psi 120 psi"
+  },
+  {
+   "measurement": "Differential pressure",
+   "lrv": 0.0,
+   "urv": 100.0,
+   "units": "inH₂O",
+   "row": "Differential pressure 0 inH₂O 100 inH₂O"
+  },
+  {
+   "measurement": "Differential pressure",
+   "lrv": -25.0,
+   "urv": 25.0,
+   "units": "inH₂O",
+   "row": "Differential pressure -25 inH₂O 25 inH₂O"
+  },
+  {
+   "measurement": "Level",
+   "lrv": 0.0,
+   "urv": 20.0,
+   "units": "ft",
+   "row": "Level 0 ft 20 ft"
+  },
+  {
+   "measurement": "Level",
+   "lrv": 2.0,
+   "urv": 18.0,
+   "units": "ft",
+   "row": "Level 2 ft 18 ft"
+  },
+  {
+   "measurement": "Flow",
+   "lrv": 0.0,
+   "urv": 500.0,
+   "units": "GPM",
+   "row": "Flow 0 GPM 500 GPM"
+  },
+  {
+   "measurement": "Flow",
+   "lrv": 0.0,
+   "urv": 1200.0,
+   "units": "GPM",
+   "row": "Flow 0 GPM 1,200 GPM"
+  },
+  {
+   "measurement": "Flow",
+   "lrv": 0.0,
+   "urv": 20000.0,
+   "units": "lb/hr",
+   "row": "Flow 0 lb/hr 20,000 lb/hr"
+  },
+  {
+   "measurement": "Temperature",
+   "lrv": 0.0,
+   "urv": 300.0,
+   "units": "°F",
+   "row": "Temperature 0 °F 300 °F"
+  },
+  {
+   "measurement": "Temperature",
+   "lrv": -40.0,
+   "urv": 250.0,
+   "units": "°F",
+   "row": "Temperature -40 °F 250 °F"
+  },
+  {
+   "measurement": "Temperature",
+   "lrv": 50.0,
+   "urv": 450.0,
+   "units": "°F",
+   "row": "Temperature 50 °F 450 °F"
+  },
+  {
+   "measurement": "Temperature",
+   "lrv": 0.0,
+   "urv": 200.0,
+   "units": "°C",
+   "row": "Temperature 0 °C 200 °C"
+  }
+ ],
+ "source": "IC_Fundamentals_Drill_Input_Library.pdf p.16"
+};
+const CAL_SCENARIOS = [
+ {
+  "id": "PT-101",
+  "tag": "PT-101",
+  "device": "Example DP/P xmtr",
+  "type": "Pressure",
+  "lrv": 0,
+  "urv": 100,
+  "units": "psi",
+  "asFoundMA": [
+   4.02,
+   8.05,
+   12.11,
+   16.14,
+   20.18,
+   12.15,
+   4.05
+  ],
+  "asLeftMA": [
+   4,
+   8.01,
+   12,
+   16.02,
+   20.01
+  ],
+  "action": "Span trim",
+  "pattern": "span error, rising +0.125% to +1.125%",
+  "source": "Field Troubleshooting Calculators.xlsx Cal Record (the sheet's own example: as-found, action, as-left)",
+  "constructed": null
+ },
+ {
+  "id": "TT-205",
+  "tag": "TT-205",
+  "device": "Temperature transmitter",
+  "type": "Temp",
+  "lrv": 0,
+  "urv": 200,
+  "units": "°C",
+  "asFoundMA": [
+   4.12,
+   8.12,
+   12.12,
+   16.12,
+   20.12,
+   12.12,
+   4.12
+  ],
+  "asLeftMA": [
+   4.0,
+   8.0,
+   12.01,
+   16.0,
+   20.01
+  ],
+  "action": "Zero trim",
+  "pattern": "zero shift, constant +0.75% at every point",
+  "source": "Field Troubleshooting Calculators.xlsx Loop Check (tag and range)",
+  "constructed": "Device name, the +0.75% zero shift (user spec), and as-left values."
+ },
+ {
+  "id": "LT-310",
+  "tag": "LT-310",
+  "device": "Level transmitter",
+  "type": "Level",
+  "lrv": 2.0,
+  "urv": 18.0,
+  "units": "ft",
+  "asFoundMA": [
+   4.01,
+   8.05,
+   12.09,
+   16.13,
+   20.17,
+   12.15,
+   4.01
+  ],
+  "asLeftMA": [
+   4.0,
+   8.01,
+   12.01,
+   16.01,
+   20.0
+  ],
+  "action": "Span trim",
+  "pattern": "span error with 0.375% hysteresis at 50%",
+  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (range)",
+  "constructed": "Tag, device name, the error pattern (user spec), and as-left values."
+ }
+];
+const CAL_FORM = {
+ "title": "5. As-Found / As-Left Calibration Record",
+ "header": [
+  "Tag:",
+  "Device:",
+  "S/N:",
+  "Type: Pressure / DP / Level / Flow / Temp / Other:",
+  "Range (LRV–URV):",
+  "Units:",
+  "Tolerance: ±",
+  "% of span",
+  "Interval:",
+  "Test standard used:",
+  "Std. cal. due:",
+  "Date:",
+  "Technician:",
+  "Ambient:"
+ ],
+ "asFoundHeading": "As-found (do not adjust before recording)",
+ "columns": [
+  "% Span",
+  "Input applied",
+  "Ideal output",
+  "As-found output",
+  "Error (% span)",
+  "In tol."
+ ],
+ "asLeftColumns": [
+  "% Span",
+  "Input applied",
+  "Ideal output",
+  "As-left output",
+  "Error (% span)",
+  "In tol."
+ ],
+ "summaryFound": [
+  "Max as-found error:",
+  "Hysteresis observed:"
+ ],
+ "actionHeading": "Action taken",
+ "actions": [
+  "No adjustment needed",
+  "Zero trim",
+  "Span trim",
+  "Sensor trim",
+  "Re-range only",
+  "Repaired:",
+  "Replaced:"
+ ],
+ "summaryLeft": [
+  "Max as-left error:",
+  "Result: PASS / FAIL"
+ ],
+ "notes": "Notes and follow-up",
+ "signoff": [
+  "Technician sign-off:",
+  "Reviewed:"
+ ],
+ "source": "Field Troubleshooting Template Pack.pdf p.7"
+};
+
+// Tool 3.1 / 3.2
+const IOM = {
+ "constructed": true,
+ "source": "constructed — training scenario, no source citation",
+ "platform": "Allen-Bradley CompactLogix, local chassis",
+ "addressFormat": {
+  "DI": "Local:{slot}:I.Data.{n}",
+  "DO": "Local:{slot}:O.Data.{n}",
+  "AI": "Local:{slot}:I.Ch{n}Data",
+  "AO": "Local:{slot}:O.Ch{n}Data"
+ },
+ "conventions": [
+  "Addresses follow CompactLogix local-chassis syntax (platform convention).",
+  "A faulted input channel is treated as its unsafe state: every rung that examines it goes false.",
+  "Rungs show run permissives only; start/stop logic is not drawn."
+ ],
+ "motors": [
+  {
+   "id": "CV-101",
+   "name": "CV-101 infeed conveyor",
+   "output": "CV101_RUN",
+   "feedback": "CV101_AUX"
+  },
+  {
+   "id": "P-201",
+   "name": "P-201 sump pump",
+   "output": "P201_RUN",
+   "feedback": "P201_AUX"
+  },
+  {
+   "id": "AG-301",
+   "name": "AG-301 agitator",
+   "output": "AG301_RUN",
+   "feedback": "AG301_AUX"
+  }
+ ],
+ "slots": [
+  {
+   "slot": 0,
+   "kind": "CPU",
+   "name": "Controller",
+   "points": []
+  },
+  {
+   "slot": 1,
+   "kind": "DI",
+   "name": "DI 16-pt 24 VDC",
+   "points": [
+    {
+     "n": 0,
+     "tag": "ESTOP_OK",
+     "device": null,
+     "desc": "E-stop chain healthy (safety relay aux)",
+     "normalOn": true,
+     "role": "permissive",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 1,
+     "tag": "ZS_101",
+     "device": "ZS-101",
+     "desc": "CV-101 pull-cord switch healthy",
+     "normalOn": true,
+     "role": "permissive",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 2,
+     "tag": "ZS_102",
+     "device": "ZS-102",
+     "desc": "CV-101 belt alignment switch healthy",
+     "normalOn": true,
+     "role": "permissive",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 3,
+     "tag": "CV101_AUX",
+     "device": null,
+     "desc": "CV-101 contactor aux (run feedback)",
+     "normalOn": true,
+     "role": "feedback",
+     "motor": "CV-101",
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 4,
+     "tag": "LSL_201",
+     "device": "LSL-201",
+     "desc": "Sump low-level switch: level above low",
+     "normalOn": true,
+     "role": "permissive",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 5,
+     "tag": "FSL_202",
+     "device": "FSL-202",
+     "desc": "P-201 seal water flow switch: flow present",
+     "normalOn": true,
+     "role": "permissive",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 6,
+     "tag": "ZSO_203",
+     "device": "ZSO-203",
+     "desc": "P-201 suction valve XV-203 open limit",
+     "normalOn": true,
+     "role": "permissive",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 7,
+     "tag": "P201_AUX",
+     "device": null,
+     "desc": "P-201 contactor aux (run feedback)",
+     "normalOn": true,
+     "role": "feedback",
+     "motor": "P-201",
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 8,
+     "tag": "ZSC_301",
+     "device": "ZSC-301",
+     "desc": "AG-301 guard door closed limit",
+     "normalOn": true,
+     "role": "permissive",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 9,
+     "tag": "TSH_302",
+     "device": "TSH-302",
+     "desc": "AG-301 bearing temperature high switch",
+     "normalOn": false,
+     "role": "permissive",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 10,
+     "tag": "AG301_AUX",
+     "device": null,
+     "desc": "AG-301 contactor aux (run feedback)",
+     "normalOn": true,
+     "role": "feedback",
+     "motor": "AG-301",
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 11,
+     "tag": "LSH_206",
+     "device": "LSH-206",
+     "desc": "Sump high-level switch (alarm only)",
+     "normalOn": false,
+     "role": "alarm",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    }
+   ]
+  },
+  {
+   "slot": 2,
+   "kind": "DO",
+   "name": "DO 16-pt 24 VDC",
+   "points": [
+    {
+     "n": 0,
+     "tag": "CV101_RUN",
+     "device": null,
+     "desc": "CV-101 run command to starter",
+     "normalOn": true,
+     "role": "output",
+     "motor": "CV-101",
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 1,
+     "tag": "P201_RUN",
+     "device": null,
+     "desc": "P-201 run command to starter",
+     "normalOn": true,
+     "role": "output",
+     "motor": "P-201",
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 2,
+     "tag": "AG301_RUN",
+     "device": null,
+     "desc": "AG-301 run command to starter",
+     "normalOn": true,
+     "role": "output",
+     "motor": "AG-301",
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 3,
+     "tag": "XV_203",
+     "device": "XV-203",
+     "desc": "XV-203 suction valve open command",
+     "normalOn": true,
+     "role": "output",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    }
+   ]
+  },
+  {
+   "slot": 3,
+   "kind": "AI",
+   "name": "AI 8-ch 4-20 mA",
+   "points": [
+    {
+     "n": 0,
+     "tag": "LT_204",
+     "device": "LT-204",
+     "desc": "Sump level transmitter",
+     "normalOn": true,
+     "role": "permissive",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 1,
+     "tag": "TT_303",
+     "device": "TT-303",
+     "desc": "AG-301 bearing temperature transmitter",
+     "normalOn": true,
+     "role": "permissive",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    }
+   ]
+  },
+  {
+   "slot": 4,
+   "kind": "AO",
+   "name": "AO 4-ch 4-20 mA",
+   "points": [
+    {
+     "n": 0,
+     "tag": "FV_205",
+     "device": "FV-205",
+     "desc": "P-201 recirculation valve position command",
+     "normalOn": true,
+     "role": "command",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    },
+    {
+     "n": 1,
+     "tag": "TV_304",
+     "device": "TV-304",
+     "desc": "AG-301 jacket temperature valve command",
+     "normalOn": true,
+     "role": "command",
+     "motor": null,
+     "constructed": true,
+     "source": "constructed — training scenario, no source citation"
+    }
+   ]
+  },
+  {
+   "slot": 5,
+   "kind": "EMPTY",
+   "name": "Empty",
+   "points": []
+  },
+  {
+   "slot": 6,
+   "kind": "EMPTY",
+   "name": "Empty",
+   "points": []
+  },
+  {
+   "slot": 7,
+   "kind": "EMPTY",
+   "name": "Empty",
+   "points": []
+  }
+ ],
+ "rungs": [
+  {
+   "rung": 10,
+   "output": "CV101_RUN",
+   "conditions": [
+    [
+     "XIC",
+     "ESTOP_OK"
+    ],
+    [
+     "XIC",
+     "ZS_101"
+    ],
+    [
+     "XIC",
+     "ZS_102"
+    ]
+   ]
+  },
+  {
+   "rung": 20,
+   "output": "XV_203",
+   "conditions": [
+    [
+     "XIC",
+     "ESTOP_OK"
+    ]
+   ]
+  },
+  {
+   "rung": 21,
+   "output": "P201_RUN",
+   "conditions": [
+    [
+     "XIC",
+     "ESTOP_OK"
+    ],
+    [
+     "XIC",
+     "LSL_201"
+    ],
+    [
+     "XIC",
+     "FSL_202"
+    ],
+    [
+     "XIC",
+     "ZSO_203"
+    ],
+    [
+     "OK",
+     "LT_204"
+    ]
+   ]
+  },
+  {
+   "rung": 30,
+   "output": "AG301_RUN",
+   "conditions": [
+    [
+     "XIC",
+     "ESTOP_OK"
+    ],
+    [
+     "XIC",
+     "ZSC_301"
+    ],
+    [
+     "XIO",
+     "TSH_302"
+    ],
+    [
+     "OK",
+     "TT_303"
+    ]
+   ]
+  }
+ ]
+};
+const PERM = {
+ "constructed": true,
+ "source": "constructed — training scenario, no source citation",
+ "motor": {
+  "id": "P-401",
+  "name": "P-401 transfer pump",
+  "output": "P401_RUN",
+  "rung": 40
+ },
+ "instructionConvention": {
+  "XIC": "true when its input bit is ON",
+  "XIO": "true when its input bit is OFF",
+  "note": "Rockwell instruction behavior (platform convention)."
+ },
+ "permissives": [
+  {
+   "id": "es",
+   "label": "E-Stop OK",
+   "tag": "ESTOP_OK",
+   "ins": "XIC",
+   "device": "E-stop",
+   "good": "E-stop released, chain healthy",
+   "bad": "E-stop pressed and latched",
+   "fix": "Reset E-stop",
+   "break": "Press E-stop",
+   "inputWhenGood": true,
+   "delayMs": 0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "guard",
+   "label": "Guard Closed",
+   "tag": "ZSC_402",
+   "ins": "XIC",
+   "device": "Guard door, ZSC-402",
+   "good": "Guard door closed",
+   "bad": "Guard door open",
+   "fix": "Close guard door",
+   "break": "Open guard door",
+   "inputWhenGood": true,
+   "delayMs": 0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "lube",
+   "label": "Lube Pressure OK",
+   "tag": "PSL_403",
+   "ins": "XIC",
+   "device": "Lube pump and pressure switch PSL-403",
+   "good": "Lube pump running, pressure OK",
+   "bad": "Lube pump stopped, pressure low",
+   "pending": "Lube pump running, pressure building",
+   "fix": "Start lube pump",
+   "break": "Stop lube pump",
+   "inputWhenGood": true,
+   "delayMs": 3000,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "dv",
+   "label": "Discharge Valve Limit",
+   "tag": "ZSO_404",
+   "ins": "XIC",
+   "device": "Discharge valve XV-404, open limit ZSO-404",
+   "good": "Discharge valve open, limit made",
+   "bad": "Discharge valve closed",
+   "fix": "Open discharge valve",
+   "break": "Close discharge valve",
+   "inputWhenGood": true,
+   "delayMs": 0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "vfd",
+   "label": "VFD Fault Clear",
+   "tag": "VFD_401_FAULT",
+   "ins": "XIO",
+   "device": "VFD-401",
+   "good": "VFD healthy, no fault",
+   "bad": "VFD fault active",
+   "fix": "Reset VFD fault",
+   "break": "Trip VFD fault",
+   "inputWhenGood": false,
+   "delayMs": 0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ]
+};
+const PLC_LESSONS = {
+ "domain": {
+  "text": "Without I/O mapping and permissive logic, you cannot tell if the problem is field-side or logic-side.",
+  "source": "Field Learning Plan.pdf p.2"
+ },
+ "ioMapBlock": {
+  "task": "Identify the I/O addresses for a real loop. Trace from field terminal to ladder logic.",
+  "output": "An annotated I/O map showing field device → terminal → PLC address → ladder rung.",
+  "source": "Field Learning Plan.pdf p.12, block 5 (PLC I/O mapping)"
+ },
+ "permissiveBlock": {
+  "task": "Find a motor start circuit in the PLC. Identify every permissive in series. Force one open and observe the result.",
+  "output": "A written list of permissives and the effect of each being false.",
+  "source": "Field Learning Plan.pdf p.12, block 6 (Ladder logic permissives)"
+ },
+ "checkPlc": {
+  "text": "Check the PLC: Is the I/O card healthy? Is the ladder logic permissive open?",
+  "source": "Field Learning Plan.pdf p.14, 30-second diagnostic sequence, step 5"
+ },
+ "concepts": [
+  {
+   "text": "Examine-if-closed concept",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "Examine-if-open concept",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+  },
+  {
+   "text": "NO vs NC as physical state versus PLC logic state",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
+  }
+ ],
+ "symptoms": [
+  {
+   "text": "Motor will not start because permissive is missing",
+   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"
+  }
+ ],
+ "trap": {
+  "name": "Skipping the permissives",
+  "fix": "When a final element will not actuate, check the PLC logic permissives before you touch the field device.",
+  "source": "Field Learning Plan.pdf p.10"
+ }
+};
+
+// Tool 4.1
+// Generated from output/content-library.json. Do not edit by hand.
+const RUNG = {
+ "platform": "Allen-Bradley CompactLogix",
+ "tags": [
+  {
+   "tag": "CONV_START",
+   "type": "BOOL",
+   "role": "input",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "ESTOP_OK",
+   "type": "BOOL",
+   "role": "input",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "ZS_101",
+   "type": "BOOL",
+   "role": "input",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "LSL_201",
+   "type": "BOOL",
+   "role": "input",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "PSH_302",
+   "type": "BOOL",
+   "role": "input",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "CONV_RUN",
+   "type": "BOOL",
+   "role": "output",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "M201_RUN",
+   "type": "BOOL",
+   "role": "output",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "T4_0",
+   "type": "TIMER",
+   "role": "timer",
+   "preS": 5,
+   "members": [
+    "DN",
+    "PRE",
+    "ACC"
+   ],
+   "units": "s",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "instructions": [
+  {
+   "ins": "XIC",
+   "kind": "condition",
+   "symbol": "] [",
+   "behavior": "true when its bit is ON",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "ins": "XIO",
+   "kind": "condition",
+   "symbol": "]/[",
+   "behavior": "true when its bit is OFF",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "ins": "OTE",
+   "kind": "output",
+   "symbol": "( )",
+   "behavior": "writes the rung state to its bit every scan",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "ins": "TON",
+   "kind": "output",
+   "symbol": "TON",
+   "behavior": "while the rung is true, ACC counts up; DN turns ON when ACC reaches PRE; a false rung resets ACC and DN",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "ins": "OTL",
+   "kind": "output",
+   "symbol": "(L)",
+   "behavior": "turns its bit ON when the rung is true; the bit stays ON after the rung goes false",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "ins": "OTU",
+   "kind": "output",
+   "symbol": "(U)",
+   "behavior": "turns its bit OFF when the rung is true",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "instructionNote": "Rockwell instruction behavior (platform convention).",
+ "conditionSlots": 4,
+ "challenges": [
+  {
+   "id": "c1",
+   "goal": "CONV_RUN energizes when CONV_START AND ESTOP_OK are true",
+   "output": "CONV_RUN",
+   "rungs": 1,
+   "all": [
+    "CONV_START",
+    "ESTOP_OK"
+   ],
+   "none": [],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "c2",
+   "goal": "M201_RUN energizes when CONV_START AND ESTOP_OK AND NOT ZS_101",
+   "output": "M201_RUN",
+   "rungs": 1,
+   "all": [
+    "CONV_START",
+    "ESTOP_OK"
+   ],
+   "none": [
+    "ZS_101"
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "c3",
+   "goal": "Use a TON so M201_RUN energizes 5 seconds after CONV_START",
+   "output": "M201_RUN",
+   "rungs": 2,
+   "all": [
+    "CONV_START"
+   ],
+   "none": [],
+   "timer": {
+    "tag": "T4_0",
+    "preS": 5,
+    "steps": [
+     {
+      "on": false,
+      "dt": 0,
+      "label": "off",
+      "expect": false
+     },
+     {
+      "on": true,
+      "dt": 0,
+      "label": "on, 0 s",
+      "expect": false
+     },
+     {
+      "on": true,
+      "dt": 3,
+      "label": "held 3 s",
+      "expect": false
+     },
+     {
+      "on": true,
+      "dt": 2,
+      "label": "held 5 s",
+      "expect": true
+     },
+     {
+      "on": false,
+      "dt": 0,
+      "label": "released",
+      "expect": false
+     }
+    ]
+   },
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "constructed": true,
+ "source": "constructed — training scenario, no source citation"
+};
+
+// Tool 4.2
+const HMI = {
+ "tags": [
+  {
+   "tag": "LT_101",
+   "type": "REAL",
+   "min": 0,
+   "max": 100,
+   "units": "%",
+   "value": 62.0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "PT_201",
+   "type": "REAL",
+   "min": 0,
+   "max": 200,
+   "units": "psig",
+   "value": 148.0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "TT_301",
+   "type": "REAL",
+   "min": -20,
+   "max": 200,
+   "units": "°C",
+   "value": 145.0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "FT_401",
+   "type": "REAL",
+   "min": 0,
+   "max": 500,
+   "units": "GPM",
+   "value": 312.0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "P201_RUN",
+   "type": "BOOL",
+   "value": 1,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "tag": "XV_203_POS",
+   "type": "BOOL",
+   "value": 0,
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "elements": [
+  {
+   "id": "tank",
+   "label": "Feed tank level bar",
+   "shape": "tank",
+   "expects": "analog",
+   "min": 0,
+   "max": 100,
+   "units": "%",
+   "answer": "LT_101",
+   "field": "Local level gauge reads 62 %",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "pump",
+   "label": "Transfer pump run indicator",
+   "shape": "pump",
+   "expects": "bool",
+   "on": "RUN",
+   "off": "STOP",
+   "answer": "P201_RUN",
+   "field": "Transfer pump running, local run light on",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "valve",
+   "label": "Feed valve position indicator",
+   "shape": "valve",
+   "expects": "bool",
+   "on": "OPEN",
+   "off": "CLOSED",
+   "answer": "XV_203_POS",
+   "field": "Feed valve closed",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "num",
+   "label": "Header pressure display",
+   "shape": "numeric",
+   "expects": "analog",
+   "min": 0,
+   "max": 200,
+   "units": "psig",
+   "answer": "PT_201",
+   "field": "Local pressure gauge reads 148 psig",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "trend",
+   "label": "Reactor temperature trend",
+   "shape": "trend",
+   "expects": "analog",
+   "min": -20,
+   "max": 200,
+   "units": "°C",
+   "answer": "TT_301",
+   "field": "Local temperature indicator reads 145 °C",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "constructed": true,
+ "source": "constructed — training scenario, no source citation"
+};
+
+// Tool 4.3
+const CCG = {
+ "requests": [
+  {
+   "id": "r1",
+   "text": "Change T4_0.PRE from 5 s to 8 s on Line 2 fill timer",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "r2",
+   "text": "Add a new permissive contact to the M-401 start rung",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "r3",
+   "text": "Modify AI scaling for PT-101 from 0-100 to 0-150 psig",
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "steps": [
+  {
+   "n": 1,
+   "text": "Verify current logic",
+   "needs": [],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 2,
+   "text": "Document the change request",
+   "needs": [
+    {
+     "step": 1,
+     "why": "You can't write the change against logic you haven't confirmed. The request would describe a guess."
+    }
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 3,
+   "text": "Get approval",
+   "needs": [
+    {
+     "step": 2,
+     "why": "Approvers sign what's written. There's nothing to approve until the request is documented."
+    }
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 4,
+   "text": "Back up the current program",
+   "needs": [],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 5,
+   "text": "Edit offline",
+   "needs": [
+    {
+     "step": 3,
+     "why": "Editing before approval is an unapproved change."
+    },
+    {
+     "step": 4,
+     "why": "The backup is the known-good copy. Take it before you touch the program."
+    }
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 6,
+   "text": "Download to the PLC",
+   "needs": [
+    {
+     "step": 4,
+     "why": "You can't download before backing up: if the change breaks something, you have no rollback."
+    },
+    {
+     "step": 5,
+     "why": "There's nothing to download until the edit is made."
+    }
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 7,
+   "text": "Verify the change works",
+   "needs": [
+    {
+     "step": 6,
+     "why": "The change isn't running until it's downloaded."
+    }
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "n": 8,
+   "text": "Update documentation",
+   "needs": [
+    {
+     "step": 7,
+     "why": "Documents record what was proven to work, not what was intended."
+    }
+   ],
+   "constructed": true,
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "orderRule": "A step is rejected only when a step it needs has not been placed. Back up can go anywhere before Edit offline.",
+ "constructed": true,
+ "source": "constructed — training scenario, no source citation"
+};
+
+// Tool 4.1 - 4.3
+const PROG_LESSONS = {
+ "concepts": {
+  "items": [
+   "Examine-if-closed concept",
+   "Examine-if-open concept",
+   "Output coil",
+   "Seal-in circuit",
+   "Start-stop logic",
+   "PLC scan cycle",
+   "Analog scaling in PLC logic"
+  ],
+  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
+ },
+ "hmiChain": {
+  "text": "Sensor -> transmitter -> PLC -> HMI",
+  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
+ },
+ "hmiSymptom": {
+  "text": "Transmitter output is correct but HMI value is wrong",
+  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"
+ },
+ "scalingFailure": {
+  "text": "calibrating a good transmitter because the scaling was wrong.",
+  "source": "Field Troubleshooting Template Pack.pdf p.9, Form 7, \"Reading is wrong but stable\", failure mode"
+ },
+ "approved": {
+  "text": "Operations notified, loop out of service or bypassed as approved",
+  "source": "Field Troubleshooting Template Pack.pdf p.5, Form 4 Loop Check, pre-check"
+ },
+ "revision": {
+  "text": "Tag, terminal numbers, and drawing revision match the field",
+  "source": "Field Troubleshooting Template Pack.pdf p.5, Form 4 Loop Check, pre-check"
+ },
+ "documentation": {
+  "text": "Documentation filed, CMMS closed",
+  "source": "Field Troubleshooting Template Pack.pdf p.6, Form 4 Loop Check, restore"
+ }
+};
+</script>
+<script type="text/babel">
+/* The COST_CONSEQUENCE object below is tool-authored interface copy.
+   It names the tool's own category for each wrong-move type so the
+   user sees what class of mistake they just made. It is NOT extracted
+   from any source and must not be cited as field content. The actual
+   reason each wrong move is wrong comes from the "reason" and
+   "derivedFrom" fields on each option. */
+
+/* ==========================================================================
+   TECH DEV LAB
+   Single-file build. React 18 UMD + Babel Standalone. No server required.
+
+   Storage: app state lives in localStorage under "techDevLab.v3", tool
+   state under "techDevLab.v3.<tool>". One exception, set by request:
+   Trap Spotter uses "techDevLab.v2.trapSpotter" (see EXTRA_TOOL_KEYS;
+   Reset clears it too). The reference build in sources/tech-dev-lab.html
+   uses "techDevLab.v1". Browsers often share localStorage across files
+   opened from disk, so these keys stay clear of it and the two builds
+   can't overwrite each other's progress.
+   ========================================================================== */
+
+const { useState, useEffect, useRef, createContext, useContext } = React;
+
+/* ==========================================================================
+   1. CONSTANTS & DATA
+   ========================================================================== */
+
+// Design tokens: context/design_system.md
+// Two palettes, same shape. Components read the active one with useC().
+// Light-mode signal colors are darker so they still read as accents on white.
+const C_DARK = {
+  bg: "#0a0e14",
+  panel: "#121821",
+  border: "#1e2836",
+  signal_cyan: "#22d3ee",
+  amber: "#f5a524",
+  lime: "#84cc16",
+  rose: "#f43f5e",
+  violet: "#a78bfa",
+  text: "#e5e9f0",
+  text_mute: "#7a8699",
+  text_dim: "#7a8699",
+};
+
+const C_LIGHT = {
+  bg: "#f7f8fa",
+  panel: "#ffffff",
+  border: "#e2e5ea",
+  signal_cyan: "#0e7490",
+  amber: "#b45309",
+  lime: "#4d7c0f",
+  rose: "#be123c",
+  violet: "#6d28d9",
+  text: "#111827",
+  text_mute: "#4b5563",
+  text_dim: "#6b7280",
+};
+
+const THEMES = { dark: C_DARK, light: C_LIGHT };
+// UI preference, not progress: Reset leaves it alone.
+const THEME_KEY = "techDevLab.v3.theme";
+const THEME_FADE_MS = 200;
+const ThemeCtx = React.createContext(C_DARK);
+function useC() {
+  return React.useContext(ThemeCtx);
+}
+
+function loadTheme() {
+  try {
+    return localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark";
+  } catch (e) {
+    return "dark";
+  }
+}
+
+function saveTheme(theme) {
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch (e) {
+    // Storage blocked: the theme still applies for this session.
+  }
+}
+
+const HEAD_FONT = "'Space Grotesk', sans-serif";
+const MONO_FONT = "'JetBrains Mono', monospace";
+const UI_FONT = "'Inter', system-ui, sans-serif";
+
+const MOBILE_BREAKPOINT = 900;
+const DUR_FAST = 120;
+const DUR_SLOW = 280;
+const TOUCH_MIN = 44;
+
+// Layers and tool slots: skills/orchestrator-build-lab/SKILL.md, Step 2
+const LAYERS = [
+  {
+    id: "electrical", num: 1, name: "Electrical", accent: "signal_cyan",
+    tools: [
+      { id: "1.1", name: "Wire It Live", sub: "24 VDC Start/Stop" },
+      { id: "1.2", name: "Sourcing or Sinking?" },
+      { id: "1.3", name: "Contact Logic Puzzle" },
+      { id: "1.4", name: "Trap Spotter" },
+    ],
+  },
+  {
+    id: "instrumentation", num: 2, name: "Instrumentation", accent: "signal_cyan",
+    tools: [
+      { id: "2.1", name: "Wire Count Detective" },
+      { id: "2.2", name: "Scaling Bench" },
+      { id: "2.3", name: "Calibration Record Builder" },
+      { id: "2.4", name: "Split-Half Isolator" },
+    ],
+  },
+  {
+    id: "plc", num: 3, name: "PLC", accent: "signal_cyan",
+    tools: [
+      { id: "3.1", name: "I/O Map Inspector" },
+      { id: "3.2", name: "Permissive Detective" },
+      { id: "3.3", name: "Timer Trace" },
+      { id: "3.4", name: "Symptom → First Move" },
+    ],
+  },
+  {
+    id: "programming", num: 4, name: "Programming", accent: "violet",
+    tools: [
+      { id: "4.1", name: "Rung Editor" },
+      { id: "4.2", name: "HMI Tag Bind" },
+      { id: "4.3", name: "Change Control Gate" },
+    ],
+  },
+  {
+    id: "drill", num: 5, name: "Drill", accent: "lime",
+    tools: [
+      { id: "5.1", name: "The Bench" },
+    ],
+  },
+];
+
+// Socratic prompts only. No field values here; those come from sources/.
+const HELPER_PROMPTS = {
+  electrical: [
+    "Before you measure, say what you expect to read and where.",
+    "Which single reading would eliminate half of what is left?",
+    "A reading that eliminates nothing was the wrong reading.",
+  ],
+  instrumentation: [
+    "Field device, wiring, power, or controller: which reading separates them?",
+    "What would this loop look like if every part of it were healthy?",
+    "Measure in the middle of what is left.",
+  ],
+  plc: [
+    "What does the controller believe right now? What does the field say?",
+    "Where do those two stories first disagree?",
+    "Measure in the middle of what is left.",
+  ],
+  programming: [
+    "What else reads or writes this tag before you change it?",
+    "How will you prove the change did only what you intended?",
+    "Who needs to know before this goes live?",
+  ],
+  // Built from IC_Fundamentals_Drill_Input_Library.pdf p.1: retrieve cold, apply, correct, revisit.
+  drill: [
+    "Can you answer it cold, before you look anything up?",
+    "Where would this show up on a real loop or symptom?",
+    "What did you miss, and when will you come back to it?",
+  ],
+};
+
+/* --------------------------------------------------------------------------
+   Persistence layer
+   -------------------------------------------------------------------------- */
+
+const STORAGE_KEY = "techDevLab.v3"; // v3, not v2: see header comment
+
+const DEFAULT_STATE = {
+  xp: 0, level: 1, streak: 0, bestStreak: 0,
+  muted: true, activeLayer: "electrical", fieldNotes: [],
+  skillRadar: { electrical: 0, instrumentation: 0, plc: 0, programming: 0 },
+};
+
+function num(v, fallback) {
+  return typeof v === "number" && Number.isFinite(v) ? v : fallback;
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return DEFAULT_STATE;
+    const p = JSON.parse(raw) || {};
+    const xp = Math.max(0, num(p.xp, 0));
+    const radar = p.skillRadar || {};
+    return {
+      ...DEFAULT_STATE,
+      xp,
+      level: levelOf(xp),
+      streak: num(p.streak, 0),
+      bestStreak: num(p.bestStreak, 0),
+      muted: typeof p.muted === "boolean" ? p.muted : true,
+      activeLayer: LAYERS.some(l => l.id === p.activeLayer) ? p.activeLayer : "electrical",
+      fieldNotes: Array.isArray(p.fieldNotes) ? p.fieldNotes : [],
+      skillRadar: {
+        electrical: num(radar.electrical, 0),
+        instrumentation: num(radar.instrumentation, 0),
+        plc: num(radar.plc, 0),
+        programming: num(radar.programming, 0),
+      },
+    };
+  } catch (e) {
+    return DEFAULT_STATE;
+  }
+}
+
+function save(state) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    // Storage full or blocked: the session keeps working in memory.
+  }
+}
+
+// Per-tool state lives under dotted sub-keys of STORAGE_KEY (techDevLab.v3.<tool>).
+// Tool keys outside that prefix are listed here so Reset clears them too.
+const EXTRA_TOOL_KEYS = ["techDevLab.v2.trapSpotter"];
+
+function loadTool(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveTool(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    // Same as save(): keep working in memory.
+  }
+}
+
+function clearToolStorage() {
+  try {
+    Object.keys(localStorage)
+      .filter(k => k !== THEME_KEY && (k.startsWith(STORAGE_KEY + ".") || EXTRA_TOOL_KEYS.includes(k)))
+      .forEach(k => localStorage.removeItem(k));
+  } catch (e) {
+    // Nothing stored, or storage blocked.
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Game math
+   -------------------------------------------------------------------------- */
+
+// Minimum XP for levels 1-6.
+const LEVEL_XP = [0, 150, 400, 800, 1300, 1900];
+const TITLES = ["Helper", "Apprentice", "Technician", "Senior Tech", "Lead Tech", "Controls Engineer"];
+
+function levelOf(xp) {
+  let level = 1;
+  for (let i = 0; i < LEVEL_XP.length; i++) {
+    if (xp >= LEVEL_XP[i]) level = i + 1;
+  }
+  return level;
+}
+
+function titleOf(level) {
+  const i = Math.min(Math.max(level, 1), TITLES.length) - 1;
+  return TITLES[i];
+}
+
+// Skill radar gain per first-pass correct answer (radar axes run 0-100).
+const RADAR_STEP = 0.4;
+
+function awardXP(state, n) {
+  const xp = Math.max(0, state.xp + n);
+  return { ...state, xp, level: levelOf(xp) };
+}
+
+function addFieldNote(state, entry) {
+  const note = { ...entry, at: new Date().toISOString() };
+  return { ...state, fieldNotes: [note, ...state.fieldNotes] };
+}
+
+/* ==========================================================================
+   2. SHARED UI COMPONENTS
+   ========================================================================== */
+
+const MotionCtx = createContext(false); // true = prefers-reduced-motion
+
+function useReducedMotion() {
+  return useContext(MotionCtx);
+}
+
+function useMediaQuery(query) {
+  const get = () => (window.matchMedia ? window.matchMedia(query).matches : false);
+  const [matches, setMatches] = useState(get);
+  useEffect(() => {
+    if (!window.matchMedia) return;
+    const mql = window.matchMedia(query);
+    const onChange = () => setMatches(mql.matches);
+    onChange();
+    if (mql.addEventListener) mql.addEventListener("change", onChange);
+    else mql.addListener(onChange);
+    return () => {
+      if (mql.removeEventListener) mql.removeEventListener("change", onChange);
+      else mql.removeListener(onChange);
+    };
+  }, [query]);
+  return matches;
+}
+
+function transition(reduced, props) {
+  if (reduced) return "none";
+  return props.map(p => `${p} ${DUR_SLOW - 80}ms ease-out`).join(", ");
+}
+
+function glow(color) {
+  return `0 0 0 1px ${color}, 0 0 14px ${color}40`;
+}
+
+function Panel({ children, source, style, ...rest }) {
+  const C = useC();
+  return (
+    <section
+      {...rest}
+      style={{
+        background: C.panel,
+        border: `1px solid ${C.border}`,
+        borderRadius: 6,
+        padding: 20,
+        ...style,
+      }}
+    >
+      {children}
+      {source !== undefined && (
+        <footer
+          style={{
+            marginTop: 20,
+            paddingTop: 10,
+            borderTop: `1px solid ${C.border}`,
+            fontFamily: MONO_FONT,
+            fontSize: 11,
+            color: C.text_dim,
+          }}
+        >
+          SOURCE: {source}
+        </footer>
+      )}
+    </section>
+  );
+}
+
+// Engraved label plate: uppercase, letter-spacing 2px.
+function H({ children, as: Tag = "h2", color: colorProp, style }) {
+  const C = useC();
+  const color = colorProp ?? C.text_mute;
+  return (
+    <Tag
+      style={{
+        margin: 0,
+        fontFamily: HEAD_FONT,
+        fontWeight: 700,
+        fontSize: 11,
+        letterSpacing: "2px",
+        textTransform: "uppercase",
+        color,
+        ...style,
+      }}
+    >
+      {children}
+    </Tag>
+  );
+}
+
+function Btn({ children, onClick, variant = "primary", color: colorProp, ariaLabel, pressed, style, ...rest }) {
+  const C = useC();
+  const color = colorProp ?? C.signal_cyan;
+  const reduced = useReducedMotion();
+  const [hover, setHover] = useState(false);
+  const primary = variant === "primary";
+  const active = pressed === true;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel}
+      aria-pressed={pressed}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        minHeight: TOUCH_MIN,
+        minWidth: TOUCH_MIN,
+        padding: "0 16px",
+        borderRadius: 4,
+        border: `1px solid ${primary || active ? color : C.border}`,
+        background: primary ? `${color}1a` : active ? `${color}14` : "transparent",
+        color: primary || active ? color : C.text_mute,
+        fontFamily: UI_FONT,
+        fontWeight: 600,
+        fontSize: 13,
+        cursor: rest.disabled ? "default" : "pointer",
+        opacity: rest.disabled ? 0.5 : 1,
+        boxShadow: active || (hover && primary && !rest.disabled) ? glow(color) : "none",
+        transition: transition(reduced, ["box-shadow", "background", "border-color", "color"]),
+        ...style,
+      }}
+      {...rest}
+    >
+      {children}
+    </button>
+  );
+}
+
+function Chip({ children, color: colorProp, style }) {
+  const C = useC();
+  const color = colorProp ?? C.text_mute;
+  return (
+    <span
+      style={{
+        display: "inline-block",
+        padding: "2px 8px",
+        border: `1px solid ${color}55`,
+        borderRadius: 3,
+        fontFamily: MONO_FONT,
+        fontSize: 11,
+        color,
+        whiteSpace: "nowrap",
+        ...style,
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function Verdict({ ok, title, children }) {
+  const C = useC();
+  const reduced = useReducedMotion();
+  const color = ok ? C.lime : C.rose;
+  return (
+    <div
+      role="status"
+      style={{
+        borderLeft: `3px solid ${color}`,
+        background: `${color}12`,
+        padding: "12px 16px",
+        borderRadius: 4,
+        animation: reduced ? "none" : `${ok ? "shieldPop" : "shake"} ${DUR_SLOW}ms ease-out`,
+      }}
+    >
+      <div style={{ fontFamily: HEAD_FONT, fontWeight: 700, color, letterSpacing: "-0.01em" }}>{title}</div>
+      {children && <div style={{ marginTop: 6, color: C.text, fontSize: 14 }}>{children}</div>}
+    </div>
+  );
+}
+
+function Scanline() {
+  const C = useC();
+  const reduced = useReducedMotion();
+  if (reduced) return null;
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        height: 1,
+        background: C.signal_cyan,
+        opacity: 0.4,
+        animation: "scanline 4s linear infinite",
+        pointerEvents: "none",
+      }}
+    />
+  );
+}
+
+function Helper({ layer, tool }) {
+  const C = useC();
+  const prompts = HELPER_PROMPTS[layer.id] || [];
+  return (
+    <aside aria-label="Helper" aria-live="polite">
+      <Panel>
+        <H as="h2">Helper</H>
+        <p style={{ margin: "12px 0 16px", fontSize: 13, color: C.text_mute }}>
+          <span style={{ fontFamily: MONO_FONT, color: C[layer.accent] }}>{tool.id}</span> {tool.name}
+          {TOOLS[tool.id] ? "." : " is not built yet."}
+          Questions to carry into this layer:
+        </p>
+        <ul style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 10 }}>
+          {prompts.map(p => (
+            <li key={p} style={{ fontSize: 14, lineHeight: 1.45, color: C.text }}>{p}</li>
+          ))}
+        </ul>
+      </Panel>
+    </aside>
+  );
+}
+
+function Radar({ values, size = 56 }) {
+  const C = useC();
+  const axes = ["electrical", "instrumentation", "plc", "programming"];
+  const labels = { electrical: "Electrical", instrumentation: "Instrumentation", plc: "PLC", programming: "Programming" };
+  const c = size / 2;
+  const r = c - 4;
+  // Axis order: up, right, down, left.
+  const dirs = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+  const pt = (i, frac) => `${c + dirs[i][0] * r * frac},${c + dirs[i][1] * r * frac}`;
+  const ring = frac => axes.map((_, i) => pt(i, frac)).join(" ");
+  const shape = axes.map((a, i) => pt(i, Math.min(Math.max(values[a] || 0, 0), 100) / 100)).join(" ");
+  const summary = axes.map(a => `${labels[a]} ${values[a] || 0}`).join(", ");
+  return (
+    <svg width={size} height={size} role="img" aria-label={`Skill radar: ${summary}`}>
+      <title>{`Skill radar: ${summary}`}</title>
+      {[1 / 3, 2 / 3, 1].map(f => (
+        <polygon key={f} points={ring(f)} fill="none" stroke={C.border} strokeWidth="1" />
+      ))}
+      {axes.map((_, i) => (
+        <line key={i} x1={c} y1={c} x2={c + dirs[i][0] * r} y2={c + dirs[i][1] * r} stroke={C.border} strokeWidth="1" />
+      ))}
+      <polygon points={shape} fill={`${C.signal_cyan}40`} stroke={C.signal_cyan} strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Layer navigation
+   -------------------------------------------------------------------------- */
+
+function LayerNav({ active, onSelect, mobile }) {
+  const C = useC();
+  const reduced = useReducedMotion();
+
+  if (mobile) {
+    return (
+      <nav
+        aria-label="Layers"
+        style={{
+          position: "fixed",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 10,
+          display: "grid",
+          gridTemplateColumns: `repeat(${LAYERS.length}, 1fr)`,
+          background: C.panel,
+          borderTop: `1px solid ${C.border}`,
+          paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        }}
+      >
+        {LAYERS.map(l => {
+          const on = l.id === active;
+          return (
+            <button
+              key={l.id}
+              type="button"
+              onClick={() => onSelect(l.id)}
+              aria-label={`Layer ${l.num}: ${l.name}`}
+              aria-current={on ? "page" : undefined}
+              style={{
+                minHeight: 56,
+                border: "none",
+                borderTop: `2px solid ${on ? C[l.accent] : "transparent"}`,
+                background: on ? `${C[l.accent]}12` : "transparent",
+                color: on ? C[l.accent] : C.text_mute,
+                fontFamily: UI_FONT,
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: transition(reduced, ["background", "color", "border-color"]),
+              }}
+            >
+              <div style={{ fontFamily: MONO_FONT, fontSize: 10, color: on ? C[l.accent] : C.text_dim }}>L{l.num}</div>
+              {l.name}
+            </button>
+          );
+        })}
+      </nav>
+    );
+  }
+
+  return (
+    <nav aria-label="Layers" style={{ padding: "20px 12px", borderRight: `1px solid ${C.border}` }}>
+      <H as="h2" style={{ padding: "0 8px 12px" }}>Layers</H>
+      <div style={{ display: "grid", gap: 6 }}>
+        {LAYERS.map(l => {
+          const on = l.id === active;
+          return (
+            <button
+              key={l.id}
+              type="button"
+              onClick={() => onSelect(l.id)}
+              aria-label={`Layer ${l.num}: ${l.name}, ${l.tools.length} tools`}
+              aria-current={on ? "page" : undefined}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                minHeight: TOUCH_MIN,
+                padding: "8px 10px",
+                textAlign: "left",
+                border: `1px solid ${on ? C[l.accent] : "transparent"}`,
+                borderRadius: 4,
+                background: on ? `${C[l.accent]}12` : "transparent",
+                boxShadow: on ? glow(C[l.accent]) : "none",
+                color: on ? C.text : C.text_mute,
+                fontFamily: UI_FONT,
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: transition(reduced, ["background", "color", "border-color", "box-shadow"]),
+              }}
+            >
+              <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: on ? C[l.accent] : C.text_dim }}>L{l.num}</span>
+              <span style={{ flex: 1 }}>{l.name}</span>
+              <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: C.text_dim }}>{l.tools.length}</span>
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
+/* ==========================================================================
+   3. TOOL COMPONENTS
+   ========================================================================== */
+
+function ToolTabs({ layer, activeId, onSelect }) {
+  const C = useC();
+  return (
+    <div role="group" aria-label={`${layer.name} tools`} style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      {layer.tools.map(t => (
+        <Btn
+          key={t.id}
+          variant="ghost"
+          color={C[layer.accent]}
+          pressed={t.id === activeId}
+          ariaLabel={`Tool ${t.id}: ${t.name}`}
+          onClick={() => onSelect(t.id)}
+        >
+          <span style={{ fontFamily: MONO_FONT, marginRight: 8 }}>{t.id}</span>
+          {t.name}
+        </Btn>
+      ))}
+    </div>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Tool 3.4: Symptom -> First Move
+   One operator report, four first moves. Pick, see the consequence, retry.
+   Content: output/content-library.json (symptoms with sourced options).
+   Tags and services are constructed for training (tagDerived); everything
+   else is quoted from the cited source.
+   -------------------------------------------------------------------------- */
+
+const CHAIN = ["Process", "Sensor", "Transmitter", "Wiring", "Card", "Controller", "Display"];
+const SFM_KEY = STORAGE_KEY + ".symptomFirstMove";
+const SFM_XP_BY_ATTEMPT = [15, 5, 0, 0]; // first time a card is played only; replays award 0
+const SFM_RECALL_GAP = 3; // cards until a missed pattern comes back
+
+// What each wrong-move type costs you. These are the tool's own words for the
+// content library's cost tags, not field facts.
+const COST_CONSEQUENCE = {
+  part: { title: "Part swapped. Fault still there.", text: "Hardware changed before the chain showed where the fault was." },
+  endnode: { title: "Far end checked first.", text: "Everything between this point and the fault is still unproven." },
+  premature: { title: "Right check, wrong time.", text: "Earlier checks would have cut the chain first." },
+  mask: { title: "Symptom hidden. Fault kept.", text: "The reading looks better and the fault is still in the loop." },
+};
+const COST_FALLBACK = { title: "Not the first move.", text: "Something else comes first." };
+
 const SFM_BY_ID = Object.fromEntries(SFM_SYMPTOMS.map(s => [s.id, s]));
 
 function shuffled(list) {
@@ -6794,399 +8757,6 @@ const SPH_XP_FIRST = 35;
 const SPH_XP_RETRY = 10;
 const SPH_RADAR = 0.8;
 
-// Generated from output/content-library.json (splitHalf). Do not edit by hand.
-const SH = {
- "chain": [
-  "Process",
-  "Sensor",
-  "Transmitter",
-  "Wiring",
-  "Card",
-  "Controller",
-  "Display"
- ],
- "chainSource": "Field Troubleshooting Calculators.xlsx Split-Half Log (E6: \"Process, sensor, transmitter, wiring, card, controller, display = 7\")",
- "heading": "The loop is a chain. Cut it in the middle, not at the ends.",
- "rule": "Rule: after each measurement, you should be able to eliminate at least half the remaining chain. If a measurement eliminates nothing, it was the wrong measurement.",
- "logRule": "Measure in the middle of what is left. Each step should cut the suspect chain roughly in half.",
- "measurementPoints": [
-  {
-   "step": 1,
-   "text": "Controller input (raw counts)"
-  },
-  {
-   "step": 2,
-   "text": "Field terminal / marshalling"
-  },
-  {
-   "step": 3,
-   "text": "Junction box"
-  },
-  {
-   "step": 4,
-   "text": "Transmitter terminals"
-  },
-  {
-   "step": 5,
-   "text": "Sensor / process connection"
-  }
- ],
- "worksheetColumns": [
-  "Step",
-  "Measure at",
-  "Expected",
-  "Actual",
-  "Good / Bad",
-  "Halves remaining"
- ],
- "worksheetFooter": [
-  "Fault isolated to:",
-  "Evidence (the two readings that bracket it):",
-  "Verification after repair:"
- ],
- "flags": [
-  {
-   "label": "Isolated",
-   "when": "links after <= 1"
-  },
-  {
-   "label": "Eliminated nothing: wrong measurement",
-   "when": "links after >= links before"
-  },
-  {
-   "label": "Weak cut: measure closer to middle",
-   "when": "links after > links before * 0.75"
-  },
-  {
-   "label": "Good cut",
-   "when": "otherwise"
-  }
- ],
- "example": {
-  "tag": "LT-301",
-  "steps": [
-   {
-    "step": 1,
-    "measureAt": "Field terminals / marshalling",
-    "expected": "12.0 mA",
-    "actual": "12.0 mA",
-    "result": "Good",
-    "linksBefore": 7,
-    "linksAfter": 4,
-    "flag": "Good cut"
-   },
-   {
-    "step": 2,
-    "measureAt": "Transmitter terminals",
-    "expected": "12.0 mA",
-    "actual": "12.0 mA",
-    "result": "Good",
-    "linksBefore": 4,
-    "linksAfter": 2,
-    "flag": "Good cut"
-   },
-   {
-    "step": 3,
-    "measureAt": "Transmitter local display vs process",
-    "expected": "40%",
-    "actual": "95%",
-    "result": "Bad",
-    "linksBefore": 2,
-    "linksAfter": 1,
-    "flag": "Isolated"
-   }
-  ],
-  "faultIsolatedTo": "Process connection / wet leg (upstream of transmitter)",
-  "source": "Field Troubleshooting Calculators.xlsx Split-Half Log"
- },
- "sources": [
-  "Field Troubleshooting Template Pack.pdf p.3",
-  "Field Troubleshooting Calculators.xlsx Split-Half Log"
- ]
-};
-// Generated from output/split-half-scenarios.json. Do not edit by hand.
-const SPH_SCENARIOS = [
- {
-  "id": "SH-01",
-  "tag": "FT-101",
-  "service": "Boiler Feedwater Flow",
-  "tagDerived": true,
-  "range": "0-500 GPM",
-  "lrv": 0,
-  "urv": 500,
-  "units": "GPM",
-  "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Flow 0 GPM 500 GPM)",
-  "faultLink": 3,
-  "faultLinkName": "Wiring",
-  "faultCategory": "Reading pegged low (at or below 4 mA)",
-  "faultDescription": "Confirm polarity and that no wire is lifted or backed out.",
-  "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading pegged low (at or below 4 mA)\", step 3",
-  "readings": {
-   "proc": {
-    "good": "300 GPM",
-    "bad": null,
-    "statusGood": true
-   },
-   "sens": {
-    "good": "300 GPM",
-    "bad": null,
-    "statusGood": true
-   },
-   "xmtr": {
-    "good": "13.6 mA",
-    "bad": null,
-    "statusGood": true
-   },
-   "jb": {
-    "good": "13.6 mA",
-    "bad": "0.0 mA",
-    "statusGood": false
-   },
-   "card": {
-    "good": "13.6 mA",
-    "bad": "0.0 mA",
-    "statusGood": false
-   },
-   "ctrl": {
-    "good": "300 GPM",
-    "bad": "-125 GPM",
-    "statusGood": false
-   },
-   "hmi": {
-    "good": "300 GPM",
-    "bad": "-125 GPM",
-    "statusGood": false
-   }
-  },
-  "isProcessFault": false,
-  "numbers": "Healthy signal 60% = 13.6 mA (p.4 table). Past the fault: 0.0 mA (p.4: open circuit, lifted wire). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
-  "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
- },
- {
-  "id": "SH-02",
-  "tag": "TT-205",
-  "service": "Reactor Outlet Temperature",
-  "tagDerived": true,
-  "range": "0-200 °C",
-  "lrv": 0,
-  "urv": 200,
-  "units": "°C",
-  "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Temperature 0 °C 200 °C)",
-  "faultLink": 1,
-  "faultLinkName": "Sensor",
-  "faultCategory": "Reading pegged high (at or above 20 mA)",
-  "faultDescription": "For temperature, check for an open thermocouple or RTD lead.",
-  "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading pegged high (at or above 20 mA)\", step 6",
-  "readings": {
-   "proc": {
-    "good": "100 °C",
-    "bad": null,
-    "statusGood": true
-   },
-   "sens": {
-    "good": "100 °C",
-    "bad": "Open circuit",
-    "statusGood": false
-   },
-   "xmtr": {
-    "good": "12.0 mA",
-    "bad": "21.0 mA",
-    "statusGood": false
-   },
-   "jb": {
-    "good": "12.0 mA",
-    "bad": "21.0 mA",
-    "statusGood": false
-   },
-   "card": {
-    "good": "12.0 mA",
-    "bad": "21.0 mA",
-    "statusGood": false
-   },
-   "ctrl": {
-    "good": "100 °C",
-    "bad": "212.5 °C",
-    "statusGood": false
-   },
-   "hmi": {
-    "good": "100 °C",
-    "bad": "212.5 °C",
-    "statusGood": false
-   }
-  },
-  "isProcessFault": false,
-  "numbers": "Healthy signal 50% = 12.0 mA (p.4 table). Past the fault: 21.0 mA (p.4: device failure alarm, NAMUR NE43 high; Form 7: upscale burnout). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
-  "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
- },
- {
-  "id": "SH-03",
-  "tag": "PDT-401",
-  "service": "Filter Differential Pressure",
-  "tagDerived": true,
-  "range": "0-100 inH2O",
-  "lrv": 0,
-  "urv": 100,
-  "units": "inH2O",
-  "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Differential pressure 0 inH₂O 100 inH₂O)",
-  "faultLink": 2,
-  "faultLinkName": "Transmitter",
-  "faultCategory": "Reading is wrong but stable",
-  "faultDescription": "Check for zero shift: has the device been overpressured, or the mounting changed?",
-  "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading is wrong but stable\", step 3",
-  "readings": {
-   "proc": {
-    "good": "50 inH2O",
-    "bad": null,
-    "statusGood": true
-   },
-   "sens": {
-    "good": "50 inH2O",
-    "bad": null,
-    "statusGood": true
-   },
-   "xmtr": {
-    "good": "12.0 mA",
-    "bad": "13.6 mA",
-    "statusGood": false
-   },
-   "jb": {
-    "good": "12.0 mA",
-    "bad": "13.6 mA",
-    "statusGood": false
-   },
-   "card": {
-    "good": "12.0 mA",
-    "bad": "13.6 mA",
-    "statusGood": false
-   },
-   "ctrl": {
-    "good": "50 inH2O",
-    "bad": "60 inH2O",
-    "statusGood": false
-   },
-   "hmi": {
-    "good": "50 inH2O",
-    "bad": "60 inH2O",
-    "statusGood": false
-   }
-  },
-  "isProcessFault": false,
-  "numbers": "Healthy signal 50% = 12.0 mA (p.4 table). Past the fault: zero-shifted to 60% = 13.6 mA (p.4 table). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
-  "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
- },
- {
-  "id": "SH-04",
-  "tag": "LT-310",
-  "service": "Surge Drum Level",
-  "tagDerived": true,
-  "range": "2-18 ft",
-  "lrv": 2,
-  "urv": 18,
-  "units": "ft",
-  "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Level 2 ft 18 ft)",
-  "faultLink": 4,
-  "faultLinkName": "Card",
-  "faultCategory": "Reading is wrong but stable",
-  "faultDescription": "Check controller scaling and raw counts before touching the field device.",
-  "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading is wrong but stable\", step 2",
-  "readings": {
-   "proc": {
-    "good": "14 ft",
-    "bad": null,
-    "statusGood": true
-   },
-   "sens": {
-    "good": "14 ft",
-    "bad": null,
-    "statusGood": true
-   },
-   "xmtr": {
-    "good": "16.0 mA",
-    "bad": null,
-    "statusGood": true
-   },
-   "jb": {
-    "good": "16.0 mA",
-    "bad": null,
-    "statusGood": true
-   },
-   "card": {
-    "good": "16.0 mA",
-    "bad": "12.0 mA",
-    "statusGood": false
-   },
-   "ctrl": {
-    "good": "14 ft",
-    "bad": "10 ft",
-    "statusGood": false
-   },
-   "hmi": {
-    "good": "14 ft",
-    "bad": "10 ft",
-    "statusGood": false
-   }
-  },
-  "isProcessFault": false,
-  "numbers": "Healthy signal 75% = 16.0 mA (p.4 table). Past the fault: the card reads 12.0 mA (50%, p.4 table). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
-  "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
- },
- {
-  "id": "SH-05",
-  "tag": "FT-712",
-  "service": "Cooling Water Supply Flow",
-  "tagDerived": true,
-  "range": "0-1,200 GPM",
-  "lrv": 0,
-  "urv": 1200,
-  "units": "GPM",
-  "rangeSource": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (Flow 0 GPM 1,200 GPM)",
-  "faultLink": 0,
-  "faultLinkName": "Process",
-  "faultCategory": "Reading pegged low (at or below 4 mA)",
-  "faultDescription": "Compare to the actual process with an independent indication.",
-  "faultSource": "Field Troubleshooting Template Pack.pdf p.9, Form 7 \"Reading pegged low (at or below 4 mA)\", step 5",
-  "readings": {
-   "proc": {
-    "good": "600 GPM",
-    "bad": "0 GPM",
-    "statusGood": false
-   },
-   "sens": {
-    "good": "600 GPM",
-    "bad": "0 GPM",
-    "statusGood": false
-   },
-   "xmtr": {
-    "good": "12.0 mA",
-    "bad": "4.0 mA",
-    "statusGood": false
-   },
-   "jb": {
-    "good": "12.0 mA",
-    "bad": "4.0 mA",
-    "statusGood": false
-   },
-   "card": {
-    "good": "12.0 mA",
-    "bad": "4.0 mA",
-    "statusGood": false
-   },
-   "ctrl": {
-    "good": "600 GPM",
-    "bad": "0 GPM",
-    "statusGood": false
-   },
-   "hmi": {
-    "good": "600 GPM",
-    "bad": "0 GPM",
-    "statusGood": false
-   }
-  },
-  "isProcessFault": true,
-  "numbers": "Normal (what operations expect) 50% = 12.0 mA (p.4 table). Actual: the process really is at LRV, 4.0 mA (p.4: process truly at LRV). EU values by the p.4 formula EU = LRV + ((I - 4) / 16) x (URV - LRV).",
-  "constructed": "Tag, service, which link is faulted, and the healthy process % are constructed for training."
- }
-];
 
 // One test point per chain link, in chain order.
 const SPH_POINTS = [
@@ -8549,545 +10119,6 @@ function WireItLive({ onResult }) {
    Generated from output/content-library.json. Do not edit by hand.
    -------------------------------------------------------------------------- */
 
-const CALC = {
- "source": "Field Troubleshooting Calculators.xlsx",
- "mAConverter": {
-  "formulas": [
-   "% span = (I - 4) / 16 x 100.",
-   "EU = LRV + ((I - 4) / 16) x (URV - LRV).",
-   "I = 4 + 16 x (EU - LRV) / (URV - LRV).",
-   "Error (% span) = (Measured mA - Ideal mA) / 16 x 100."
-  ],
-  "formulasSource": "Field Troubleshooting Calculators.xlsx Start Here C10",
-  "alarmNote": "NAMUR NE43: valid signal 3.8-20.5 mA; failure at or below 3.6 mA or at or above 21.0 mA. Vendor defaults vary (some 3.75 / 21.75 mA). Check the device's configured alarm levels.",
-  "alarmNoteSource": "Field Troubleshooting Calculators.xlsx Start Here C11",
-  "alarmBands": [
-   {
-    "test": "<= 0.05",
-    "upTo": 0.05,
-    "inclusive": true,
-    "label": "Open circuit / no supply"
-   },
-   {
-    "test": "<= 3.6",
-    "upTo": 3.6,
-    "inclusive": true,
-    "label": "Low failure alarm (NE43) or supply/leakage problem"
-   },
-   {
-    "test": "< 3.8",
-    "upTo": 3.8,
-    "inclusive": false,
-    "label": "Ambiguous zone: check HART status"
-   },
-   {
-    "test": "< 4",
-    "upTo": 4.0,
-    "inclusive": false,
-    "label": "Under-range saturation: process below LRV or range wrong"
-   },
-   {
-    "test": "<= 20",
-    "upTo": 20.0,
-    "inclusive": true,
-    "label": "Valid measurement"
-   },
-   {
-    "test": "<= 20.5",
-    "upTo": 20.5,
-    "inclusive": true,
-    "label": "Over-range saturation: process above URV or range wrong"
-   },
-   {
-    "test": "< 21",
-    "upTo": 21.0,
-    "inclusive": false,
-    "label": "Ambiguous zone: check HART status"
-   },
-   {
-    "test": "<= 23",
-    "upTo": 23.0,
-    "inclusive": true,
-    "label": "High failure alarm (NE43)"
-   },
-   {
-    "test": "otherwise",
-    "upTo": null,
-    "inclusive": null,
-    "label": "Beyond normal output: suspect short or foreign source"
-   }
-  ],
-  "alarmBandsSource": "Field Troubleshooting Calculators.xlsx mA Converter C12 (formula)",
-  "outOfRangeNote": "Readings outside 4-20 mA give % below 0 or above 100 on purpose; the meaning column is the useful part.",
-  "referenceTable": [
-   {
-    "pct": 0,
-    "mA": 4,
-    "eu": 0
-   },
-   {
-    "pct": 5,
-    "mA": 4.8,
-    "eu": 7.5
-   },
-   {
-    "pct": 10,
-    "mA": 5.6,
-    "eu": 15
-   },
-   {
-    "pct": 15,
-    "mA": 6.4,
-    "eu": 22.5
-   },
-   {
-    "pct": 20,
-    "mA": 7.2,
-    "eu": 30
-   },
-   {
-    "pct": 25,
-    "mA": 8,
-    "eu": 37.5
-   },
-   {
-    "pct": 30,
-    "mA": 8.8,
-    "eu": 45
-   },
-   {
-    "pct": 35,
-    "mA": 9.6,
-    "eu": 52.5
-   },
-   {
-    "pct": 40,
-    "mA": 10.4,
-    "eu": 60
-   },
-   {
-    "pct": 45,
-    "mA": 11.2,
-    "eu": 67.5
-   },
-   {
-    "pct": 50,
-    "mA": 12,
-    "eu": 75
-   },
-   {
-    "pct": 55,
-    "mA": 12.8,
-    "eu": 82.5
-   },
-   {
-    "pct": 60,
-    "mA": 13.6,
-    "eu": 90
-   },
-   {
-    "pct": 65,
-    "mA": 14.4,
-    "eu": 97.5
-   },
-   {
-    "pct": 70,
-    "mA": 15.2,
-    "eu": 105
-   },
-   {
-    "pct": 75,
-    "mA": 16,
-    "eu": 112.5
-   },
-   {
-    "pct": 80,
-    "mA": 16.8,
-    "eu": 120
-   },
-   {
-    "pct": 85,
-    "mA": 17.6,
-    "eu": 127.5
-   },
-   {
-    "pct": 90,
-    "mA": 18.4,
-    "eu": 135
-   },
-   {
-    "pct": 95,
-    "mA": 19.2,
-    "eu": 142.5
-   },
-   {
-    "pct": 100,
-    "mA": 20,
-    "eu": 150
-   }
-  ],
-  "referenceRange": {
-   "lrv": 0,
-   "urv": 150,
-   "units": "in H2O"
-  },
-  "referenceSource": "Field Troubleshooting Calculators.xlsx mA Converter I5:K26"
- },
- "calRecord": {
-  "pointDefinitions": [
-   0,
-   25,
-   50,
-   75,
-   100,
-   "50 (down)",
-   "0 (down)"
-  ],
-  "toleranceDefaultPct": 0.5,
-  "errorFormula": "IF(E14=\"\",\"\",(E14-D14)/16*100)",
-  "passRule": "IF(E14=\"\",\"\",IF(ABS(F14)<=$C$10,\"PASS\",\"FAIL\"))",
-  "hysteresisFormula": {
-   "at50": "IF(OR(E16=\"\",E19=\"\"),\"\",ABS(E19-E16)/16*100)",
-   "at0": "IF(OR(E14=\"\",E20=\"\"),\"\",ABS(E20-E14)/16*100)"
-  },
-  "actionList": [
-   "No adjustment",
-   "Zero trim",
-   "Span trim",
-   "Zero and span trim",
-   "Sensor trim",
-   "Re-range only",
-   "Repaired",
-   "Replaced"
-  ],
-  "actionNote": "Pick from list. Re-ranging is not calibration.",
-  "failureMode": "Failure mode: adjusting before recording as-found destroys the evidence. Record first, then trim.",
-  "exampleValues": {
-   "tag": "PT-101",
-   "device": "Example DP/P xmtr",
-   "lrv": 0,
-   "urv": 100,
-   "units": "psi",
-   "tolerancePct": 0.5,
-   "asFoundMA": [
-    4.02,
-    8.05,
-    12.11,
-    16.14,
-    20.18,
-    12.15,
-    4.05
-   ],
-   "asFoundErrorPct": [
-    0.125,
-    0.3125,
-    0.6875,
-    0.875,
-    1.125,
-    0.9375,
-    0.3125
-   ],
-   "asFoundInTol": [
-    "PASS",
-    "PASS",
-    "FAIL",
-    "FAIL",
-    "FAIL",
-    "FAIL",
-    "PASS"
-   ],
-   "maxAsFoundErrorPct": 1.125,
-   "hysteresis50Pct": 0.25,
-   "hysteresis0Pct": 0.1875,
-   "asFoundResult": "FAIL",
-   "actionTaken": "Span trim",
-   "asLeftMA": [
-    4,
-    8.01,
-    12,
-    16.02,
-    20.01
-   ],
-   "maxAsLeftErrorPct": 0.125,
-   "asLeftResult": "PASS"
-  },
-  "source": "Field Troubleshooting Calculators.xlsx Cal Record"
- },
- "loopCheck": {
-  "readingTheResult": [
-   "1. mA dev bad, HMI dev matches it: problem is upstream of the card (injection, wiring, card input).",
-   "2. mA dev good, HMI dev bad: signal arrives correctly; suspect scaling (LRV/URV/units) in the controller.",
-   "3. Error same size at every point: zero/offset error. Error grows with signal: span error.",
-   "4. Failure mode: passing a loop check with damping hiding a slow card response. Let each point settle."
-  ],
-  "exampleLoop": {
-   "tag": "TT-205",
-   "lrv": 0,
-   "urv": 200,
-   "units": "°C"
-  },
-  "source": "Field Troubleshooting Calculators.xlsx Loop Check"
- }
-};
-const LRV_URV = {
- "items": [
-  {
-   "measurement": "Pressure",
-   "lrv": 0.0,
-   "urv": 100.0,
-   "units": "psi",
-   "row": "Pressure 0 psi 100 psi"
-  },
-  {
-   "measurement": "Pressure",
-   "lrv": 0.0,
-   "urv": 250.0,
-   "units": "psi",
-   "row": "Pressure 0 psi 250 psi"
-  },
-  {
-   "measurement": "Pressure",
-   "lrv": -10.0,
-   "urv": 50.0,
-   "units": "psi",
-   "row": "Pressure -10 psi 50 psi"
-  },
-  {
-   "measurement": "Pressure",
-   "lrv": 20.0,
-   "urv": 120.0,
-   "units": "psi",
-   "row": "Pressure 20 psi 120 psi"
-  },
-  {
-   "measurement": "Differential pressure",
-   "lrv": 0.0,
-   "urv": 100.0,
-   "units": "inH₂O",
-   "row": "Differential pressure 0 inH₂O 100 inH₂O"
-  },
-  {
-   "measurement": "Differential pressure",
-   "lrv": -25.0,
-   "urv": 25.0,
-   "units": "inH₂O",
-   "row": "Differential pressure -25 inH₂O 25 inH₂O"
-  },
-  {
-   "measurement": "Level",
-   "lrv": 0.0,
-   "urv": 20.0,
-   "units": "ft",
-   "row": "Level 0 ft 20 ft"
-  },
-  {
-   "measurement": "Level",
-   "lrv": 2.0,
-   "urv": 18.0,
-   "units": "ft",
-   "row": "Level 2 ft 18 ft"
-  },
-  {
-   "measurement": "Flow",
-   "lrv": 0.0,
-   "urv": 500.0,
-   "units": "GPM",
-   "row": "Flow 0 GPM 500 GPM"
-  },
-  {
-   "measurement": "Flow",
-   "lrv": 0.0,
-   "urv": 1200.0,
-   "units": "GPM",
-   "row": "Flow 0 GPM 1,200 GPM"
-  },
-  {
-   "measurement": "Flow",
-   "lrv": 0.0,
-   "urv": 20000.0,
-   "units": "lb/hr",
-   "row": "Flow 0 lb/hr 20,000 lb/hr"
-  },
-  {
-   "measurement": "Temperature",
-   "lrv": 0.0,
-   "urv": 300.0,
-   "units": "°F",
-   "row": "Temperature 0 °F 300 °F"
-  },
-  {
-   "measurement": "Temperature",
-   "lrv": -40.0,
-   "urv": 250.0,
-   "units": "°F",
-   "row": "Temperature -40 °F 250 °F"
-  },
-  {
-   "measurement": "Temperature",
-   "lrv": 50.0,
-   "urv": 450.0,
-   "units": "°F",
-   "row": "Temperature 50 °F 450 °F"
-  },
-  {
-   "measurement": "Temperature",
-   "lrv": 0.0,
-   "urv": 200.0,
-   "units": "°C",
-   "row": "Temperature 0 °C 200 °C"
-  }
- ],
- "source": "IC_Fundamentals_Drill_Input_Library.pdf p.16"
-};
-const CAL_SCENARIOS = [
- {
-  "id": "PT-101",
-  "tag": "PT-101",
-  "device": "Example DP/P xmtr",
-  "type": "Pressure",
-  "lrv": 0,
-  "urv": 100,
-  "units": "psi",
-  "asFoundMA": [
-   4.02,
-   8.05,
-   12.11,
-   16.14,
-   20.18,
-   12.15,
-   4.05
-  ],
-  "asLeftMA": [
-   4,
-   8.01,
-   12,
-   16.02,
-   20.01
-  ],
-  "action": "Span trim",
-  "pattern": "span error, rising +0.125% to +1.125%",
-  "source": "Field Troubleshooting Calculators.xlsx Cal Record (the sheet's own example: as-found, action, as-left)",
-  "constructed": null
- },
- {
-  "id": "TT-205",
-  "tag": "TT-205",
-  "device": "Temperature transmitter",
-  "type": "Temp",
-  "lrv": 0,
-  "urv": 200,
-  "units": "°C",
-  "asFoundMA": [
-   4.12,
-   8.12,
-   12.12,
-   16.12,
-   20.12,
-   12.12,
-   4.12
-  ],
-  "asLeftMA": [
-   4.0,
-   8.0,
-   12.01,
-   16.0,
-   20.01
-  ],
-  "action": "Zero trim",
-  "pattern": "zero shift, constant +0.75% at every point",
-  "source": "Field Troubleshooting Calculators.xlsx Loop Check (tag and range)",
-  "constructed": "Device name, the +0.75% zero shift (user spec), and as-left values."
- },
- {
-  "id": "LT-310",
-  "tag": "LT-310",
-  "device": "Level transmitter",
-  "type": "Level",
-  "lrv": 2.0,
-  "urv": 18.0,
-  "units": "ft",
-  "asFoundMA": [
-   4.01,
-   8.05,
-   12.09,
-   16.13,
-   20.17,
-   12.15,
-   4.01
-  ],
-  "asLeftMA": [
-   4.0,
-   8.01,
-   12.01,
-   16.01,
-   20.0
-  ],
-  "action": "Span trim",
-  "pattern": "span error with 0.375% hysteresis at 50%",
-  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.16 (range)",
-  "constructed": "Tag, device name, the error pattern (user spec), and as-left values."
- }
-];
-const CAL_FORM = {
- "title": "5. As-Found / As-Left Calibration Record",
- "header": [
-  "Tag:",
-  "Device:",
-  "S/N:",
-  "Type: Pressure / DP / Level / Flow / Temp / Other:",
-  "Range (LRV–URV):",
-  "Units:",
-  "Tolerance: ±",
-  "% of span",
-  "Interval:",
-  "Test standard used:",
-  "Std. cal. due:",
-  "Date:",
-  "Technician:",
-  "Ambient:"
- ],
- "asFoundHeading": "As-found (do not adjust before recording)",
- "columns": [
-  "% Span",
-  "Input applied",
-  "Ideal output",
-  "As-found output",
-  "Error (% span)",
-  "In tol."
- ],
- "asLeftColumns": [
-  "% Span",
-  "Input applied",
-  "Ideal output",
-  "As-left output",
-  "Error (% span)",
-  "In tol."
- ],
- "summaryFound": [
-  "Max as-found error:",
-  "Hysteresis observed:"
- ],
- "actionHeading": "Action taken",
- "actions": [
-  "No adjustment needed",
-  "Zero trim",
-  "Span trim",
-  "Sensor trim",
-  "Re-range only",
-  "Repaired:",
-  "Replaced:"
- ],
- "summaryLeft": [
-  "Max as-left error:",
-  "Result: PASS / FAIL"
- ],
- "notes": "Notes and follow-up",
- "signoff": [
-  "Technician sign-off:",
-  "Reviewed:"
- ],
- "source": "Field Troubleshooting Template Pack.pdf p.7"
-};
 const TOOL_CONVENTIONS = {
  "calRecord": {
   "sameSizeSpreadPct": {
@@ -9885,532 +10916,6 @@ function CalRecordBuilder({ onResult, onStep }) {
    object carries "constructed": true); plcLessons are quoted from sources.
    -------------------------------------------------------------------------- */
 
-const IOM = {
- "constructed": true,
- "source": "constructed — training scenario, no source citation",
- "platform": "Allen-Bradley CompactLogix, local chassis",
- "addressFormat": {
-  "DI": "Local:{slot}:I.Data.{n}",
-  "DO": "Local:{slot}:O.Data.{n}",
-  "AI": "Local:{slot}:I.Ch{n}Data",
-  "AO": "Local:{slot}:O.Ch{n}Data"
- },
- "conventions": [
-  "Addresses follow CompactLogix local-chassis syntax (platform convention).",
-  "A faulted input channel is treated as its unsafe state: every rung that examines it goes false.",
-  "Rungs show run permissives only; start/stop logic is not drawn."
- ],
- "motors": [
-  {
-   "id": "CV-101",
-   "name": "CV-101 infeed conveyor",
-   "output": "CV101_RUN",
-   "feedback": "CV101_AUX"
-  },
-  {
-   "id": "P-201",
-   "name": "P-201 sump pump",
-   "output": "P201_RUN",
-   "feedback": "P201_AUX"
-  },
-  {
-   "id": "AG-301",
-   "name": "AG-301 agitator",
-   "output": "AG301_RUN",
-   "feedback": "AG301_AUX"
-  }
- ],
- "slots": [
-  {
-   "slot": 0,
-   "kind": "CPU",
-   "name": "Controller",
-   "points": []
-  },
-  {
-   "slot": 1,
-   "kind": "DI",
-   "name": "DI 16-pt 24 VDC",
-   "points": [
-    {
-     "n": 0,
-     "tag": "ESTOP_OK",
-     "device": null,
-     "desc": "E-stop chain healthy (safety relay aux)",
-     "normalOn": true,
-     "role": "permissive",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 1,
-     "tag": "ZS_101",
-     "device": "ZS-101",
-     "desc": "CV-101 pull-cord switch healthy",
-     "normalOn": true,
-     "role": "permissive",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 2,
-     "tag": "ZS_102",
-     "device": "ZS-102",
-     "desc": "CV-101 belt alignment switch healthy",
-     "normalOn": true,
-     "role": "permissive",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 3,
-     "tag": "CV101_AUX",
-     "device": null,
-     "desc": "CV-101 contactor aux (run feedback)",
-     "normalOn": true,
-     "role": "feedback",
-     "motor": "CV-101",
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 4,
-     "tag": "LSL_201",
-     "device": "LSL-201",
-     "desc": "Sump low-level switch: level above low",
-     "normalOn": true,
-     "role": "permissive",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 5,
-     "tag": "FSL_202",
-     "device": "FSL-202",
-     "desc": "P-201 seal water flow switch: flow present",
-     "normalOn": true,
-     "role": "permissive",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 6,
-     "tag": "ZSO_203",
-     "device": "ZSO-203",
-     "desc": "P-201 suction valve XV-203 open limit",
-     "normalOn": true,
-     "role": "permissive",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 7,
-     "tag": "P201_AUX",
-     "device": null,
-     "desc": "P-201 contactor aux (run feedback)",
-     "normalOn": true,
-     "role": "feedback",
-     "motor": "P-201",
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 8,
-     "tag": "ZSC_301",
-     "device": "ZSC-301",
-     "desc": "AG-301 guard door closed limit",
-     "normalOn": true,
-     "role": "permissive",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 9,
-     "tag": "TSH_302",
-     "device": "TSH-302",
-     "desc": "AG-301 bearing temperature high switch",
-     "normalOn": false,
-     "role": "permissive",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 10,
-     "tag": "AG301_AUX",
-     "device": null,
-     "desc": "AG-301 contactor aux (run feedback)",
-     "normalOn": true,
-     "role": "feedback",
-     "motor": "AG-301",
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 11,
-     "tag": "LSH_206",
-     "device": "LSH-206",
-     "desc": "Sump high-level switch (alarm only)",
-     "normalOn": false,
-     "role": "alarm",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    }
-   ]
-  },
-  {
-   "slot": 2,
-   "kind": "DO",
-   "name": "DO 16-pt 24 VDC",
-   "points": [
-    {
-     "n": 0,
-     "tag": "CV101_RUN",
-     "device": null,
-     "desc": "CV-101 run command to starter",
-     "normalOn": true,
-     "role": "output",
-     "motor": "CV-101",
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 1,
-     "tag": "P201_RUN",
-     "device": null,
-     "desc": "P-201 run command to starter",
-     "normalOn": true,
-     "role": "output",
-     "motor": "P-201",
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 2,
-     "tag": "AG301_RUN",
-     "device": null,
-     "desc": "AG-301 run command to starter",
-     "normalOn": true,
-     "role": "output",
-     "motor": "AG-301",
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 3,
-     "tag": "XV_203",
-     "device": "XV-203",
-     "desc": "XV-203 suction valve open command",
-     "normalOn": true,
-     "role": "output",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    }
-   ]
-  },
-  {
-   "slot": 3,
-   "kind": "AI",
-   "name": "AI 8-ch 4-20 mA",
-   "points": [
-    {
-     "n": 0,
-     "tag": "LT_204",
-     "device": "LT-204",
-     "desc": "Sump level transmitter",
-     "normalOn": true,
-     "role": "permissive",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 1,
-     "tag": "TT_303",
-     "device": "TT-303",
-     "desc": "AG-301 bearing temperature transmitter",
-     "normalOn": true,
-     "role": "permissive",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    }
-   ]
-  },
-  {
-   "slot": 4,
-   "kind": "AO",
-   "name": "AO 4-ch 4-20 mA",
-   "points": [
-    {
-     "n": 0,
-     "tag": "FV_205",
-     "device": "FV-205",
-     "desc": "P-201 recirculation valve position command",
-     "normalOn": true,
-     "role": "command",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    },
-    {
-     "n": 1,
-     "tag": "TV_304",
-     "device": "TV-304",
-     "desc": "AG-301 jacket temperature valve command",
-     "normalOn": true,
-     "role": "command",
-     "motor": null,
-     "constructed": true,
-     "source": "constructed — training scenario, no source citation"
-    }
-   ]
-  },
-  {
-   "slot": 5,
-   "kind": "EMPTY",
-   "name": "Empty",
-   "points": []
-  },
-  {
-   "slot": 6,
-   "kind": "EMPTY",
-   "name": "Empty",
-   "points": []
-  },
-  {
-   "slot": 7,
-   "kind": "EMPTY",
-   "name": "Empty",
-   "points": []
-  }
- ],
- "rungs": [
-  {
-   "rung": 10,
-   "output": "CV101_RUN",
-   "conditions": [
-    [
-     "XIC",
-     "ESTOP_OK"
-    ],
-    [
-     "XIC",
-     "ZS_101"
-    ],
-    [
-     "XIC",
-     "ZS_102"
-    ]
-   ]
-  },
-  {
-   "rung": 20,
-   "output": "XV_203",
-   "conditions": [
-    [
-     "XIC",
-     "ESTOP_OK"
-    ]
-   ]
-  },
-  {
-   "rung": 21,
-   "output": "P201_RUN",
-   "conditions": [
-    [
-     "XIC",
-     "ESTOP_OK"
-    ],
-    [
-     "XIC",
-     "LSL_201"
-    ],
-    [
-     "XIC",
-     "FSL_202"
-    ],
-    [
-     "XIC",
-     "ZSO_203"
-    ],
-    [
-     "OK",
-     "LT_204"
-    ]
-   ]
-  },
-  {
-   "rung": 30,
-   "output": "AG301_RUN",
-   "conditions": [
-    [
-     "XIC",
-     "ESTOP_OK"
-    ],
-    [
-     "XIC",
-     "ZSC_301"
-    ],
-    [
-     "XIO",
-     "TSH_302"
-    ],
-    [
-     "OK",
-     "TT_303"
-    ]
-   ]
-  }
- ]
-};
-const PERM = {
- "constructed": true,
- "source": "constructed — training scenario, no source citation",
- "motor": {
-  "id": "P-401",
-  "name": "P-401 transfer pump",
-  "output": "P401_RUN",
-  "rung": 40
- },
- "instructionConvention": {
-  "XIC": "true when its input bit is ON",
-  "XIO": "true when its input bit is OFF",
-  "note": "Rockwell instruction behavior (platform convention)."
- },
- "permissives": [
-  {
-   "id": "es",
-   "label": "E-Stop OK",
-   "tag": "ESTOP_OK",
-   "ins": "XIC",
-   "device": "E-stop",
-   "good": "E-stop released, chain healthy",
-   "bad": "E-stop pressed and latched",
-   "fix": "Reset E-stop",
-   "break": "Press E-stop",
-   "inputWhenGood": true,
-   "delayMs": 0,
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "id": "guard",
-   "label": "Guard Closed",
-   "tag": "ZSC_402",
-   "ins": "XIC",
-   "device": "Guard door, ZSC-402",
-   "good": "Guard door closed",
-   "bad": "Guard door open",
-   "fix": "Close guard door",
-   "break": "Open guard door",
-   "inputWhenGood": true,
-   "delayMs": 0,
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "id": "lube",
-   "label": "Lube Pressure OK",
-   "tag": "PSL_403",
-   "ins": "XIC",
-   "device": "Lube pump and pressure switch PSL-403",
-   "good": "Lube pump running, pressure OK",
-   "bad": "Lube pump stopped, pressure low",
-   "pending": "Lube pump running, pressure building",
-   "fix": "Start lube pump",
-   "break": "Stop lube pump",
-   "inputWhenGood": true,
-   "delayMs": 3000,
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "id": "dv",
-   "label": "Discharge Valve Limit",
-   "tag": "ZSO_404",
-   "ins": "XIC",
-   "device": "Discharge valve XV-404, open limit ZSO-404",
-   "good": "Discharge valve open, limit made",
-   "bad": "Discharge valve closed",
-   "fix": "Open discharge valve",
-   "break": "Close discharge valve",
-   "inputWhenGood": true,
-   "delayMs": 0,
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "id": "vfd",
-   "label": "VFD Fault Clear",
-   "tag": "VFD_401_FAULT",
-   "ins": "XIO",
-   "device": "VFD-401",
-   "good": "VFD healthy, no fault",
-   "bad": "VFD fault active",
-   "fix": "Reset VFD fault",
-   "break": "Trip VFD fault",
-   "inputWhenGood": false,
-   "delayMs": 0,
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  }
- ]
-};
-const PLC_LESSONS = {
- "domain": {
-  "text": "Without I/O mapping and permissive logic, you cannot tell if the problem is field-side or logic-side.",
-  "source": "Field Learning Plan.pdf p.2"
- },
- "ioMapBlock": {
-  "task": "Identify the I/O addresses for a real loop. Trace from field terminal to ladder logic.",
-  "output": "An annotated I/O map showing field device → terminal → PLC address → ladder rung.",
-  "source": "Field Learning Plan.pdf p.12, block 5 (PLC I/O mapping)"
- },
- "permissiveBlock": {
-  "task": "Find a motor start circuit in the PLC. Identify every permissive in series. Force one open and observe the result.",
-  "output": "A written list of permissives and the effect of each being false.",
-  "source": "Field Learning Plan.pdf p.12, block 6 (Ladder logic permissives)"
- },
- "checkPlc": {
-  "text": "Check the PLC: Is the I/O card healthy? Is the ladder logic permissive open?",
-  "source": "Field Learning Plan.pdf p.14, 30-second diagnostic sequence, step 5"
- },
- "concepts": [
-  {
-   "text": "Examine-if-closed concept",
-   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
-  },
-  {
-   "text": "Examine-if-open concept",
-   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
-  },
-  {
-   "text": "NO vs NC as physical state versus PLC logic state",
-   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.8"
-  }
- ],
- "symptoms": [
-  {
-   "text": "Motor will not start because permissive is missing",
-   "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"
-  }
- ],
- "trap": {
-  "name": "Skipping the permissives",
-  "fix": "When a final element will not actuate, check the PLC logic permissives before you touch the field device.",
-  "source": "Field Learning Plan.pdf p.10"
- }
-};
 
 function TrainingBadge() {
   const C = useC();
@@ -11112,491 +11617,6 @@ function PermissiveDetective({ onResult, onStep }) {
   );
 }
 
-// Generated from output/content-library.json. Do not edit by hand.
-const RUNG = {
- "platform": "Allen-Bradley CompactLogix",
- "tags": [
-  {
-   "tag": "CONV_START",
-   "type": "BOOL",
-   "role": "input",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "tag": "ESTOP_OK",
-   "type": "BOOL",
-   "role": "input",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "tag": "ZS_101",
-   "type": "BOOL",
-   "role": "input",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "tag": "LSL_201",
-   "type": "BOOL",
-   "role": "input",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "tag": "PSH_302",
-   "type": "BOOL",
-   "role": "input",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "tag": "CONV_RUN",
-   "type": "BOOL",
-   "role": "output",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "tag": "M201_RUN",
-   "type": "BOOL",
-   "role": "output",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "tag": "T4_0",
-   "type": "TIMER",
-   "role": "timer",
-   "preS": 5,
-   "members": [
-    "DN",
-    "PRE",
-    "ACC"
-   ],
-   "units": "s",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  }
- ],
- "instructions": [
-  {
-   "ins": "XIC",
-   "kind": "condition",
-   "symbol": "] [",
-   "behavior": "true when its bit is ON",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "ins": "XIO",
-   "kind": "condition",
-   "symbol": "]/[",
-   "behavior": "true when its bit is OFF",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "ins": "OTE",
-   "kind": "output",
-   "symbol": "( )",
-   "behavior": "writes the rung state to its bit every scan",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "ins": "TON",
-   "kind": "output",
-   "symbol": "TON",
-   "behavior": "while the rung is true, ACC counts up; DN turns ON when ACC reaches PRE; a false rung resets ACC and DN",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "ins": "OTL",
-   "kind": "output",
-   "symbol": "(L)",
-   "behavior": "turns its bit ON when the rung is true; the bit stays ON after the rung goes false",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "ins": "OTU",
-   "kind": "output",
-   "symbol": "(U)",
-   "behavior": "turns its bit OFF when the rung is true",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  }
- ],
- "instructionNote": "Rockwell instruction behavior (platform convention).",
- "conditionSlots": 4,
- "challenges": [
-  {
-   "id": "c1",
-   "goal": "CONV_RUN energizes when CONV_START AND ESTOP_OK are true",
-   "output": "CONV_RUN",
-   "rungs": 1,
-   "all": [
-    "CONV_START",
-    "ESTOP_OK"
-   ],
-   "none": [],
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "id": "c2",
-   "goal": "M201_RUN energizes when CONV_START AND ESTOP_OK AND NOT ZS_101",
-   "output": "M201_RUN",
-   "rungs": 1,
-   "all": [
-    "CONV_START",
-    "ESTOP_OK"
-   ],
-   "none": [
-    "ZS_101"
-   ],
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "id": "c3",
-   "goal": "Use a TON so M201_RUN energizes 5 seconds after CONV_START",
-   "output": "M201_RUN",
-   "rungs": 2,
-   "all": [
-    "CONV_START"
-   ],
-   "none": [],
-   "timer": {
-    "tag": "T4_0",
-    "preS": 5,
-    "steps": [
-     {
-      "on": false,
-      "dt": 0,
-      "label": "off",
-      "expect": false
-     },
-     {
-      "on": true,
-      "dt": 0,
-      "label": "on, 0 s",
-      "expect": false
-     },
-     {
-      "on": true,
-      "dt": 3,
-      "label": "held 3 s",
-      "expect": false
-     },
-     {
-      "on": true,
-      "dt": 2,
-      "label": "held 5 s",
-      "expect": true
-     },
-     {
-      "on": false,
-      "dt": 0,
-      "label": "released",
-      "expect": false
-     }
-    ]
-   },
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  }
- ],
- "constructed": true,
- "source": "constructed — training scenario, no source citation"
-};
-const HMI = {
- "tags": [
-  {
-   "tag": "LT_101",
-   "type": "REAL",
-   "min": 0,
-   "max": 100,
-   "units": "%",
-   "value": 62.0,
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "tag": "PT_201",
-   "type": "REAL",
-   "min": 0,
-   "max": 200,
-   "units": "psig",
-   "value": 148.0,
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "tag": "TT_301",
-   "type": "REAL",
-   "min": -20,
-   "max": 200,
-   "units": "°C",
-   "value": 145.0,
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "tag": "FT_401",
-   "type": "REAL",
-   "min": 0,
-   "max": 500,
-   "units": "GPM",
-   "value": 312.0,
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "tag": "P201_RUN",
-   "type": "BOOL",
-   "value": 1,
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "tag": "XV_203_POS",
-   "type": "BOOL",
-   "value": 0,
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  }
- ],
- "elements": [
-  {
-   "id": "tank",
-   "label": "Feed tank level bar",
-   "shape": "tank",
-   "expects": "analog",
-   "min": 0,
-   "max": 100,
-   "units": "%",
-   "answer": "LT_101",
-   "field": "Local level gauge reads 62 %",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "id": "pump",
-   "label": "Transfer pump run indicator",
-   "shape": "pump",
-   "expects": "bool",
-   "on": "RUN",
-   "off": "STOP",
-   "answer": "P201_RUN",
-   "field": "Transfer pump running, local run light on",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "id": "valve",
-   "label": "Feed valve position indicator",
-   "shape": "valve",
-   "expects": "bool",
-   "on": "OPEN",
-   "off": "CLOSED",
-   "answer": "XV_203_POS",
-   "field": "Feed valve closed",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "id": "num",
-   "label": "Header pressure display",
-   "shape": "numeric",
-   "expects": "analog",
-   "min": 0,
-   "max": 200,
-   "units": "psig",
-   "answer": "PT_201",
-   "field": "Local pressure gauge reads 148 psig",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "id": "trend",
-   "label": "Reactor temperature trend",
-   "shape": "trend",
-   "expects": "analog",
-   "min": -20,
-   "max": 200,
-   "units": "°C",
-   "answer": "TT_301",
-   "field": "Local temperature indicator reads 145 °C",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  }
- ],
- "constructed": true,
- "source": "constructed — training scenario, no source citation"
-};
-const CCG = {
- "requests": [
-  {
-   "id": "r1",
-   "text": "Change T4_0.PRE from 5 s to 8 s on Line 2 fill timer",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "id": "r2",
-   "text": "Add a new permissive contact to the M-401 start rung",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "id": "r3",
-   "text": "Modify AI scaling for PT-101 from 0-100 to 0-150 psig",
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  }
- ],
- "steps": [
-  {
-   "n": 1,
-   "text": "Verify current logic",
-   "needs": [],
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "n": 2,
-   "text": "Document the change request",
-   "needs": [
-    {
-     "step": 1,
-     "why": "You can't write the change against logic you haven't confirmed. The request would describe a guess."
-    }
-   ],
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "n": 3,
-   "text": "Get approval",
-   "needs": [
-    {
-     "step": 2,
-     "why": "Approvers sign what's written. There's nothing to approve until the request is documented."
-    }
-   ],
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "n": 4,
-   "text": "Back up the current program",
-   "needs": [],
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "n": 5,
-   "text": "Edit offline",
-   "needs": [
-    {
-     "step": 3,
-     "why": "Editing before approval is an unapproved change."
-    },
-    {
-     "step": 4,
-     "why": "The backup is the known-good copy. Take it before you touch the program."
-    }
-   ],
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "n": 6,
-   "text": "Download to the PLC",
-   "needs": [
-    {
-     "step": 4,
-     "why": "You can't download before backing up: if the change breaks something, you have no rollback."
-    },
-    {
-     "step": 5,
-     "why": "There's nothing to download until the edit is made."
-    }
-   ],
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "n": 7,
-   "text": "Verify the change works",
-   "needs": [
-    {
-     "step": 6,
-     "why": "The change isn't running until it's downloaded."
-    }
-   ],
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  },
-  {
-   "n": 8,
-   "text": "Update documentation",
-   "needs": [
-    {
-     "step": 7,
-     "why": "Documents record what was proven to work, not what was intended."
-    }
-   ],
-   "constructed": true,
-   "source": "constructed — training scenario, no source citation"
-  }
- ],
- "orderRule": "A step is rejected only when a step it needs has not been placed. Back up can go anywhere before Edit offline.",
- "constructed": true,
- "source": "constructed — training scenario, no source citation"
-};
-const PROG_LESSONS = {
- "concepts": {
-  "items": [
-   "Examine-if-closed concept",
-   "Examine-if-open concept",
-   "Output coil",
-   "Seal-in circuit",
-   "Start-stop logic",
-   "PLC scan cycle",
-   "Analog scaling in PLC logic"
-  ],
-  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.6"
- },
- "hmiChain": {
-  "text": "Sensor -> transmitter -> PLC -> HMI",
-  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.12"
- },
- "hmiSymptom": {
-  "text": "Transmitter output is correct but HMI value is wrong",
-  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.14"
- },
- "scalingFailure": {
-  "text": "calibrating a good transmitter because the scaling was wrong.",
-  "source": "Field Troubleshooting Template Pack.pdf p.9, Form 7, \"Reading is wrong but stable\", failure mode"
- },
- "approved": {
-  "text": "Operations notified, loop out of service or bypassed as approved",
-  "source": "Field Troubleshooting Template Pack.pdf p.5, Form 4 Loop Check, pre-check"
- },
- "revision": {
-  "text": "Tag, terminal numbers, and drawing revision match the field",
-  "source": "Field Troubleshooting Template Pack.pdf p.5, Form 4 Loop Check, pre-check"
- },
- "documentation": {
-  "text": "Documentation filed, CMMS closed",
-  "source": "Field Troubleshooting Template Pack.pdf p.6, Form 4 Loop Check, restore"
- }
-};
 
 /* --------------------------------------------------------------------------
    Layer 4 shared
