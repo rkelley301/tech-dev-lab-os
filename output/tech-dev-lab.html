@@ -2835,7 +2835,7 @@ const BENCH = {
 };
 </script>
 <script>
-/* Tool data for 2.1, 2.2, 2.3, 2.4, 3.1, 3.2, 3.4, 4.1, 4.2, 4.3: plain object
+/* Tool data for 1.3, 2.1, 2.2, 2.3, 2.4, 3.1, 3.2, 3.3, 3.4, 4.1, 4.2, 4.3: plain object
    literals kept out of the Babel block so it stays under Babel Standalone's
    500 KB limit (same reason as The Bench data above). */
 // Tool 3.4
@@ -7696,6 +7696,254 @@ const WCD = {
   "constructed": true,
   "source": "constructed — training scenario, no source citation",
   "note": "Outcome titles use the Input Library p.21 Tier 5 names where one applies. No mA value is shown except 0.0 mA for open return conductor and missing 24 VDC supply (user decision 2026-09-25)."
+ }
+};
+// Tool 1.3
+// Generated from output/content-library.json. Do not edit by hand.
+const CLP = {
+ "source": "sources/contact-logic-spec.md (user-provided spec)",
+ "inputs": [
+  {
+   "tag": "STOP",
+   "text": "physical NC contact. 1 = released/path intact, 0 = pressed/path open."
+  },
+  {
+   "tag": "START",
+   "text": "physical NO contact. 1 = pressed/closed."
+  },
+  {
+   "tag": "M1_AUX_PREV",
+   "text": "physical NO holding contact driven by previous M1 coil state. 1 = previously energized, 0 = previously off."
+  }
+ ],
+ "output": "M1_COIL = STOP AND (START OR M1_AUX_PREV)",
+ "state": "M1_AUX_NEXT = M1_COIL",
+ "table": [
+  {
+   "stop": 0,
+   "start": 0,
+   "aux": 0,
+   "coil": 0,
+   "label": "Stop pressed"
+  },
+  {
+   "stop": 0,
+   "start": 0,
+   "aux": 1,
+   "coil": 0,
+   "label": "Stop drops latched coil"
+  },
+  {
+   "stop": 0,
+   "start": 1,
+   "aux": 0,
+   "coil": 0,
+   "label": "Stop overrides Start"
+  },
+  {
+   "stop": 0,
+   "start": 1,
+   "aux": 1,
+   "coil": 0,
+   "label": "Stop overrides every parallel branch"
+  },
+  {
+   "stop": 1,
+   "start": 0,
+   "aux": 0,
+   "coil": 0,
+   "label": "Idle"
+  },
+  {
+   "stop": 1,
+   "start": 0,
+   "aux": 1,
+   "coil": 1,
+   "label": "Valid latched/running state"
+  },
+  {
+   "stop": 1,
+   "start": 1,
+   "aux": 0,
+   "coil": 1,
+   "label": "Start energizes"
+  },
+  {
+   "stop": 1,
+   "start": 1,
+   "aux": 1,
+   "coil": 1,
+   "label": "Remains energized"
+  }
+ ],
+ "sequence": "idle → press START → coil on → release START → coil stays on (sealed) → press STOP → coil drops",
+ "walkthrough": {
+  "start": {
+   "stop": 1,
+   "start": 0,
+   "aux": 0
+  },
+  "steps": [
+   {
+    "id": "press-start",
+    "action": "Press START",
+    "change": {
+     "start": 1
+    }
+   },
+   {
+    "id": "next-on",
+    "action": "Next state (M1 AUX follows the coil)",
+    "next": true
+   },
+   {
+    "id": "release-start",
+    "action": "Release START",
+    "change": {
+     "start": 0
+    }
+   },
+   {
+    "id": "press-stop",
+    "action": "Press STOP",
+    "change": {
+     "stop": 0
+    }
+   }
+  ],
+  "constructed": true,
+  "source": "constructed — training scenario, no source citation",
+  "note": "Step wording and the placement of Next state after Press START (so M1 AUX picks up the coil before START is released) are constructed from the spec's sequence line. Every coil value comes from the spec's truth table."
+ },
+ "rung": {
+  "constructed": true,
+  "source": "constructed — training scenario, no source citation",
+  "note": "Rung drawing layout is constructed from the spec's contact list."
+ }
+};
+// Tool 3.3
+// Generated from output/content-library.json. Do not edit by hand.
+const TTR = {
+ "source": "Rockwell Automation 1756-RM018, Logix 5000 Controllers General Instructions, TON (as given in sources/timer-trace-spec.md, user-provided spec)",
+ "tag": "T4",
+ "preset": {
+  "default": 2000,
+  "min": 500,
+  "max": 10000,
+  "units": "ms"
+ },
+ "regions": [
+  {
+   "id": "off",
+   "text": "RUNG_IN = 0: EN=0, TT=0, DN=0, ACC=0",
+   "en": 0,
+   "tt": 0,
+   "dn": 0
+  },
+  {
+   "id": "timing",
+   "text": "RUNG_IN = 1 and ACC < PRE: EN=1, TT=1, DN=0, ACC accumulates",
+   "en": 1,
+   "tt": 1,
+   "dn": 0
+  },
+  {
+   "id": "done",
+   "text": "RUNG_IN = 1 and ACC >= PRE: EN=1, TT=0, DN=1, ACC holds at PRE",
+   "en": 1,
+   "tt": 0,
+   "dn": 1
+  },
+  {
+   "id": "drop",
+   "text": "RUNG_IN transitions to 0: EN=0, TT=0, DN=0, ACC resets to 0",
+   "en": 0,
+   "tt": 0,
+   "dn": 0
+  }
+ ],
+ "quiz": {
+  "items": [
+   {
+    "id": "q1",
+    "given": {
+     "rung": 0,
+     "en": 0,
+     "tt": 0,
+     "dn": 0,
+     "acc": "0"
+    },
+    "event": "The rung goes true.",
+    "region": "timing"
+   },
+   {
+    "id": "q2",
+    "given": {
+     "rung": 1,
+     "en": 1,
+     "tt": 1,
+     "dn": 0,
+     "acc": "< PRE"
+    },
+    "event": "The rung stays true and ACC is still below PRE.",
+    "region": "timing"
+   },
+   {
+    "id": "q3",
+    "given": {
+     "rung": 1,
+     "en": 1,
+     "tt": 1,
+     "dn": 0,
+     "acc": "< PRE"
+    },
+    "event": "ACC reaches PRE (ACC >= PRE) with the rung still true.",
+    "region": "done"
+   },
+   {
+    "id": "q4",
+    "given": {
+     "rung": 1,
+     "en": 1,
+     "tt": 0,
+     "dn": 1,
+     "acc": ">= PRE"
+    },
+    "event": "The rung stays true.",
+    "region": "done"
+   },
+   {
+    "id": "q5",
+    "given": {
+     "rung": 1,
+     "en": 1,
+     "tt": 0,
+     "dn": 1,
+     "acc": ">= PRE"
+    },
+    "event": "The rung goes false.",
+    "region": "drop"
+   },
+   {
+    "id": "q6",
+    "given": {
+     "rung": 1,
+     "en": 1,
+     "tt": 1,
+     "dn": 0,
+     "acc": "< PRE"
+    },
+    "event": "The rung goes false before ACC reaches PRE.",
+    "region": "drop"
+   }
+  ],
+  "constructed": true,
+  "source": "constructed — training scenario, no source citation",
+  "note": "Question wording is constructed; every answer is the EN / TT / DN of the named region in the spec."
+ },
+ "constructed": {
+  "chart": true,
+  "note": "The simulation clock, chart layout, and transition log are constructed. They draw only the four regions above."
  }
 };
 </script>
@@ -13957,10 +14205,630 @@ function WireCount({ onResult }) {
   );
 }
 
+/* --------------------------------------------------------------------------
+   Tool 1.3: Contact Logic Puzzle
+   The user's locked contact model (sources/contact-logic-spec.md):
+   M1_COIL = STOP AND (START OR M1_AUX_PREV), M1_AUX_NEXT = M1_COIL.
+   Every coil value is read from the spec's truth table. Walkthrough: predict
+   the coil before each step of the latching sequence. Bench: toggle STOP and
+   START, and press Next state to move M1 AUX to the coil.
+   -------------------------------------------------------------------------- */
+
+const CL_KEY = STORAGE_KEY + ".contactLogic";
+const CL_XP_FIRST = 20;
+const CL_XP_RETRY = 8;
+const CL_RADAR = 0.5;
+const CL_STEPS = CLP.walkthrough.steps;
+
+function clRow(s) {
+  return CLP.table.find(r => r.stop === s.stop && r.start === s.start && r.aux === s.aux);
+}
+
+function clApply(s, step) {
+  if (step.next) return { ...s, aux: clRow(s).coil };
+  return { ...s, ...step.change };
+}
+
+// Inputs after the first n walkthrough steps.
+function clWalkState(n) {
+  return CL_STEPS.slice(0, n).reduce(clApply, { ...CLP.walkthrough.start });
+}
+
+function clWalkFresh() {
+  return { step: 0, misses: 0, firstMiss: null, last: null };
+}
+
+function clLoad() {
+  const t = loadTool(CL_KEY) || {};
+  const w = t.walk;
+  const b = t.bench;
+  const bit = v => v === 0 || v === 1;
+  return {
+    mode: t.mode === "bench" ? "bench" : "walk",
+    walk: w && Number.isInteger(w.step) && w.step >= 0 && w.step <= CL_STEPS.length ? w : clWalkFresh(),
+    bench: b && bit(b.stop) && bit(b.start) && bit(b.aux) ? b : { ...CLP.walkthrough.start },
+    played: t.played === true,
+    log: Array.isArray(t.log) ? t.log : [],
+  };
+}
+
+function ClContact({ x, y, nc, closed, powered, label, value }) {
+  const C = useC();
+  const col = powered && closed ? C.signal_cyan : closed ? C.text_mute : C.text_dim;
+  return (
+    <g>
+      <line x1={x} y1={y - 14} x2={x} y2={y + 14} stroke={col} strokeWidth="3" />
+      <line x1={x + 18} y1={y - 14} x2={x + 18} y2={y + 14} stroke={col} strokeWidth="3" />
+      {nc && <line x1={x - 4} y1={y + 12} x2={x + 22} y2={y - 12} stroke={col} strokeWidth="2" />}
+      {closed && <line x1={x} y1={y} x2={x + 18} y2={y} stroke={col} strokeWidth="2" strokeDasharray="3 3" />}
+      <text x={x + 9} y={y - 22} textAnchor="middle" fontFamily={MONO_FONT} fontSize="11" fill={C.text}>{label}</text>
+      <text x={x + 9} y={y + 30} textAnchor="middle" fontFamily={MONO_FONT} fontSize="10" fill={col}>{closed ? "CLOSED" : "OPEN"} · {value}</text>
+    </g>
+  );
+}
+
+function ClRung({ s }) {
+  const C = useC();
+  const a = s.stop === 1;
+  const coil = clRow(s).coil === 1;
+  const w = on => ({ stroke: on ? C.signal_cyan : C.border, strokeWidth: on ? 3 : 2 });
+  return (
+    <svg viewBox="0 0 560 200" width="560" height="200" role="img" aria-label={`Rung: STOP ${a ? "closed" : "open"}, START ${s.start ? "closed" : "open"}, M1 AUX ${s.aux ? "closed" : "open"}, M1_COIL ${coil ? "energized" : "off"}`} style={{ display: "block", maxWidth: "100%", height: "auto" }}>
+      <line x1="20" y1="20" x2="20" y2="175" stroke={C.signal_cyan} strokeWidth="3" />
+      <line x1="540" y1="20" x2="540" y2="175" stroke={C.text_mute} strokeWidth="3" />
+      <line x1="20" y1="60" x2="90" y2="60" {...w(true)} />
+      <ClContact x={90} y={60} nc closed={a} powered label="STOP (NC)" value={`${s.stop} = ${s.stop ? "released" : "pressed"}`} />
+      <line x1="108" y1="60" x2="180" y2="60" {...w(a)} />
+      <line x1="180" y1="60" x2="230" y2="60" {...w(a)} />
+      <line x1="180" y1="60" x2="180" y2="150" {...w(a)} />
+      <line x1="180" y1="150" x2="230" y2="150" {...w(a)} />
+      <ClContact x={230} y={60} closed={s.start === 1} powered={a} label="START (NO)" value={`${s.start} = ${s.start ? "pressed" : "released"}`} />
+      <ClContact x={230} y={150} closed={s.aux === 1} powered={a} label="M1 AUX (NO)" value={`M1_AUX_PREV ${s.aux}`} />
+      {/* START out, M1 AUX out, and the coil feed are one node: live whenever the coil is. */}
+      <line x1="248" y1="60" x2="330" y2="60" {...w(coil)} />
+      <line x1="248" y1="150" x2="330" y2="150" {...w(coil)} />
+      <line x1="330" y1="60" x2="330" y2="150" {...w(coil)} />
+      <line x1="330" y1="60" x2="420" y2="60" {...w(coil)} />
+      <circle cx="440" cy="60" r="18" fill={coil ? `${C.signal_cyan}22` : "none"} stroke={coil ? C.signal_cyan : C.text_dim} strokeWidth="3" />
+      <text x="440" y="30" textAnchor="middle" fontFamily={MONO_FONT} fontSize="11" fill={C.text}>M1_COIL</text>
+      <text x="440" y="100" textAnchor="middle" fontFamily={MONO_FONT} fontSize="10" fill={coil ? C.signal_cyan : C.text_dim}>{coil ? "ENERGIZED · 1" : "OFF · 0"}</text>
+      <line x1="458" y1="60" x2="540" y2="60" {...w(coil)} />
+    </svg>
+  );
+}
+
+function ClTable({ s }) {
+  const C = useC();
+  const cur = clRow(s);
+  return (
+    <div className="tool-scroll">
+      <table aria-label="Truth table" style={{ borderCollapse: "collapse", fontSize: 13, minWidth: 440 }}>
+        <thead>
+          <tr style={{ color: C.text_dim, textAlign: "left" }}>
+            {["STOP", "START", "M1AUX", "COIL", ""].map((h, i) => (
+              <th key={i} scope="col" style={{ padding: "4px 10px", fontFamily: MONO_FONT, fontWeight: 600, borderBottom: `1px solid ${C.border}` }}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {CLP.table.map(r => {
+            const on = r === cur;
+            return (
+              <tr key={`${r.stop}${r.start}${r.aux}`} aria-current={on ? "true" : undefined} style={{ background: on ? `${C.signal_cyan}14` : "transparent", boxShadow: on ? `inset 3px 0 0 ${C.signal_cyan}` : "none" }}>
+                {[r.stop, r.start, r.aux].map((v, i) => (
+                  <td key={i} style={{ padding: "4px 10px", fontFamily: MONO_FONT, color: on ? C.text : C.text_mute }}>{v}</td>
+                ))}
+                <td style={{ padding: "4px 10px", fontFamily: MONO_FONT, color: r.coil ? C.lime : C.text_mute }}>→ {r.coil}</td>
+                <td style={{ padding: "4px 10px", color: on ? C.text : C.text_mute }}>{r.label}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ContactLogic({ onResult }) {
+  const C = useC();
+  const [t, setT] = useState(clLoad);
+  useEffect(() => saveTool(CL_KEY, t), [t]);
+  const w = t.walk;
+  const done = w.step >= CL_STEPS.length;
+  const ws = clWalkState(w.step);
+  const shown = t.mode === "walk" ? ws : t.bench;
+  const step = CL_STEPS[w.step];
+
+  const predict = coil => {
+    if (t.mode !== "walk" || done) return;
+    const after = clApply(ws, step);
+    const row = clRow(after);
+    if (coil !== row.coil) {
+      setT(x => ({ ...x, walk: { ...x.walk, misses: x.walk.misses + 1, firstMiss: x.walk.firstMiss || `${step.action}: ${coil ? "ON" : "OFF"}`, last: { ok: false, step: w.step, coil, after } } }));
+      return;
+    }
+    const nextStep = w.step + 1;
+    const walk = { ...w, step: nextStep, last: { ok: true, step: w.step, row } };
+    if (nextStep < CL_STEPS.length) {
+      setT(x => ({ ...x, walk }));
+      return;
+    }
+    const fresh = !t.played;
+    const clean = w.misses === 0;
+    const sealed = CLP.table.find(r => r.stop === 1 && r.start === 0 && r.aux === 1);
+    const dropped = CLP.table.find(r => r.stop === 0 && r.start === 0 && r.aux === 1);
+    onResult({
+      xp: fresh ? (clean ? CL_XP_FIRST : CL_XP_RETRY) : 0,
+      firstTry: clean,
+      firstPass: fresh && clean,
+      radar: CL_RADAR,
+      note: { tool: "1.3", tag: "M1", text: `Contact Logic Puzzle M1: sealed in, then dropped — ${sealed.stop} ${sealed.start} ${sealed.aux} → ${sealed.coil} (${sealed.label}); ${dropped.stop} ${dropped.start} ${dropped.aux} → ${dropped.coil} (${dropped.label}).` },
+    });
+    setT(x => ({
+      ...x,
+      played: true,
+      walk,
+      log: [{ id: "M1", seq: CL_STEPS.map(s => s.action.split(" (")[0]).join(" → "), attempts: w.misses + 1, first: w.firstMiss || "clean", at: new Date().toISOString() }, ...x.log],
+    }));
+  };
+
+  const restart = () => setT(x => ({ ...x, walk: clWalkFresh() }));
+  const setMode = mode => setT(x => ({ ...x, mode }));
+  const bench = patch => setT(x => ({ ...x, bench: { ...x.bench, ...patch } }));
+  const benchNext = () => setT(x => ({ ...x, bench: clApply(x.bench, { next: true }) }));
+
+  useEffect(() => {
+    const onKey = e => {
+      const tag = l4KeyTarget(e);
+      if (tag === null || t.mode !== "walk") return;
+      if (!done && (e.key === "1" || e.key === "2")) {
+        e.preventDefault();
+        predict(e.key === "1" ? 1 : 0);
+      } else if (done && e.key === "Enter" && tag !== "BUTTON") {
+        e.preventDefault();
+        restart();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  const last = w.last;
+  const onoff = v => (v ? "ON" : "OFF");
+
+  return (
+    <div style={{ display: "grid", gap: 20 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+        <TrainingBadge />
+        <Chip color={C.signal_cyan}>{t.mode === "walk" ? `STEP ${Math.min(w.step + 1, CL_STEPS.length)} / ${CL_STEPS.length}` : "BENCH"}</Chip>
+        <Chip color={C.lime}>{t.played ? "SEQUENCE CLEARED" : "SEQUENCE OPEN"}</Chip>
+        <span style={{ fontSize: 12, color: C.text_dim }}>Keys: 1 predicts ON, 2 predicts OFF</span>
+      </div>
+
+      <div role="group" aria-label="Mode" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <Btn variant="ghost" pressed={t.mode === "walk"} onClick={() => setMode("walk")} ariaLabel="Walkthrough mode">Walkthrough</Btn>
+        <Btn variant="ghost" pressed={t.mode === "bench"} onClick={() => setMode("bench")} ariaLabel="Bench mode">Bench</Btn>
+      </div>
+
+      <section aria-label="Rung" style={{ display: "grid", gap: 6 }}>
+        <H as="h3">Rung</H>
+        <div className="tool-scroll"><ClRung s={shown} /></div>
+        <ConstructedNote source={`${CLP.rung.source}. ${CLP.rung.note}`} />
+      </section>
+
+      {t.mode === "walk" ? (
+        <section aria-labelledby="cl-step" style={{ display: "grid", gap: 10 }}>
+          <H as="h3">Latching sequence</H>
+          {!done ? (
+            <>
+              <p id="cl-step" style={{ margin: 0, fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 20, color: C.text }}>
+                Next: {step.action}. Predict M1_COIL after it.
+              </p>
+              <div role="group" aria-labelledby="cl-step" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <Btn onClick={() => predict(1)} ariaLabel="1: M1_COIL ON">1: ON</Btn>
+                <Btn onClick={() => predict(0)} ariaLabel="2: M1_COIL OFF">2: OFF</Btn>
+              </div>
+            </>
+          ) : (
+            <p id="cl-step" style={{ margin: 0, fontSize: 14, color: C.text }}>Sequence complete: {CLP.sequence}.</p>
+          )}
+          <ConstructedNote source={`${CLP.walkthrough.source}. ${CLP.walkthrough.note}`} />
+          <div aria-live="polite" style={{ display: "grid", gap: 12 }}>
+            {last && !last.ok && (
+              <Verdict key={w.misses} ok={false} title={`Not ${onoff(last.coil)}. Trace the rung again.`}>
+                <p style={{ margin: 0 }}>
+                  After "{CL_STEPS[last.step].action}": STOP {last.after.stop ? "closed (released)" : "open (pressed)"}, START {last.after.start ? "closed (pressed)" : "open (released)"}, M1 AUX {last.after.aux ? "closed" : "open"}.
+                </p>
+                <p style={{ margin: "4px 0 0", color: C.text_mute }}>{CLP.output}</p>
+                <Cites cites={[CLP.source]} />
+                <p style={{ margin: "6px 0 0", fontWeight: 600 }}>Finishing now is worth {t.played ? 0 : CL_XP_RETRY} XP.</p>
+              </Verdict>
+            )}
+            {last && last.ok && (
+              <Verdict key={`ok-${last.step}`} ok title={`M1_COIL ${onoff(last.row.coil)}: ${last.row.label}.`}>
+                <p style={{ margin: 0, fontFamily: MONO_FONT, fontSize: 13 }}>
+                  STOP {last.row.stop} · START {last.row.start} · M1AUX {last.row.aux} → COIL {last.row.coil}
+                </p>
+                {CL_STEPS[last.step].next && <p style={{ margin: "4px 0 0", color: C.text_mute }}>{CLP.state}</p>}
+                <Cites cites={[CLP.source]} />
+              </Verdict>
+            )}
+            {done && (
+              <Verdict ok title={w.misses === 0 ? "Sealed in and dropped, no misses." : `Sealed in and dropped with ${w.misses} miss${w.misses === 1 ? "" : "es"}.`}>
+                <p style={{ margin: 0 }}>{CLP.output}. {CLP.state}.</p>
+                <Cites cites={[CLP.source]} />
+                <div style={{ marginTop: 10 }}>
+                  <Btn variant="ghost" onClick={restart} ariaLabel="Run the sequence again">Run it again</Btn>
+                </div>
+              </Verdict>
+            )}
+          </div>
+        </section>
+      ) : (
+        <section aria-label="Bench controls" style={{ display: "grid", gap: 10 }}>
+          <H as="h3">Bench</H>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <Btn variant="ghost" pressed={t.bench.stop === 0} onClick={() => bench({ stop: t.bench.stop ? 0 : 1 })} ariaLabel={`STOP pushbutton: ${t.bench.stop ? "released, press it" : "pressed, release it"}`}>
+              STOP: {t.bench.stop ? "Released (1)" : "Pressed (0)"}
+            </Btn>
+            <Btn variant="ghost" pressed={t.bench.start === 1} onClick={() => bench({ start: t.bench.start ? 0 : 1 })} ariaLabel={`START pushbutton: ${t.bench.start ? "pressed, release it" : "released, press it"}`}>
+              START: {t.bench.start ? "Pressed (1)" : "Released (0)"}
+            </Btn>
+            <Btn onClick={benchNext} ariaLabel="Next state: M1 AUX follows the coil">Next state</Btn>
+          </div>
+          <p style={{ margin: 0, fontFamily: MONO_FONT, fontSize: 12, color: C.text_mute }}>
+            M1_AUX_PREV {t.bench.aux} → M1_AUX_NEXT {clRow(t.bench).coil}
+          </p>
+          {CLP.inputs.map(i => (
+            <p key={i.tag} style={{ margin: 0, fontSize: 13, color: C.text_mute }}>
+              <span style={{ fontFamily: MONO_FONT, color: C.signal_cyan }}>{i.tag}</span>: {i.text}
+            </p>
+          ))}
+          <Cites cites={[CLP.source]} />
+        </section>
+      )}
+
+      <section aria-label="Truth table" style={{ display: "grid", gap: 6 }}>
+        <H as="h3">Truth table</H>
+        <ClTable s={shown} />
+        <p style={{ margin: 0, fontFamily: MONO_FONT, fontSize: 12, color: C.text_mute }}>{CLP.output} · {CLP.state}</p>
+        <Cites cites={[CLP.source]} />
+      </section>
+
+      <DecisionLog
+        title="Sequence log"
+        headers={["Motor", "Sequence"]}
+        log={t.log}
+        cells={r => [r.id, r.seq]}
+        empty="Each sequence you finish is logged here and in Field Notes."
+      />
+    </div>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Tool 3.3: Timer Trace
+   A normal, non-retentive TON (the user's locked model, sources/
+   timer-trace-spec.md, Rockwell 1756-RM018). The simulation only ever sits
+   in one of the spec's regions; every chart edge is a region change, logged
+   with the region's text. DN is set at the moment ACC reaches PRE, and TT
+   falls in the same instant. No RTO, no scan-time behavior.
+   -------------------------------------------------------------------------- */
+
+const TT_KEY = STORAGE_KEY + ".timerTrace";
+const TT_XP_FIRST = 20;
+const TT_XP_RETRY = 8;
+const TT_RADAR = 0.5;
+const TT_TICK_MS = 50;
+const TT_REGION = Object.fromEntries(TTR.regions.map(r => [r.id, r]));
+const TT_ROWS = [["rung", "Rung"], ["en", "EN"], ["tt", "TT"], ["dn", "DN"]];
+
+function ttBits(regionId) {
+  const r = TT_REGION[regionId];
+  return { rung: regionId === "timing" || regionId === "done" ? 1 : 0, en: r.en, tt: r.tt, dn: r.dn };
+}
+
+function ttClampPre(v) {
+  const n = Math.round(Number(v));
+  if (!Number.isFinite(n)) return TTR.preset.default;
+  return Math.min(TTR.preset.max, Math.max(TTR.preset.min, n));
+}
+
+function ttAcc(g) {
+  return g === ">= PRE" ? "≥ PRE" : g;
+}
+
+function ttQuizFresh(idx) {
+  const g = TTR.quiz.items[idx].given;
+  return { idx, pick: { en: g.en, tt: g.tt, dn: g.dn }, misses: 0, firstMiss: null, last: null, solved: false };
+}
+
+function ttLoad() {
+  const t = loadTool(TT_KEY) || {};
+  const q = t.quiz;
+  return {
+    pre: ttClampPre(t.pre ?? TTR.preset.default),
+    quiz: q && TTR.quiz.items[q.idx] && q.pick ? q : ttQuizFresh(0),
+    played: Array.isArray(t.played) ? t.played : [],
+    log: Array.isArray(t.log) ? t.log : [],
+  };
+}
+
+function ttSimFresh() {
+  return { clock: 0, running: false, rung: 0, since: null, done: false, n: 1, events: [{ n: 1, t: 0, region: "off" }] };
+}
+
+function TtChart({ sim, pre }) {
+  const C = useC();
+  const W = 640, X0 = 70, PW = 556, ROW = 38, TOP = 22;
+  const span = Math.max(2.5 * pre, 5000);
+  const t1 = Math.max(sim.clock, span);
+  const t0 = t1 - span;
+  const x = t => X0 + ((t - t0) / span) * PW;
+  const H = TOP + ROW * TT_ROWS.length + 22;
+  const before = [...sim.events].reverse().find(e => e.t <= t0) || sim.events[0];
+  const inWin = sim.events.filter(e => e.t > t0 && e.t <= t1);
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={`Timing chart, last ${Math.round(span)} ms: ${inWin.map(e => `transition ${e.n} to ${e.region}`).join(", ") || "no transitions"}`} style={{ display: "block", maxWidth: "100%", height: "auto" }}>
+      {inWin.map(e => (
+        <g key={e.n}>
+          <line x1={x(e.t)} y1={TOP - 6} x2={x(e.t)} y2={TOP + ROW * TT_ROWS.length} stroke={C.border} strokeDasharray="3 3" />
+          <text x={x(e.t)} y={TOP - 10} textAnchor="middle" fontFamily={MONO_FONT} fontSize="10" fill={C.amber}>{e.n}</text>
+        </g>
+      ))}
+      {TT_ROWS.map(([k, label], i) => {
+        const hi = TOP + i * ROW + 8, lo = TOP + i * ROW + 30;
+        const y = v => (v ? hi : lo);
+        let v = ttBits(before.region)[k];
+        let d = `M ${X0} ${y(v)}`;
+        for (const e of inWin) {
+          const nv = ttBits(e.region)[k];
+          d += ` L ${x(e.t)} ${y(v)}`;
+          if (nv !== v) d += ` L ${x(e.t)} ${y(nv)}`;
+          v = nv;
+        }
+        d += ` L ${X0 + PW} ${y(v)}`;
+        return (
+          <g key={k}>
+            <text x={8} y={lo - 6} fontFamily={MONO_FONT} fontSize="11" fill={C.text_mute}>{label}</text>
+            <line x1={X0} y1={lo} x2={X0 + PW} y2={lo} stroke={C.border} />
+            <path d={d} fill="none" stroke={k === "dn" ? C.lime : k === "tt" ? C.amber : C.signal_cyan} strokeWidth="2" />
+          </g>
+        );
+      })}
+      <text x={X0} y={H - 4} fontFamily={MONO_FONT} fontSize="10" fill={C.text_dim}>{Math.round(t0)} ms</text>
+      <text x={X0 + PW} y={H - 4} textAnchor="end" fontFamily={MONO_FONT} fontSize="10" fill={C.text_dim}>{Math.round(t1)} ms</text>
+    </svg>
+  );
+}
+
+function TimerTrace({ onResult }) {
+  const C = useC();
+  const [t, setT] = useState(ttLoad);
+  const [preText, setPreText] = useState(String(t.pre));
+  const [sim, setSim] = useState(ttSimFresh);
+  useEffect(() => saveTool(TT_KEY, t), [t]);
+
+  // The clock only moves while running. DN is set at since + PRE exactly.
+  useEffect(() => {
+    if (!sim.running) return undefined;
+    let last = performance.now();
+    const id = setInterval(() => {
+      const now = performance.now();
+      const dt = now - last;
+      last = now;
+      setSim(s => {
+        if (!s.running) return s;
+        const clock = s.clock + dt;
+        if (s.rung && !s.done && clock - s.since >= t.pre) {
+          const n = s.n + 1;
+          return { ...s, clock, done: true, n, events: [...s.events, { n, t: s.since + t.pre, region: "done" }].slice(-40) };
+        }
+        return { ...s, clock };
+      });
+    }, TT_TICK_MS);
+    return () => clearInterval(id);
+  }, [sim.running, t.pre]);
+
+  const run = () =>
+    setSim(s => {
+      if (s.rung) return { ...s, running: !s.running };
+      const n = s.n + 1;
+      return { ...s, rung: 1, since: s.clock, done: false, running: true, n, events: [...s.events, { n, t: s.clock, region: "timing" }].slice(-40) };
+    });
+  const drop = () =>
+    setSim(s => {
+      if (!s.rung) return s;
+      const n = s.n + 1;
+      // The clock keeps its run/pause state, so time passes while the rung is low.
+      return { ...s, rung: 0, since: null, done: false, n, events: [...s.events, { n, t: s.clock, region: "drop" }].slice(-40) };
+    });
+  const commitPre = () => {
+    const pre = ttClampPre(preText);
+    setPreText(String(pre));
+    setT(x => ({ ...x, pre }));
+  };
+
+  const region = sim.rung ? (sim.done ? "done" : "timing") : sim.events[sim.events.length - 1].region;
+  const bits = ttBits(region);
+  const acc = sim.rung ? (sim.done ? "≥ PRE" : `${Math.floor(sim.clock - sim.since)} ms`) : "0 ms";
+
+  // Quiz.
+  const q = t.quiz;
+  const item = TTR.quiz.items[q.idx];
+  const want = ttBits(item.region);
+  const setQ = patch => setT(x => ({ ...x, quiz: { ...x.quiz, ...patch } }));
+  const flip = k => {
+    if (q.solved) return;
+    setQ({ pick: { ...q.pick, [k]: q.pick[k] ? 0 : 1 }, last: null });
+  };
+  const submit = () => {
+    if (q.solved) return;
+    const wrong = ["en", "tt", "dn"].filter(k => q.pick[k] !== want[k]).length;
+    if (wrong) {
+      setQ({ misses: q.misses + 1, firstMiss: q.firstMiss || `EN ${q.pick.en} TT ${q.pick.tt} DN ${q.pick.dn}`, last: { ok: false, wrong } });
+      return;
+    }
+    const fresh = !t.played.includes(item.id);
+    const clean = q.misses === 0;
+    onResult({
+      xp: fresh ? (clean ? TT_XP_FIRST : TT_XP_RETRY) : 0,
+      firstTry: clean,
+      firstPass: fresh && clean,
+      radar: TT_RADAR,
+      note: { tool: "3.3", tag: TTR.tag, text: `Timer Trace ${TTR.tag}: ${item.event} → EN ${want.en}, TT ${want.tt}, DN ${want.dn} — ${TT_REGION[item.region].text}` },
+    });
+    setT(x => ({
+      ...x,
+      played: fresh ? [...x.played, item.id] : x.played,
+      log: [{ id: item.id.toUpperCase(), event: item.event, attempts: q.misses + 1, first: q.firstMiss || "clean", at: new Date().toISOString() }, ...x.log],
+      quiz: { ...x.quiz, solved: true, last: { ok: true } },
+    }));
+  };
+  const nextQ = () => setT(x => ({ ...x, quiz: ttQuizFresh((x.quiz.idx + 1) % TTR.quiz.items.length) }));
+
+  useEffect(() => {
+    const onKey = e => {
+      const tag = l4KeyTarget(e);
+      if (tag === null) return;
+      if (/^[1-3]$/.test(e.key) && !q.solved) {
+        e.preventDefault();
+        flip(["en", "tt", "dn"][Number(e.key) - 1]);
+      } else if (e.key === "Enter" && tag !== "BUTTON") {
+        e.preventDefault();
+        if (q.solved) nextQ();
+        else submit();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  const Bit = ({ name, v }) => (
+    <div style={{ display: "grid", gap: 2, padding: "6px 10px", border: `1px solid ${v ? C.signal_cyan : C.border}`, borderRadius: 4, minWidth: 64 }}>
+      <span style={{ fontFamily: MONO_FONT, fontSize: 10, color: C.text_mute }}>{name}</span>
+      <span style={{ fontFamily: MONO_FONT, fontSize: 18, color: v ? C.signal_cyan : C.text_dim }}>{v}</span>
+    </div>
+  );
+
+  const recent = [...sim.events].reverse().slice(0, 6);
+
+  return (
+    <div style={{ display: "grid", gap: 20 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+        <TrainingBadge />
+        <Chip color={C.signal_cyan}>{TTR.tag} · TON</Chip>
+        <Chip color={C.lime}>SOLVED {t.played.length} / {TTR.quiz.items.length}</Chip>
+        <span style={{ fontSize: 12, color: C.text_dim }}>Keys: 1-3 flip EN / TT / DN, Enter checks</span>
+      </div>
+
+      <section aria-labelledby="tt-sim" style={{ display: "grid", gap: 12 }}>
+        <H as="h3"><span id="tt-sim">Timer</span></H>
+        <div aria-live="off" style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "stretch" }}>
+          <Bit name="RUNG_IN" v={bits.rung} />
+          <Bit name={`${TTR.tag}.EN`} v={bits.en} />
+          <Bit name={`${TTR.tag}.TT`} v={bits.tt} />
+          <Bit name={`${TTR.tag}.DN`} v={bits.dn} />
+          <div style={{ display: "grid", gap: 2, padding: "6px 10px", border: `1px solid ${C.border}`, borderRadius: 4, minWidth: 150 }}>
+            <span style={{ fontFamily: MONO_FONT, fontSize: 10, color: C.text_mute }}>{TTR.tag}.ACC / {TTR.tag}.PRE</span>
+            <span aria-label={`ACC ${acc}, PRE ${t.pre} ms`} style={{ fontFamily: MONO_FONT, fontSize: 18, color: sim.done ? C.lime : C.text }}>{acc} / {t.pre} ms</span>
+          </div>
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "flex-end" }}>
+          <Btn onClick={run} ariaLabel={sim.rung ? (sim.running ? "Pause the clock" : "Resume the clock") : "Run: rung input true"}>
+            {sim.rung ? (sim.running ? "Pause" : "Resume") : "Run (rung true)"}
+          </Btn>
+          <Btn variant="ghost" color={C.rose} onClick={drop} disabled={!sim.rung} ariaLabel="Drop the rung">Drop the rung</Btn>
+          <label style={{ display: "grid", gap: 4, fontSize: 12, color: C.text_mute }}>
+            {TTR.tag}.PRE (ms, {TTR.preset.min}–{TTR.preset.max})
+            <input
+              type="number"
+              min={TTR.preset.min}
+              max={TTR.preset.max}
+              step="100"
+              value={preText}
+              disabled={!!sim.rung}
+              onChange={e => setPreText(e.target.value)}
+              onBlur={commitPre}
+              onKeyDown={e => { if (e.key === "Enter") commitPre(); }}
+              aria-label={`${TTR.tag}.PRE in milliseconds`}
+              style={{ minHeight: TOUCH_MIN, width: 120, padding: "0 8px", background: C.bg, color: C.text, border: `1px solid ${C.border}`, borderRadius: 4, fontFamily: MONO_FONT, fontSize: 14 }}
+            />
+          </label>
+          {sim.rung ? <span style={{ fontSize: 12, color: C.text_dim, alignSelf: "center" }}>Drop the rung to change PRE.</span> : null}
+        </div>
+        <div className="tool-scroll"><TtChart sim={sim} pre={t.pre} /></div>
+        <div>
+          <H as="h4">Transitions</H>
+          <ol aria-label="Transition log" style={{ margin: "6px 0 0", padding: 0, listStyle: "none", display: "grid", gap: 4 }}>
+            {recent.map(e => (
+              <li key={e.n} style={{ display: "flex", gap: 10, fontSize: 13, color: C.text }}>
+                <span style={{ fontFamily: MONO_FONT, color: C.amber, minWidth: 22 }}>{e.n}</span>
+                <span style={{ fontFamily: MONO_FONT, color: C.text_mute, minWidth: 80 }}>{Math.round(e.t)} ms</span>
+                <span>{TT_REGION[e.region].text}</span>
+              </li>
+            ))}
+          </ol>
+          <Cites cites={[TTR.source]} />
+          <ConstructedNote source={`constructed — training scenario, no source citation. ${TTR.constructed.note}`} />
+        </div>
+      </section>
+
+      <section aria-labelledby="tt-q" style={{ display: "grid", gap: 10 }}>
+        <H as="h3">Predict the next state</H>
+        <p style={{ margin: 0, fontFamily: MONO_FONT, fontSize: 13, color: C.text_mute }}>
+          Now: RUNG_IN {item.given.rung} · EN {item.given.en} · TT {item.given.tt} · DN {item.given.dn} · ACC {ttAcc(item.given.acc)}
+        </p>
+        <p id="tt-q" style={{ margin: 0, fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 20, color: C.text }}>
+          {item.event.replace(">=", "≥")} What are EN, TT, and DN next?
+        </p>
+        <div role="group" aria-labelledby="tt-q" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {["en", "tt", "dn"].map((k, i) => (
+            <Btn key={k} variant="ghost" pressed={q.pick[k] === 1} disabled={q.solved} onClick={() => flip(k)} ariaLabel={`${i + 1}: ${k.toUpperCase()} is ${q.pick[k]}`}>
+              {i + 1}: {k.toUpperCase()} = {q.pick[k]}
+            </Btn>
+          ))}
+          {!q.solved && <Btn onClick={submit} ariaLabel="Check the prediction">Check</Btn>}
+        </div>
+        <ConstructedNote source={`${TTR.quiz.source}. ${TTR.quiz.note}`} />
+        <div aria-live="polite">
+          {q.last && !q.last.ok && (
+            <Verdict key={q.misses} ok={false} title={`${q.last.wrong} of 3 wrong.`}>
+              <p style={{ margin: 0 }}>Which region is the timer in after this event? Match EN, TT, and DN to that region.</p>
+              <p style={{ margin: "6px 0 0", fontWeight: 600 }}>Getting it now is worth {t.played.includes(item.id) ? 0 : TT_XP_RETRY} XP.</p>
+            </Verdict>
+          )}
+          {q.solved && (
+            <Verdict ok title={`EN ${want.en} · TT ${want.tt} · DN ${want.dn}${q.misses ? `, after ${q.misses} miss${q.misses === 1 ? "" : "es"}` : ""}.`}>
+              <p style={{ margin: 0, fontFamily: MONO_FONT, fontSize: 13 }}>{TT_REGION[item.region].text}</p>
+              <Cites cites={[TTR.source]} />
+              <div style={{ marginTop: 10 }}>
+                <Btn onClick={nextQ} ariaLabel="Next question">Next question</Btn>
+              </div>
+            </Verdict>
+          )}
+        </div>
+      </section>
+
+      <DecisionLog
+        title="Prediction log"
+        headers={["Question", "Event"]}
+        log={t.log}
+        cells={r => [r.id, r.event]}
+        empty="Each prediction you get right is logged here and in Field Notes."
+      />
+    </div>
+  );
+}
+
 const TOOLS = {
   "1.1": {
     component: WireItLive,
     source: "Circuit: sources/wire-it-live-circuit.png.svg and sources/wire-it-live-spec.md (user-provided spec).",
+  },
+  "1.3": {
+    component: ContactLogic,
+    source: "Contact model and truth table: sources/contact-logic-spec.md (user-provided spec). Rung drawing and walkthrough wording: constructed — training scenario, no source citation.",
   },
   "1.4": {
     component: TrapSpotter,
@@ -13994,6 +14862,10 @@ const TOOLS = {
     component: PermissiveDetective,
     ribbon: true,
     source: "Permissive rung and field devices: constructed — training scenario, no source citation. Lessons: Field Learning Plan.pdf p.10 and p.12; IC_Fundamentals_Drill_Input_Library.pdf p.6 and p.8.",
+  },
+  "3.3": {
+    component: TimerTrace,
+    source: "TON behavior: Rockwell Automation 1756-RM018, Logix 5000 Controllers General Instructions, TON (as given in sources/timer-trace-spec.md, user-provided spec). Simulation clock, chart, and quiz wording: constructed — training scenario, no source citation.",
   },
   "3.4": {
     component: SymptomFirstMove,

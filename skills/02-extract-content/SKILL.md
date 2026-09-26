@@ -214,6 +214,16 @@ excludes bare RTDs, thermocouples, and 3-/4-wire RTDs from this topology;
   wording are constructed conventions: "constructed": true with the
   constructed source line.
 
+### Step 6f: Extract the Contact Logic and Timer Trace specs (tools 1.3, 3.3)
+- "contactLogic" from sources/contact-logic-spec.md: the three input
+  definitions, the output and state equations, and the 8-row truth table
+  with its labels, verbatim. The walkthrough step wording and the rung
+  drawing are constructed ("constructed": true).
+- "timerTrace" from sources/timer-trace-spec.md: the four state regions
+  verbatim, the preset (default 2000 ms, 500-10000), the tag T4, and the
+  source line naming Rockwell 1756-RM018 (not RM003). Quiz wording is
+  constructed; every quiz answer is the EN / TT / DN of a named region.
+
 ### Step 6d: Extract the calculators workbook
 From sources/Field Troubleshooting Calculators.xlsx (read the cells and
 formulas directly; do not retype them), build a "calculators" object:
