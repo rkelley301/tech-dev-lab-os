@@ -9525,5 +9525,553 @@
     },
     "filterNote": "Device/loop category filters per drill and the transmitter-tag to range pairing are constructed.",
     "ribbonNote": "Ribbon step per drill: constructed mapping (user-approved 2026-09-25)."
+  },
+  "wireCount": {
+    "answerFields": {
+      "text": "Specify device wiring type (2/3/4-wire), power source, supply voltage, current flow, receiver terminals, and meter test location.",
+      "source": "I&C Fundamentals Drill Pack.pdf p.6 (drill 010, step 1)"
+    },
+    "mentalModel": {
+      "text": "identify the source -> trace the energy/signal path -> follow every termination -> establish where the expected current stops.",
+      "source": "IC_Fundamentals_Drill_Input_Library.pdf p.22"
+    },
+    "progression": {
+      "device": [
+        "2-wire pressure transmitter",
+        "DP transmitter",
+        "temperature transmitter",
+        "level transmitter"
+      ],
+      "topology": [
+        "External supply + passive AI",
+        "Active AI",
+        "Junction box",
+        "Marshalling terminals",
+        "Isolator",
+        "Intrinsic-safety barrier"
+      ],
+      "source": "IC_Fundamentals_Drill_Input_Library.pdf p.22"
+    },
+    "tier5": {
+      "items": [
+        "4-20 mA loop with reversed transmitter polarity",
+        "4-20 mA loop with open return conductor",
+        "4-20 mA loop with missing 24 VDC supply",
+        "4-20 mA loop landed on the wrong analog input channel",
+        "4-20 mA loop with reversed analog-input polarity",
+        "4-20 mA loop with incorrect common termination",
+        "4-20 mA loop with shield grounded at both ends",
+        "4-20 mA loop with shield improperly bonded to a signal conductor",
+        "4-20 mA loop with an open terminal",
+        "4-20 mA loop with a bypassed intrinsic-safety barrier"
+      ],
+      "source": "IC_Fundamentals_Drill_Input_Library.pdf p.21 (Tier 5 - Fault-Reconstruction Loops)"
+    },
+    "zeroMa": {
+      "reading": "0.0 mA",
+      "meaning": "Open circuit, blown fuse, dead supply, lifted wire",
+      "nextCheck": "Loop voltage at both ends",
+      "source": "Field Troubleshooting Template Pack.pdf p.4",
+      "trap": {
+        "text": "Check loop power first. A 0 mA reading on a 2-wire loop usually means the loop is broken, not that the transmitter is dead.",
+        "source": "Field Learning Plan.pdf p.10"
+      },
+      "usedFor": [
+        "openReturn",
+        "missingSupply"
+      ],
+      "usedForNote": "User decision (2026-09-25): the 0.0 mA reading is shown only for open return conductor and missing 24 VDC supply."
+    },
+    "supplyCheck": {
+      "text": "Supply voltage at transmitter terminals must exceed device minimum (commonly 10.5–12 V DC) at 20 mA, not just at 4 mA.",
+      "source": "Field Troubleshooting Template Pack.pdf p.4"
+    },
+    "meterLocation": {
+      "text": "Meter the loop current at the field terminals, not the controller.",
+      "source": "Field Troubleshooting Template Pack.pdf p.9"
+    },
+    "formSupply": {
+      "text": "Supply voltage at transmitter: ___ V DC",
+      "source": "Field Troubleshooting Template Pack.pdf p.5 (Form 4)"
+    },
+    "terminals": {
+      "items": [
+        {
+          "id": "PWR+",
+          "fn": "power +",
+          "label": "24 VDC supply +"
+        },
+        {
+          "id": "PWR-",
+          "fn": "power −",
+          "label": "24 VDC supply −, DC return"
+        },
+        {
+          "id": "SIG+",
+          "fn": "signal +",
+          "label": "input +"
+        },
+        {
+          "id": "SIG-",
+          "fn": "signal −",
+          "label": "input −"
+        },
+        {
+          "id": "COM",
+          "fn": "common",
+          "label": "DC common bus for other circuits, not wired into this loop"
+        }
+      ],
+      "constructed": true,
+      "source": "constructed — training scenario, no source citation",
+      "note": "Terminal labels and functions are a constructed convention following the Input Library p.20 and p.22 topologies."
+    },
+    "challenges": [
+      {
+        "id": "wc-1",
+        "title": "2-wire",
+        "device": {
+          "name": "2-wire pressure transmitter",
+          "source": "IC_Fundamentals_Drill_Input_Library.pdf p.19"
+        },
+        "shownAs": "Pressure transmitter",
+        "count": 2,
+        "loop": {
+          "text": "external 24 VDC supply -> 2-wire transmitter -> passive PLC analog input",
+          "source": "IC_Fundamentals_Drill_Input_Library.pdf p.20 (Tier 1)"
+        },
+        "loopFull": {
+          "text": "external 24 VDC power supply -> field transmitter -> passive PLC analog input -> DC return",
+          "source": "IC_Fundamentals_Drill_Input_Library.pdf p.22"
+        },
+        "receiver": "passive PLC analog input",
+        "chain": [
+          "24 VDC supply",
+          "Transmitter",
+          "PLC analog input",
+          "DC return"
+        ],
+        "conductors": [
+          {
+            "id": "T+",
+            "housing": "+",
+            "correct": "PWR+"
+          },
+          {
+            "id": "T-",
+            "housing": "−",
+            "correct": "SIG+",
+            "isReturn": true
+          }
+        ],
+        "jumpers": [
+          [
+            "SIG-",
+            "PWR-"
+          ]
+        ],
+        "constructed": true,
+        "constructedFields": "Housing terminal marks, panel terminal labels, and the SIG− to DC return jumper (drawn from the p.22 loop's \"-> DC return\") are constructed.",
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "id": "wc-2",
+        "title": "4-wire",
+        "device": {
+          "name": "4-wire pressure transmitter",
+          "source": "IC_Fundamentals_Drill_Input_Library.pdf p.19"
+        },
+        "shownAs": "Pressure transmitter",
+        "count": 4,
+        "loop": {
+          "text": "external 24 VDC supply -> 4-wire transmitter supply pair; transmitter output pair -> passive PLC analog input",
+          "constructed": true,
+          "source": "constructed — training scenario, no source citation"
+        },
+        "receiver": "passive PLC analog input",
+        "chain": [
+          "24 VDC supply",
+          "Transmitter",
+          "PLC analog input"
+        ],
+        "conductors": [
+          {
+            "id": "S+",
+            "housing": "SUPPLY +",
+            "correct": "PWR+",
+            "pair": "supply"
+          },
+          {
+            "id": "S-",
+            "housing": "SUPPLY −",
+            "correct": "PWR-",
+            "pair": "supply",
+            "isReturn": true
+          },
+          {
+            "id": "O+",
+            "housing": "OUT +",
+            "correct": "SIG+",
+            "pair": "output"
+          },
+          {
+            "id": "O-",
+            "housing": "OUT −",
+            "correct": "SIG-",
+            "pair": "output",
+            "isReturn": true
+          }
+        ],
+        "jumpers": [],
+        "constructed": true,
+        "constructedFields": "The loop text, housing terminal marks, and panel terminal labels are constructed. In this scenario the output pair is its own loop, separate from the supply pair.",
+        "source": "constructed — training scenario, no source citation"
+      },
+      {
+        "id": "wc-3",
+        "title": "2-wire through an isolator",
+        "device": {
+          "name": "2-wire pressure transmitter",
+          "source": "IC_Fundamentals_Drill_Input_Library.pdf p.21"
+        },
+        "shownAs": "Pressure transmitter",
+        "count": 2,
+        "loop": {
+          "text": "transmitter -> galvanic isolator -> PLC analog input",
+          "source": "IC_Fundamentals_Drill_Input_Library.pdf p.21 (best [device] + [loop] combinations)"
+        },
+        "topologyStep": {
+          "text": "Isolator",
+          "source": "IC_Fundamentals_Drill_Input_Library.pdf p.22 (change the topology)"
+        },
+        "receiver": "galvanic isolator input",
+        "chain": [
+          "24 VDC supply",
+          "Transmitter",
+          "Galvanic isolator",
+          "PLC analog input"
+        ],
+        "conductors": [
+          {
+            "id": "T+",
+            "housing": "+",
+            "correct": "PWR+"
+          },
+          {
+            "id": "T-",
+            "housing": "−",
+            "correct": "SIG+",
+            "isReturn": true
+          }
+        ],
+        "jumpers": [
+          [
+            "SIG-",
+            "PWR-"
+          ]
+        ],
+        "isolator": true,
+        "constructed": true,
+        "constructedFields": "The external 24 VDC supply is kept from the first drill (p.22 changes one variable at a time), SIG+ / SIG− are the isolator input, the isolator output is pre-wired to the PLC analog input, and the SIG− to DC return jumper matches challenge 1. All constructed.",
+        "source": "constructed — training scenario, no source citation"
+      }
+    ],
+    "outcomes": {
+      "ok": {
+        "title": "Loop closed.",
+        "text": "Current leaves the supply, passes through every termination on the loop, and returns to DC return."
+      },
+      "reversedTx": {
+        "title": "Reversed transmitter polarity.",
+        "tier5": 0,
+        "text": "The transmitter's + and − are swapped relative to the supply. Current stops here."
+      },
+      "openReturn": {
+        "title": "Open return conductor.",
+        "tier5": 1,
+        "zeroMa": true,
+        "text": "The return conductor is not landed. Nothing completes the loop back to the supply."
+      },
+      "missingSupply": {
+        "title": "Missing 24 VDC supply.",
+        "tier5": 2,
+        "zeroMa": true,
+        "text": "No conductor lands on PWR+, so the transmitter never sees the supply."
+      },
+      "reversedAi": {
+        "title": "Reversed analog-input polarity.",
+        "tier5": 4,
+        "text": "The output pair is swapped at the input terminals. Current stops here."
+      },
+      "badCommon": {
+        "title": "Incorrect common termination.",
+        "tier5": 5,
+        "text": "A loop conductor is landed on COM, which is not wired into this loop. Current stops here."
+      },
+      "openTerminal": {
+        "title": "Open terminal.",
+        "tier5": 8,
+        "text": "A conductor is not landed, so the loop is open at that point. Current stops here."
+      },
+      "bypass": {
+        "title": "Short: the input is bypassed.",
+        "text": "The loop returns to DC return without passing through the input. No current reaches the input."
+      },
+      "sameTerminal": {
+        "title": "Two conductors on one terminal.",
+        "text": "Both ends of one element are tied together, so the loop cannot close through it. Current stops here."
+      },
+      "wrongTerminal": {
+        "title": "Conductor on the wrong pair.",
+        "text": "A supply conductor and an output conductor are crossed, so neither loop closes through its own terminals. Current stops here."
+      },
+      "constructed": true,
+      "source": "constructed — training scenario, no source citation",
+      "note": "Outcome titles use the Input Library p.21 Tier 5 names where one applies. No mA value is shown except 0.0 mA for open return conductor and missing 24 VDC supply (user decision 2026-09-25)."
+    }
+  },
+  "contactLogic": {
+    "source": "sources/contact-logic-spec.md (user-provided spec)",
+    "inputs": [
+      {
+        "tag": "STOP",
+        "text": "physical NC contact. 1 = released/path intact, 0 = pressed/path open."
+      },
+      {
+        "tag": "START",
+        "text": "physical NO contact. 1 = pressed/closed."
+      },
+      {
+        "tag": "M1_AUX_PREV",
+        "text": "physical NO holding contact driven by previous M1 coil state. 1 = previously energized, 0 = previously off."
+      }
+    ],
+    "output": "M1_COIL = STOP AND (START OR M1_AUX_PREV)",
+    "state": "M1_AUX_NEXT = M1_COIL",
+    "table": [
+      {
+        "stop": 0,
+        "start": 0,
+        "aux": 0,
+        "coil": 0,
+        "label": "Stop pressed"
+      },
+      {
+        "stop": 0,
+        "start": 0,
+        "aux": 1,
+        "coil": 0,
+        "label": "Stop drops latched coil"
+      },
+      {
+        "stop": 0,
+        "start": 1,
+        "aux": 0,
+        "coil": 0,
+        "label": "Stop overrides Start"
+      },
+      {
+        "stop": 0,
+        "start": 1,
+        "aux": 1,
+        "coil": 0,
+        "label": "Stop overrides every parallel branch"
+      },
+      {
+        "stop": 1,
+        "start": 0,
+        "aux": 0,
+        "coil": 0,
+        "label": "Idle"
+      },
+      {
+        "stop": 1,
+        "start": 0,
+        "aux": 1,
+        "coil": 1,
+        "label": "Valid latched/running state"
+      },
+      {
+        "stop": 1,
+        "start": 1,
+        "aux": 0,
+        "coil": 1,
+        "label": "Start energizes"
+      },
+      {
+        "stop": 1,
+        "start": 1,
+        "aux": 1,
+        "coil": 1,
+        "label": "Remains energized"
+      }
+    ],
+    "sequence": "idle → press START → coil on → release START → coil stays on (sealed) → press STOP → coil drops",
+    "walkthrough": {
+      "start": {
+        "stop": 1,
+        "start": 0,
+        "aux": 0
+      },
+      "steps": [
+        {
+          "id": "press-start",
+          "action": "Press START",
+          "change": {
+            "start": 1
+          }
+        },
+        {
+          "id": "next-on",
+          "action": "Next state (M1 AUX follows the coil)",
+          "next": true
+        },
+        {
+          "id": "release-start",
+          "action": "Release START",
+          "change": {
+            "start": 0
+          }
+        },
+        {
+          "id": "press-stop",
+          "action": "Press STOP",
+          "change": {
+            "stop": 0
+          }
+        }
+      ],
+      "constructed": true,
+      "source": "constructed — training scenario, no source citation",
+      "note": "Step wording and the placement of Next state after Press START (so M1 AUX picks up the coil before START is released) are constructed from the spec's sequence line. Every coil value comes from the spec's truth table."
+    },
+    "rung": {
+      "constructed": true,
+      "source": "constructed — training scenario, no source citation",
+      "note": "Rung drawing layout is constructed from the spec's contact list."
+    }
+  },
+  "timerTrace": {
+    "source": "Rockwell Automation 1756-RM018, Logix 5000 Controllers General Instructions, TON (as given in sources/timer-trace-spec.md, user-provided spec)",
+    "tag": "T4",
+    "preset": {
+      "default": 2000,
+      "min": 500,
+      "max": 10000,
+      "units": "ms"
+    },
+    "regions": [
+      {
+        "id": "off",
+        "text": "RUNG_IN = 0: EN=0, TT=0, DN=0, ACC=0",
+        "en": 0,
+        "tt": 0,
+        "dn": 0
+      },
+      {
+        "id": "timing",
+        "text": "RUNG_IN = 1 and ACC < PRE: EN=1, TT=1, DN=0, ACC accumulates",
+        "en": 1,
+        "tt": 1,
+        "dn": 0
+      },
+      {
+        "id": "done",
+        "text": "RUNG_IN = 1 and ACC >= PRE: EN=1, TT=0, DN=1, ACC holds at PRE",
+        "en": 1,
+        "tt": 0,
+        "dn": 1
+      },
+      {
+        "id": "drop",
+        "text": "RUNG_IN transitions to 0: EN=0, TT=0, DN=0, ACC resets to 0",
+        "en": 0,
+        "tt": 0,
+        "dn": 0
+      }
+    ],
+    "quiz": {
+      "items": [
+        {
+          "id": "q1",
+          "given": {
+            "rung": 0,
+            "en": 0,
+            "tt": 0,
+            "dn": 0,
+            "acc": "0"
+          },
+          "event": "The rung goes true.",
+          "region": "timing"
+        },
+        {
+          "id": "q2",
+          "given": {
+            "rung": 1,
+            "en": 1,
+            "tt": 1,
+            "dn": 0,
+            "acc": "< PRE"
+          },
+          "event": "The rung stays true and ACC is still below PRE.",
+          "region": "timing"
+        },
+        {
+          "id": "q3",
+          "given": {
+            "rung": 1,
+            "en": 1,
+            "tt": 1,
+            "dn": 0,
+            "acc": "< PRE"
+          },
+          "event": "ACC reaches PRE (ACC >= PRE) with the rung still true.",
+          "region": "done"
+        },
+        {
+          "id": "q4",
+          "given": {
+            "rung": 1,
+            "en": 1,
+            "tt": 0,
+            "dn": 1,
+            "acc": ">= PRE"
+          },
+          "event": "The rung stays true.",
+          "region": "done"
+        },
+        {
+          "id": "q5",
+          "given": {
+            "rung": 1,
+            "en": 1,
+            "tt": 0,
+            "dn": 1,
+            "acc": ">= PRE"
+          },
+          "event": "The rung goes false.",
+          "region": "drop"
+        },
+        {
+          "id": "q6",
+          "given": {
+            "rung": 1,
+            "en": 1,
+            "tt": 1,
+            "dn": 0,
+            "acc": "< PRE"
+          },
+          "event": "The rung goes false before ACC reaches PRE.",
+          "region": "drop"
+        }
+      ],
+      "constructed": true,
+      "source": "constructed — training scenario, no source citation",
+      "note": "Question wording is constructed; every answer is the EN / TT / DN of the named region in the spec."
+    },
+    "constructed": {
+      "chart": true,
+      "note": "The simulation clock, chart layout, and transition log are constructed. They draw only the four regions above."
+    }
   }
 }

@@ -2835,9 +2835,9 @@ const BENCH = {
 };
 </script>
 <script>
-/* Tool data for 2.2, 2.3, 2.4, 3.1, 3.2, 3.4, 4.1, 4.2, 4.3: plain object
-   literals moved out of the Babel block for the same reason as The Bench data
-   above. Values unchanged. */
+/* Tool data for 2.1, 2.2, 2.3, 2.4, 3.1, 3.2, 3.4, 4.1, 4.2, 4.3: plain object
+   literals kept out of the Babel block so it stays under Babel Standalone's
+   500 KB limit (same reason as The Bench data above). */
 // Tool 3.4
 // Generated from output/content-library.json. Do not edit by hand.
 const SFM_SYMPTOMS = [
@@ -7390,6 +7390,312 @@ const PROG_LESSONS = {
  "documentation": {
   "text": "Documentation filed, CMMS closed",
   "source": "Field Troubleshooting Template Pack.pdf p.6, Form 4 Loop Check, restore"
+ }
+};
+// Tool 2.1
+// Generated from output/content-library.json. Do not edit by hand.
+const WCD = {
+ "answerFields": {
+  "text": "Specify device wiring type (2/3/4-wire), power source, supply voltage, current flow, receiver terminals, and meter test location.",
+  "source": "I&C Fundamentals Drill Pack.pdf p.6 (drill 010, step 1)"
+ },
+ "mentalModel": {
+  "text": "identify the source -> trace the energy/signal path -> follow every termination -> establish where the expected current stops.",
+  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.22"
+ },
+ "progression": {
+  "device": [
+   "2-wire pressure transmitter",
+   "DP transmitter",
+   "temperature transmitter",
+   "level transmitter"
+  ],
+  "topology": [
+   "External supply + passive AI",
+   "Active AI",
+   "Junction box",
+   "Marshalling terminals",
+   "Isolator",
+   "Intrinsic-safety barrier"
+  ],
+  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.22"
+ },
+ "tier5": {
+  "items": [
+   "4-20 mA loop with reversed transmitter polarity",
+   "4-20 mA loop with open return conductor",
+   "4-20 mA loop with missing 24 VDC supply",
+   "4-20 mA loop landed on the wrong analog input channel",
+   "4-20 mA loop with reversed analog-input polarity",
+   "4-20 mA loop with incorrect common termination",
+   "4-20 mA loop with shield grounded at both ends",
+   "4-20 mA loop with shield improperly bonded to a signal conductor",
+   "4-20 mA loop with an open terminal",
+   "4-20 mA loop with a bypassed intrinsic-safety barrier"
+  ],
+  "source": "IC_Fundamentals_Drill_Input_Library.pdf p.21 (Tier 5 - Fault-Reconstruction Loops)"
+ },
+ "zeroMa": {
+  "reading": "0.0 mA",
+  "meaning": "Open circuit, blown fuse, dead supply, lifted wire",
+  "nextCheck": "Loop voltage at both ends",
+  "source": "Field Troubleshooting Template Pack.pdf p.4",
+  "trap": {
+   "text": "Check loop power first. A 0 mA reading on a 2-wire loop usually means the loop is broken, not that the transmitter is dead.",
+   "source": "Field Learning Plan.pdf p.10"
+  },
+  "usedFor": [
+   "openReturn",
+   "missingSupply"
+  ],
+  "usedForNote": "User decision (2026-09-25): the 0.0 mA reading is shown only for open return conductor and missing 24 VDC supply."
+ },
+ "supplyCheck": {
+  "text": "Supply voltage at transmitter terminals must exceed device minimum (commonly 10.5–12 V DC) at 20 mA, not just at 4 mA.",
+  "source": "Field Troubleshooting Template Pack.pdf p.4"
+ },
+ "meterLocation": {
+  "text": "Meter the loop current at the field terminals, not the controller.",
+  "source": "Field Troubleshooting Template Pack.pdf p.9"
+ },
+ "formSupply": {
+  "text": "Supply voltage at transmitter: ___ V DC",
+  "source": "Field Troubleshooting Template Pack.pdf p.5 (Form 4)"
+ },
+ "terminals": {
+  "items": [
+   {
+    "id": "PWR+",
+    "fn": "power +",
+    "label": "24 VDC supply +"
+   },
+   {
+    "id": "PWR-",
+    "fn": "power −",
+    "label": "24 VDC supply −, DC return"
+   },
+   {
+    "id": "SIG+",
+    "fn": "signal +",
+    "label": "input +"
+   },
+   {
+    "id": "SIG-",
+    "fn": "signal −",
+    "label": "input −"
+   },
+   {
+    "id": "COM",
+    "fn": "common",
+    "label": "DC common bus for other circuits, not wired into this loop"
+   }
+  ],
+  "constructed": true,
+  "source": "constructed — training scenario, no source citation",
+  "note": "Terminal labels and functions are a constructed convention following the Input Library p.20 and p.22 topologies."
+ },
+ "challenges": [
+  {
+   "id": "wc-1",
+   "title": "2-wire",
+   "device": {
+    "name": "2-wire pressure transmitter",
+    "source": "IC_Fundamentals_Drill_Input_Library.pdf p.19"
+   },
+   "shownAs": "Pressure transmitter",
+   "count": 2,
+   "loop": {
+    "text": "external 24 VDC supply -> 2-wire transmitter -> passive PLC analog input",
+    "source": "IC_Fundamentals_Drill_Input_Library.pdf p.20 (Tier 1)"
+   },
+   "loopFull": {
+    "text": "external 24 VDC power supply -> field transmitter -> passive PLC analog input -> DC return",
+    "source": "IC_Fundamentals_Drill_Input_Library.pdf p.22"
+   },
+   "receiver": "passive PLC analog input",
+   "chain": [
+    "24 VDC supply",
+    "Transmitter",
+    "PLC analog input",
+    "DC return"
+   ],
+   "conductors": [
+    {
+     "id": "T+",
+     "housing": "+",
+     "correct": "PWR+"
+    },
+    {
+     "id": "T-",
+     "housing": "−",
+     "correct": "SIG+",
+     "isReturn": true
+    }
+   ],
+   "jumpers": [
+    [
+     "SIG-",
+     "PWR-"
+    ]
+   ],
+   "constructed": true,
+   "constructedFields": "Housing terminal marks, panel terminal labels, and the SIG− to DC return jumper (drawn from the p.22 loop's \"-> DC return\") are constructed.",
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "wc-2",
+   "title": "4-wire",
+   "device": {
+    "name": "4-wire pressure transmitter",
+    "source": "IC_Fundamentals_Drill_Input_Library.pdf p.19"
+   },
+   "shownAs": "Pressure transmitter",
+   "count": 4,
+   "loop": {
+    "text": "external 24 VDC supply -> 4-wire transmitter supply pair; transmitter output pair -> passive PLC analog input",
+    "constructed": true,
+    "source": "constructed — training scenario, no source citation"
+   },
+   "receiver": "passive PLC analog input",
+   "chain": [
+    "24 VDC supply",
+    "Transmitter",
+    "PLC analog input"
+   ],
+   "conductors": [
+    {
+     "id": "S+",
+     "housing": "SUPPLY +",
+     "correct": "PWR+",
+     "pair": "supply"
+    },
+    {
+     "id": "S-",
+     "housing": "SUPPLY −",
+     "correct": "PWR-",
+     "pair": "supply",
+     "isReturn": true
+    },
+    {
+     "id": "O+",
+     "housing": "OUT +",
+     "correct": "SIG+",
+     "pair": "output"
+    },
+    {
+     "id": "O-",
+     "housing": "OUT −",
+     "correct": "SIG-",
+     "pair": "output",
+     "isReturn": true
+    }
+   ],
+   "jumpers": [],
+   "constructed": true,
+   "constructedFields": "The loop text, housing terminal marks, and panel terminal labels are constructed. In this scenario the output pair is its own loop, separate from the supply pair.",
+   "source": "constructed — training scenario, no source citation"
+  },
+  {
+   "id": "wc-3",
+   "title": "2-wire through an isolator",
+   "device": {
+    "name": "2-wire pressure transmitter",
+    "source": "IC_Fundamentals_Drill_Input_Library.pdf p.21"
+   },
+   "shownAs": "Pressure transmitter",
+   "count": 2,
+   "loop": {
+    "text": "transmitter -> galvanic isolator -> PLC analog input",
+    "source": "IC_Fundamentals_Drill_Input_Library.pdf p.21 (best [device] + [loop] combinations)"
+   },
+   "topologyStep": {
+    "text": "Isolator",
+    "source": "IC_Fundamentals_Drill_Input_Library.pdf p.22 (change the topology)"
+   },
+   "receiver": "galvanic isolator input",
+   "chain": [
+    "24 VDC supply",
+    "Transmitter",
+    "Galvanic isolator",
+    "PLC analog input"
+   ],
+   "conductors": [
+    {
+     "id": "T+",
+     "housing": "+",
+     "correct": "PWR+"
+    },
+    {
+     "id": "T-",
+     "housing": "−",
+     "correct": "SIG+",
+     "isReturn": true
+    }
+   ],
+   "jumpers": [
+    [
+     "SIG-",
+     "PWR-"
+    ]
+   ],
+   "isolator": true,
+   "constructed": true,
+   "constructedFields": "The external 24 VDC supply is kept from the first drill (p.22 changes one variable at a time), SIG+ / SIG− are the isolator input, the isolator output is pre-wired to the PLC analog input, and the SIG− to DC return jumper matches challenge 1. All constructed.",
+   "source": "constructed — training scenario, no source citation"
+  }
+ ],
+ "outcomes": {
+  "ok": {
+   "title": "Loop closed.",
+   "text": "Current leaves the supply, passes through every termination on the loop, and returns to DC return."
+  },
+  "reversedTx": {
+   "title": "Reversed transmitter polarity.",
+   "tier5": 0,
+   "text": "The transmitter's + and − are swapped relative to the supply. Current stops here."
+  },
+  "openReturn": {
+   "title": "Open return conductor.",
+   "tier5": 1,
+   "zeroMa": true,
+   "text": "The return conductor is not landed. Nothing completes the loop back to the supply."
+  },
+  "missingSupply": {
+   "title": "Missing 24 VDC supply.",
+   "tier5": 2,
+   "zeroMa": true,
+   "text": "No conductor lands on PWR+, so the transmitter never sees the supply."
+  },
+  "reversedAi": {
+   "title": "Reversed analog-input polarity.",
+   "tier5": 4,
+   "text": "The output pair is swapped at the input terminals. Current stops here."
+  },
+  "badCommon": {
+   "title": "Incorrect common termination.",
+   "tier5": 5,
+   "text": "A loop conductor is landed on COM, which is not wired into this loop. Current stops here."
+  },
+  "openTerminal": {
+   "title": "Open terminal.",
+   "tier5": 8,
+   "text": "A conductor is not landed, so the loop is open at that point. Current stops here."
+  },
+  "bypass": {
+   "title": "Short: the input is bypassed.",
+   "text": "The loop returns to DC return without passing through the input. No current reaches the input."
+  },
+  "sameTerminal": {
+   "title": "Two conductors on one terminal.",
+   "text": "Both ends of one element are tied together, so the loop cannot close through it. Current stops here."
+  },
+  "wrongTerminal": {
+   "title": "Conductor on the wrong pair.",
+   "text": "A supply conductor and an output conductor are crossed, so neither loop closes through its own terminals. Current stops here."
+  },
+  "constructed": true,
+  "source": "constructed — training scenario, no source citation",
+  "note": "Outcome titles use the Input Library p.21 Tier 5 names where one applies. No mA value is shown except 0.0 mA for open return conductor and missing 24 VDC supply (user decision 2026-09-25)."
  }
 };
 </script>
@@ -13231,6 +13537,426 @@ function TheBench({ onResult, onStep }) {
   );
 }
 
+/* --------------------------------------------------------------------------
+   Tool 2.1: Wire Count Detective
+   The Input Library p.22 drill: one device, one loop topology, then change a
+   single variable. Count the conductors, land each one on a panel terminal,
+   and check where the current goes. A miswire is named by its p.21 Tier 5
+   fault where one applies, and the chain marks where the current stops.
+   Only open return conductor and missing 24 VDC supply show a reading
+   (0.0 mA, Template Pack p.4); every other fault shows no mA value.
+   -------------------------------------------------------------------------- */
+
+const WC_KEY = STORAGE_KEY + ".wireCount";
+const WC_XP_FIRST = 20;
+const WC_XP_RETRY = 8;
+const WC_RADAR = 0.5;
+const WC_COUNTS = [2, 4];
+const WC_OFF = "OFF";
+const WC_TERMS = WCD.terminals.items;
+const WC_OUT = WCD.outcomes;
+
+// Electrical node of a panel terminal: a jumper merges its two terminals.
+function wcNode(ch, term) {
+  if (!term || term === WC_OFF) return WC_OFF;
+  const j = ch.jumpers.find(([a]) => a === term);
+  return j ? j[1] : term;
+}
+
+// Where the loop goes, from the landed conductors. Returns the outcome id and
+// where to mark it: "supply", "tx", "input", "com", or a conductor id.
+function wcCheck(ch, as) {
+  if (ch.count === 2) {
+    const a = as["T+"], b = as["T-"];
+    const na = wcNode(ch, a), nb = wcNode(ch, b);
+    if (a !== WC_OFF && a === b) return { id: "sameTerminal", at: "tx" };
+    if (na === "PWR+" && nb === "SIG+") return { id: "ok" };
+    if (na !== "PWR+" && nb !== "PWR+") return { id: "missingSupply", at: "supply" };
+    if (nb === "PWR+") {
+      if (a === WC_OFF) return { id: "openTerminal", at: "T+" };
+      if (a === "COM") return { id: "badCommon", at: "com" };
+      return { id: "reversedTx", at: "tx" };
+    }
+    if (b === WC_OFF) return { id: "openReturn", at: "T-" };
+    if (b === "COM") return { id: "badCommon", at: "com" };
+    return { id: "bypass", at: "input" };
+  }
+  const sP = as["S+"], sN = as["S-"], oP = as["O+"], oN = as["O-"];
+  if (sP !== WC_OFF && sP === sN) return { id: "sameTerminal", at: "tx" };
+  if (!(sP === "PWR+" && sN === "PWR-")) {
+    if (sP === "PWR-" && sN === "PWR+") return { id: "reversedTx", at: "tx" };
+    if (sP !== "PWR+" && sN !== "PWR+") return { id: "missingSupply", at: "supply" };
+    if (sN === "PWR+") {
+      if (sP === WC_OFF) return { id: "openTerminal", at: "S+" };
+      if (sP === "COM") return { id: "badCommon", at: "com" };
+      return { id: "reversedTx", at: "tx" };
+    }
+    if (sN === WC_OFF) return { id: "openReturn", at: "S-" };
+    if (sN === "COM") return { id: "badCommon", at: "com" };
+    return { id: "wrongTerminal", at: "S-" };
+  }
+  if (oP !== WC_OFF && oP === oN) return { id: "sameTerminal", at: "tx" };
+  if (oP === "SIG+" && oN === "SIG-") return { id: "ok" };
+  if (oP === "SIG-" && oN === "SIG+") return { id: "reversedAi", at: "input" };
+  if (oN === WC_OFF) return { id: "openReturn", at: "O-" };
+  if (oP === WC_OFF) return { id: "openTerminal", at: "O+" };
+  if (oP === "COM" || oN === "COM") return { id: "badCommon", at: "com" };
+  if (["PWR+", "PWR-"].includes(oP) && ["PWR+", "PWR-"].includes(oN)) return { id: "bypass", at: "input" };
+  return { id: "wrongTerminal", at: ["PWR+", "PWR-"].includes(oP) ? "O+" : "O-" };
+}
+
+// Current path for a closed loop, in the order the current meets each termination.
+function wcPath(ch) {
+  const input = ch.isolator ? "galvanic isolator input" : "PLC analog input";
+  if (ch.count === 2) return `24 VDC supply + → PWR+ → transmitter + → transmitter − → SIG+ → ${input} → SIG− → DC return (PWR−)`;
+  return "Supply pair: PWR+ → SUPPLY + → transmitter → SUPPLY − → PWR−. Output pair: OUT + → SIG+ → PLC analog input → SIG− → OUT −";
+}
+
+function wcSession(i) {
+  return { idx: i, count: null, countMiss: null, assign: {}, checks: 0, misses: 0, firstMiss: null, result: null, done: false };
+}
+
+function wcLoad() {
+  const t = loadTool(WC_KEY) || {};
+  const s = t.session;
+  const ok = s && WCD.challenges[s.idx] && s.assign && typeof s.assign === "object";
+  return {
+    session: ok ? s : wcSession(0),
+    played: Array.isArray(t.played) ? t.played : [],
+    log: Array.isArray(t.log) ? t.log : [],
+  };
+}
+
+function WcHousing({ ch, show }) {
+  const C = useC();
+  return (
+    <div
+      role="img"
+      aria-label={`Transmitter housing with ${ch.conductors.length} terminals: ${ch.conductors.map(c => c.housing).join(", ")}`}
+      style={{ display: "inline-flex", gap: 10, padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 6, background: C.bg }}
+    >
+      {ch.conductors.map(c => (
+        <div key={c.id} style={{ display: "grid", justifyItems: "center", gap: 4 }}>
+          <span aria-hidden="true" style={{ width: 18, height: 18, borderRadius: "50%", border: `2px solid ${C.text_mute}`, boxSizing: "border-box" }} />
+          <span style={{ fontFamily: MONO_FONT, fontSize: 11, color: show ? C.text : C.text_mute, whiteSpace: "nowrap" }}>{c.housing}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function WcChain({ ch, result }) {
+  const C = useC();
+  const reduced = useReducedMotion();
+  const isoIdx = ch.chain.findIndex(n => /isolator/i.test(n));
+  const inputIdx = isoIdx >= 0 ? isoIdx : ch.chain.findIndex(n => /analog input/i.test(n));
+  const out = result && WC_OUT[result.id];
+  const markIdx = !result || result.id === "ok" ? -1 : result.at === "supply" ? 0 : result.at === "input" ? inputIdx : result.at === "com" ? -1 : 1;
+  const flowing = result && result.id === "ok";
+  const bypass = result && result.id === "bypass";
+  return (
+    <ol aria-label="Loop chain" style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center", margin: 0, padding: 0, listStyle: "none" }}>
+      {ch.chain.map((name, i) => {
+        const stop = i === markIdx;
+        // A bypass still carries current through the supply, the transmitter, and DC return.
+        const lit = flowing || (bypass && i !== inputIdx && (i < inputIdx || name === "DC return"));
+        const color = stop ? C.rose : lit ? C.signal_cyan : C.text_dim;
+        const tag = stop ? (bypass ? "no current reaches the input" : "current stops here") : lit ? "current" : result ? "no current" : "";
+        return (
+          <li key={name} aria-label={`${name}${tag ? `: ${tag}` : ""}`} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            {i > 0 && (
+              <svg width="26" height="10" aria-hidden="true">
+                <line x1="0" y1="5" x2="26" y2="5" stroke={lit ? C.signal_cyan : C.border} strokeWidth="2" strokeDasharray={flowing ? "6 10" : "none"} style={{ animation: flowing && !reduced ? "flow 0.8s linear infinite" : "none" }} />
+              </svg>
+            )}
+            <span style={{ display: "grid", gap: 2, padding: "6px 10px", border: `1px solid ${color}`, borderRadius: 4, background: stop || lit ? `${color}12` : "transparent" }}>
+              <span style={{ fontSize: 13, color: C.text, whiteSpace: "nowrap" }}>{name}</span>
+              {tag && <span style={{ fontFamily: MONO_FONT, fontSize: 10, color, whiteSpace: "nowrap" }}>{tag.toUpperCase()}</span>}
+              {stop && out && out.zeroMa && <span style={{ fontFamily: MONO_FONT, fontSize: 12, color: C.rose }}>{WCD.zeroMa.reading}</span>}
+            </span>
+          </li>
+        );
+      })}
+      {result && result.at === "com" && (
+        <li aria-label="COM terminal: current stops here" style={{ padding: "6px 10px", border: `1px solid ${C.rose}`, borderRadius: 4, background: `${C.rose}12`, fontFamily: MONO_FONT, fontSize: 11, color: C.rose }}>
+          COM: CURRENT STOPS HERE
+        </li>
+      )}
+    </ol>
+  );
+}
+
+function WcTerminalStrip({ ch, assign, result }) {
+  const C = useC();
+  const mark = result && result.id !== "ok" ? result.at : null;
+  return (
+    <div className="tool-scroll">
+      <table style={{ borderCollapse: "collapse", fontSize: 13, minWidth: 420 }}>
+        <thead>
+          <tr style={{ color: C.text_dim, textAlign: "left" }}>
+            {["Terminal", "Function", "Landed"].map(h => (
+              <th key={h} scope="col" style={{ padding: "4px 8px", fontWeight: 600, borderBottom: `1px solid ${C.border}` }}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {WC_TERMS.map(term => {
+            const landed = ch.conductors.filter(c => assign[c.id] === term.id).map(c => c.housing);
+            const jumper = ch.jumpers.find(j => j.includes(term.id));
+            const hot = mark === "com" && term.id === "COM";
+            return (
+              <tr key={term.id}>
+                <td style={{ padding: "4px 8px", fontFamily: MONO_FONT, color: hot ? C.rose : C.signal_cyan, whiteSpace: "nowrap" }}>{term.id.replace("-", "−")}</td>
+                <td style={{ padding: "4px 8px", color: C.text }}>
+                  {term.fn}: {ch.isolator && term.id.startsWith("SIG") ? `isolator ${term.label}` : term.label}
+                  {jumper && <span style={{ color: C.text_mute }}> (jumper {jumper.map(x => x.replace("-", "−")).join(" – ")})</span>}
+                </td>
+                <td style={{ padding: "4px 8px", fontFamily: MONO_FONT, color: landed.length ? C.text : C.text_dim, whiteSpace: "nowrap" }}>{landed.length ? landed.join(", ") : "—"}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function WireCount({ onResult }) {
+  const C = useC();
+  const [t, setT] = useState(wcLoad);
+  useEffect(() => saveTool(WC_KEY, t), [t]);
+  const s = t.session;
+  const ch = WCD.challenges[s.idx];
+  const countOk = s.count === ch.count;
+  const allLanded = ch.conductors.every(c => s.assign[c.id]);
+  const set = patch => setT(x => ({ ...x, session: { ...x.session, ...patch } }));
+
+  const pickCount = n => {
+    if (countOk || s.done) return;
+    if (n === ch.count) set({ count: n, countMiss: null });
+    else set({ countMiss: n, misses: s.misses + 1, firstMiss: s.firstMiss || `${n} conductors` });
+  };
+
+  const land = (id, term) => {
+    if (s.done) return;
+    set({ assign: { ...s.assign, [id]: term }, result: null });
+  };
+
+  const check = () => {
+    if (!countOk || !allLanded || s.done) return;
+    const r = wcCheck(ch, s.assign);
+    if (r.id !== "ok") {
+      set({ result: r, checks: s.checks + 1, misses: s.misses + 1, firstMiss: s.firstMiss || WC_OUT[r.id].title.replace(/\.$/, "").toLowerCase() });
+      return;
+    }
+    const fresh = !t.played.includes(ch.id);
+    const clean = s.misses === 0;
+    const landing = ch.conductors.map(c => `${c.housing} → ${s.assign[c.id].replace("-", "−")}`).join(", ");
+    onResult({
+      xp: fresh ? (clean ? WC_XP_FIRST : WC_XP_RETRY) : 0,
+      firstTry: clean,
+      firstPass: fresh && clean,
+      radar: WC_RADAR,
+      note: { tool: "2.1", tag: null, text: `Wire Count Detective: ${ch.device.name}, ${ch.count} conductors, ${landing} — ${WCD.mentalModel.text}` },
+    });
+    setT(x => ({
+      ...x,
+      played: fresh ? [...x.played, ch.id] : x.played,
+      log: [{ id: `${ch.count}-WIRE`, landing: `${ch.title}: ${landing}`, attempts: s.misses + 1, first: s.firstMiss || "clean", at: new Date().toISOString() }, ...x.log],
+      session: { ...x.session, result: r, done: true },
+    }));
+  };
+
+  const next = () => setT(x => ({ ...x, session: wcSession((x.session.idx + 1) % WCD.challenges.length) }));
+
+  useEffect(() => {
+    const onKey = e => {
+      const tag = l4KeyTarget(e);
+      if (tag === null) return;
+      if (!countOk && /^[1-2]$/.test(e.key)) {
+        e.preventDefault();
+        pickCount(WC_COUNTS[Number(e.key) - 1]);
+      } else if (e.key === "Enter" && tag !== "BUTTON") {
+        if (s.done) {
+          e.preventDefault();
+          next();
+        } else if (countOk && allLanded) {
+          e.preventDefault();
+          check();
+        }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  const out = s.result && WC_OUT[s.result.id];
+  const markedConductor = s.result && ch.conductors.find(c => c.id === s.result.at);
+
+  return (
+    <div style={{ display: "grid", gap: 20 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+        <TrainingBadge />
+        <Chip color={C.signal_cyan}>CHALLENGE {s.idx + 1} / {WCD.challenges.length}</Chip>
+        <Chip color={C.lime}>CLEARED {t.played.length} / {WCD.challenges.length}</Chip>
+        <span style={{ fontSize: 12, color: C.text_dim }}>Keys: 1-2 wire count, Enter checks the wiring</span>
+      </div>
+
+      <section aria-labelledby="wc-device" style={{ display: "grid", gap: 10 }}>
+        <H as="h3">Device</H>
+        <p id="wc-device" style={{ margin: 0, fontFamily: HEAD_FONT, fontWeight: 700, fontSize: 20, color: C.text }}>
+          {countOk ? ch.device.name : ch.shownAs}
+        </p>
+        {countOk && <Cites cites={[ch.device.source]} />}
+        <div><WcHousing ch={ch} show={countOk} /></div>
+        {countOk ? (
+          <>
+            <p style={{ margin: 0, fontSize: 14, color: C.text }}>
+              Loop: <span style={{ fontFamily: MONO_FONT, fontSize: 13 }}>{ch.loop.text}</span>
+            </p>
+            {ch.loop.constructed ? <ConstructedNote source={ch.loop.source} /> : <Cites cites={[ch.loop.source, ...(ch.topologyStep ? [ch.topologyStep.source] : [])]} />}
+            <ConstructedNote source={`${ch.source}. ${ch.constructedFields}`} />
+          </>
+        ) : (
+          <p style={{ margin: 0, fontSize: 13, color: C.text_mute }}>The loop drawing opens once you have counted the conductors.</p>
+        )}
+      </section>
+
+      <section aria-labelledby="wc-count-h" style={{ display: "grid", gap: 8 }}>
+        <H as="h3"><span id="wc-count-h">1. How many conductors do you run to this device?</span></H>
+        <div role="group" aria-labelledby="wc-count-h" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {WC_COUNTS.map((n, i) => (
+            <Btn
+              key={n}
+              variant={s.count === n ? "primary" : "ghost"}
+              color={s.countMiss === n ? C.rose : undefined}
+              pressed={s.count === n}
+              disabled={countOk}
+              onClick={() => pickCount(n)}
+              ariaLabel={`${i + 1}: ${n} wires`}
+            >
+              {i + 1}: {n} wires
+            </Btn>
+          ))}
+        </div>
+        <div aria-live="polite">
+          {s.countMiss && !countOk && (
+            <Verdict key={s.misses} ok={false} title={`${s.countMiss} conductors for ${ch.conductors.length} housing terminals.`}>
+              <p style={{ margin: 0 }}>
+                {s.countMiss > ch.conductors.length
+                  ? `${s.countMiss - ch.conductors.length} cores have nowhere to land on this housing.`
+                  : `${ch.conductors.length - s.countMiss} housing terminals are left with nothing on them.`}
+              </p>
+              <p style={{ margin: "4px 0 0", color: C.text_mute }}>Count the terminals and pick again. Finishing now is worth {t.played.includes(ch.id) ? 0 : WC_XP_RETRY} XP.</p>
+            </Verdict>
+          )}
+        </div>
+      </section>
+
+      {countOk && (
+        <section aria-labelledby="wc-land-h" style={{ display: "grid", gap: 10 }}>
+          <H as="h3"><span id="wc-land-h">2. Land each conductor on its terminal</span></H>
+          <div style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+            {ch.conductors.map((c, i) => (
+              <label key={c.id} style={{ display: "grid", gap: 4, fontSize: 13, color: C.text }}>
+                <span>Conductor {i + 1}, from housing <span style={{ fontFamily: MONO_FONT, color: markedConductor && markedConductor.id === c.id ? C.rose : C.signal_cyan }}>{c.housing}</span></span>
+                <select
+                  value={s.assign[c.id] || ""}
+                  disabled={s.done}
+                  onChange={e => land(c.id, e.target.value)}
+                  aria-label={`Conductor ${i + 1}, from housing ${c.housing}: terminal`}
+                  style={{ minHeight: TOUCH_MIN, padding: "0 8px", background: C.bg, color: C.text, border: `1px solid ${C.border}`, borderRadius: 4, fontFamily: MONO_FONT, fontSize: 13 }}
+                >
+                  <option value="" disabled>Choose a terminal</option>
+                  {WC_TERMS.map(term => (
+                    <option key={term.id} value={term.id}>{term.id.replace("-", "−")} ({term.fn})</option>
+                  ))}
+                  <option value={WC_OFF}>Not landed</option>
+                </select>
+              </label>
+            ))}
+          </div>
+          <WcTerminalStrip ch={ch} assign={s.assign} result={s.result} />
+          <ConstructedNote source={`${WCD.terminals.source}. ${WCD.terminals.note}`} />
+          {!s.done && (
+            <div>
+              <Btn onClick={check} disabled={!allLanded} ariaLabel="Check the wiring">Check wiring</Btn>
+            </div>
+          )}
+        </section>
+      )}
+
+      <div aria-live="polite" style={{ display: "grid", gap: 12 }}>
+        {s.result && (
+          <>
+            <H as="h3">Where the current goes</H>
+            <WcChain ch={ch} result={s.result} />
+          </>
+        )}
+        {s.result && !s.done && out && (
+          <Verdict key={s.checks} ok={false} title={out.title}>
+            <p style={{ margin: 0 }}>
+              {out.text}
+              {markedConductor && ` (conductor from housing ${markedConductor.housing}).`}
+            </p>
+            {out.tier5 !== undefined && (
+              <>
+                <p style={{ margin: "6px 0 0", color: C.text_mute }}>Drill loop: "{WCD.tier5.items[out.tier5]}"</p>
+                <Cites cites={[WCD.tier5.source]} />
+              </>
+            )}
+            {out.zeroMa && (
+              <>
+                <p style={{ margin: "6px 0 0" }}>
+                  Reading: <span style={{ fontFamily: MONO_FONT }}>{WCD.zeroMa.reading}</span>. Most likely meaning: {WCD.zeroMa.meaning}. Next check: {WCD.zeroMa.nextCheck}.
+                </p>
+                <Cites cites={[WCD.zeroMa.source]} />
+                {ch.count === 2 && (
+                  <>
+                    <p style={{ margin: "4px 0 0", color: C.text_mute }}>{WCD.zeroMa.trap.text}</p>
+                    <Cites cites={[WCD.zeroMa.trap.source]} />
+                  </>
+                )}
+              </>
+            )}
+            <ConstructedNote source={WC_OUT.source} />
+            <p style={{ margin: "6px 0 0", fontWeight: 600 }}>Move a conductor and check again. Finishing now is worth {t.played.includes(ch.id) ? 0 : WC_XP_RETRY} XP.</p>
+          </Verdict>
+        )}
+        {s.done && (
+          <Verdict ok title={s.misses === 0 ? "Loop closed on the first try." : `Loop closed after ${s.misses} miss${s.misses === 1 ? "" : "es"}.`}>
+            <p style={{ margin: 0 }}>{WC_OUT.ok.text}</p>
+            <dl style={{ margin: "10px 0 0", display: "grid", gridTemplateColumns: "minmax(120px, max-content) 1fr", gap: "4px 12px", fontSize: 13 }}>
+              <dt style={{ color: C.text_mute }}>Wiring type</dt><dd style={{ margin: 0, fontFamily: MONO_FONT }}>{ch.count}-wire</dd>
+              <dt style={{ color: C.text_mute }}>Power source</dt><dd style={{ margin: 0 }}>External 24 VDC supply</dd>
+              <dt style={{ color: C.text_mute }}>Supply voltage</dt><dd style={{ margin: 0 }}>{WCD.supplyCheck.text}</dd>
+              <dt style={{ color: C.text_mute }}>Current flow</dt><dd style={{ margin: 0, fontFamily: MONO_FONT, fontSize: 12 }}>{wcPath(ch)}</dd>
+              <dt style={{ color: C.text_mute }}>Receiver terminals</dt><dd style={{ margin: 0 }}>SIG+ / SIG− on the {ch.receiver}</dd>
+              <dt style={{ color: C.text_mute }}>Meter test location</dt><dd style={{ margin: 0 }}>{WCD.meterLocation.text}</dd>
+            </dl>
+            <p style={{ margin: "8px 0 0", color: C.text_mute }}>Fields from drill 010: "{WCD.answerFields.text}"</p>
+            <Cites cites={[WCD.answerFields.source, WCD.supplyCheck.source, WCD.meterLocation.source]} />
+            <p style={{ margin: "8px 0 0" }}>The reusable model: {WCD.mentalModel.text}</p>
+            <Cites cites={[WCD.mentalModel.source]} />
+            <ConstructedNote source={`${ch.source}. Current path follows the constructed terminal convention.`} />
+            <div style={{ marginTop: 10 }}>
+              <Btn onClick={next} ariaLabel="Next challenge">Next challenge</Btn>
+            </div>
+          </Verdict>
+        )}
+      </div>
+
+      <DecisionLog
+        title="Wiring log"
+        headers={["Device", "Landing"]}
+        log={t.log}
+        cells={r => [r.id, r.landing]}
+        empty="Each loop you close is logged here and in Field Notes."
+      />
+    </div>
+  );
+}
+
 const TOOLS = {
   "1.1": {
     component: WireItLive,
@@ -13239,6 +13965,10 @@ const TOOLS = {
   "1.4": {
     component: TrapSpotter,
     source: "Traps: Field Learning Plan.pdf p.10. Scenario, choices, and fix are quoted from it.",
+  },
+  "2.1": {
+    component: WireCount,
+    source: "Devices and loops: IC_Fundamentals_Drill_Input_Library.pdf p.19–22. Answer fields: I&C Fundamentals Drill Pack.pdf p.6 (drill 010). Supply, 0.0 mA, and meter location: Field Troubleshooting Template Pack.pdf p.4, p.5, p.9. Terminal labels, housing marks, the 4-wire loop, and panel jumpers: constructed — training scenario, no source citation.",
   },
   "2.2": {
     component: ScalingBench,

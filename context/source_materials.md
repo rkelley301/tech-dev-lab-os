@@ -17,6 +17,8 @@ field content. Do not invent values, hazards, or procedures.
 | tech-dev-lab.html                          | The current working build                     |
 | wire-it-live-circuit.png.svg               | Tool 1.1 circuit drawing (an SVG despite the name) |
 | wire-it-live-spec.md                       | Tool 1.1 circuit spec, as provided by the user |
+| contact-logic-spec.md                      | Tool 1.3 contact model and truth table, as provided by the user |
+| timer-trace-spec.md                        | Tool 3.3 TON model (Rockwell 1756-RM018), as provided by the user |
 
 ## Where to find specific things
 - Field symptoms: IC_Fundamentals_Drill_Input_Library.pdf p.13–15
@@ -32,3 +34,4 @@ field content. Do not invent values, hazards, or procedures.
 - Symptom checklists (Form 7) with failure modes: Field Troubleshooting Template Pack.pdf p.9–10
 - Seven filmed faults + PIC-510 capstone: course-design.pdf p.2
 - 30-second diagnostic sequence: Field Learning Plan.pdf p.13–14
+- Loop wiring drill (devices, [loop] topologies, Tier 5 faults, one-variable progression): IC_Fundamentals_Drill_Input_Library.pdf p.18–22

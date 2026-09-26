@@ -197,6 +197,23 @@ x/y), targetNets (from the spec's Wiring section: terminals that must end
 up connected), operation lines and the 5 faults (name + consequence),
 verbatim from the spec.
 
+### Step 6e: Extract the Wire Count Detective content (tool 2.1)
+Build a "wireCount" object, 2-wire and 4-wire only (Input Library p.22
+excludes bare RTDs, thermocouples, and 3-/4-wire RTDs from this topology;
+3-wire transmitters are out of scope by user decision):
+- answerFields: drill 010 step 1, verbatim (Drill Pack p.6)
+- mentalModel and progression (device, then topology): Input Library p.22
+- tier5: the 10 fault-reconstruction loops, verbatim (Input Library p.21)
+- zeroMa: the 0.0 mA row (Template Pack p.4) and the 2-wire trap (Field
+  Learning Plan p.10). Shown only for open return conductor and missing
+  24 VDC supply; no other fault gets an mA value.
+- supplyCheck (Template Pack p.4), meterLocation (p.9), formSupply (p.5)
+- challenges: device names from Input Library p.19 / p.21, loops from p.20
+  (Tier 1) and p.21 (isolator pairing), verbatim
+- terminals, housing marks, jumpers, the 4-wire loop text, and outcome
+  wording are constructed conventions: "constructed": true with the
+  constructed source line.
+
 ### Step 6d: Extract the calculators workbook
 From sources/Field Troubleshooting Calculators.xlsx (read the cells and
 formulas directly; do not retype them), build a "calculators" object:
